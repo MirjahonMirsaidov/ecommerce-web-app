@@ -5,8 +5,23 @@ services:
     build:
       context: .
     ports:
-    - "8000:8000"
+      - "8000:8000"
     volumes:
-    - ./ecommerce:/ecommerce
+      - ./ecommerce:/ecommerce
     command: >
       sh -c "python manage.py runserver 0.0.0.0:8000"
+#    environment:
+#      - DB_HOST=db
+#      - DB_NAME=ecommerce
+#      - DB_USER=postgres
+#      - DB_PASS=u?^Qv7dPa#hh
+#    depends_on:
+#      - db
+#
+#
+#  db:
+#    image: postgres:13-alpine
+#    environment:
+#      - POSTGRES_DB=ecommerce
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=u?^Qv7dPa#hh
