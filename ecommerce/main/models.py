@@ -29,3 +29,37 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('name',)
+
+
+class Region(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class District(models.Model):
+    region = models.ForeignKey(Region, related_name='districts', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Address(models.Model):
+    user = models.ForeignKey(User, related_name='address', on_delete=models.CASCADE)
+    region = models.ForeignKey(Region, on_delete=models.CASCADE)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    street = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.user.email
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.user.email
+
