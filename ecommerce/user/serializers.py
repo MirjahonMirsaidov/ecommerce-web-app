@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from django.utils.translation import gettext as _
@@ -18,12 +19,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ('phone_number', )
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(many=False)
-    address = AddressSerializer(many=True)
+    profile = ProfileSerializer(many=False, required=False)
+    address = AddressSerializer(many=True, required=False)
 
     class Meta:
         model = User
@@ -32,16 +33,18 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True, 'min_length': 5}
         }
 
+
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        return User.objects.create(
+            name=validated_data['name'],
+            email=validated_data['email'],
+            password=make_password(validated_data['password'])
+        )
 
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
         user = super().update(instance, validated_data)
 
-        if password:
-            user.set_password(password)
-            user.save()
+        user.save()
 
         return user
 

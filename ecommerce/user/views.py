@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 
 from .serializers import *
+from main.models import *
+
+User = get_user_model()
 
 
 class UserListView(generics.ListAPIView):
@@ -35,7 +38,7 @@ class ChangePasswordView(generics.UpdateAPIView):
     Change user password
     """
     serializer_class = ChangePasswordSerializer
-    model = get_user_model()
+    model = User
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_object(self, queryset=None):
@@ -66,3 +69,32 @@ class ChangePasswordView(generics.UpdateAPIView):
             return Response(response)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileCreateView(generics.CreateAPIView):
+    serializer_class = ProfileSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def post(self, request):
+        serializer = ProfileSerializer(data=request.data)
+        user_id = request.user.pk
+        user = request.user
+        phone_number = self.request.data.get('phone_number')
+        if serializer.is_valid():
+            Profile.objects.create(user_id=user_id, phone_number=phone_number)
+            user.profile.save()
+
+            return Response({
+                'status': status.HTTP_201_CREATED
+            })
+
+        return Response({
+                'message': serializer.errors,
+                'status': status.HTTP_400_BAD_REQUEST
+            })
+
+
+class AddressCreateView(generics.CreateAPIView):
+    serializer_class = AddressSerializer
