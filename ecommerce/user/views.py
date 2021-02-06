@@ -76,7 +76,6 @@ class ProfileCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-
     def post(self, request):
         serializer = ProfileSerializer(data=request.data)
         user_id = request.user.pk
