@@ -31,8 +31,18 @@ class SizeSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProductImage
+        fields = ('images', )
+
+
 class ProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, required=False)
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ('id', 'category', 'brand', 'name', 'color', 'size', 'price', 'quantity', 'images')
+
+
