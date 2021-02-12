@@ -12,13 +12,19 @@ class CartCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
 
-class CartDetailView(generics.GenericAPIView):
+class CartDetailView(generics.ListAPIView):
     serializer_class = CartSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request):
-        carts = Cart.objects.filter(user=request.user.pk)
-        for cart in carts:
-            print(cart.user)
-            return Response({'data': {'user':cart.user}})
+    def get_queryset(self):
+        user = self.request.user.pk
+        return Cart.objects.filter(user=user)
+
+
+class OrderCreateView(generics.GenericAPIView):
+    serializer_class = HistorySerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+

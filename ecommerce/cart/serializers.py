@@ -15,3 +15,10 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+
+class HistorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = History
+        fields = '__all__'
