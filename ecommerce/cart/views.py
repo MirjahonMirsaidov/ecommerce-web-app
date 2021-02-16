@@ -12,24 +12,14 @@ class CartCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
 
-class CartDetailView(generics.GenericAPIView):
+class CartDetailView(generics.ListAPIView):
     serializer_class = CartProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get(self, request):
-        user = request.user
-        user_id = user.pk
-        product_id = CartProduct.objects.filter(user=user_id)
-        product = Product.objects.filter(id=product_id)
-        return Response({
-          'status': 200,
-          'data': {
-              'user': user.email,
-              'product': product.id,
-
-          }
-        })
+    def get_queryset(self):
+        user = self.request.user
+        return CartProduct.objects.filter(user=user)
 
 
 class OrderCreateView(generics.GenericAPIView):
