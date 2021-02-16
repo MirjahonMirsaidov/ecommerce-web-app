@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from .serializers import *
 from main.models import *
+from cart.models import Cart
 
 User = get_user_model()
 
@@ -15,8 +16,18 @@ class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
 
 
-class UserApiView(generics.CreateAPIView):
+class UserApiView(generics.GenericAPIView):
     serializer_class = UserSerializer
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            email = request.data.get('email')
+            id = User.objects.get(email=email).id
+            Cart.objects.get_or_create(user_id=id)
+            return Response( status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateTokenView(ObtainAuthToken):
