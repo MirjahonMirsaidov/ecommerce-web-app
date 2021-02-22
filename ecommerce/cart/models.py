@@ -23,11 +23,12 @@ class Cart(models.Model):
 
 class OrderProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    cart_product = models.ForeignKey(CartProduct, on_delete=models.CASCADE)
     count = models.PositiveIntegerField(default=1)
+    single_price = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.product.category.name
+        return self.cart_product.product.category.name
 
 
 class Order(models.Model):
