@@ -5,11 +5,11 @@ from product.serializers import ProductSerializer
 
 
 class CartProductSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    product = ProductSerializer(required=False)
 
     class Meta:
         model = CartProduct
-        fields = ('product', )
+        fields = ('product', 'count')
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -19,11 +19,11 @@ class CartSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OrderProductSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = OrderProduct
-        fields = '__all__'
+# class OrderProductSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = OrderProduct
+#         fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):

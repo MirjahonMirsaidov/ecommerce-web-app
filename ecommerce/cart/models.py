@@ -8,6 +8,7 @@ from main.models import User
 class CartProduct(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField(default=1)
     is_selected = models.BooleanField(default=False)
 
     def __str__(self):
@@ -21,19 +22,19 @@ class Cart(models.Model):
         return self.user.email
 
 
-class OrderProduct(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    cart_product = models.ForeignKey(CartProduct, on_delete=models.CASCADE)
-    count = models.PositiveIntegerField(default=1)
-    single_price = models.PositiveIntegerField()
-
-    def __str__(self):
-        return self.cart_product.product.category.name
+# class OrderProduct(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     cart_product = models.ForeignKey(CartProduct, on_delete=models.CASCADE)
+#     count = models.PositiveIntegerField(default=1)
+#     single_price = models.PositiveIntegerField()
+#
+#     def __str__(self):
+#         return self.cart_product.product.category.name
 
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    order_product = models.ManyToManyField(OrderProduct)
+    cart_product = models.ManyToManyField(CartProduct)
     overall_price = models.PositiveIntegerField()
     start_date = models.DateTimeField(default=timezone.now)
 

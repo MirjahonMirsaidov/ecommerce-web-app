@@ -28,27 +28,35 @@ class AddToCartProductView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, id):
-        CartProduct.objects.get_or_create(user=request.user, product_id=id)
-        return Response(status=status.HTTP_200_OK)
-
-
-class CreateOrderProductView(generics.GenericAPIView):
-    serializer_class = OrderProductSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request, id):
-        serializer = OrderProductSerializer(data=request.data)
+        serializer = CartProductSerializer(data=request.data)
 
         if serializer.is_valid():
             count = serializer.data.get('count')
-            OrderProduct.objects.create(user=request.user, cart_product_id=id, count=count)
+            CartProduct.objects.get_or_create(user=request.user, product_id=id, count=count)
             return Response(status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class CreateOrderProductView(generics.GenericAPIView):
+#     serializer_class = OrderProductSerializer
+#     authentication_classes = (authentication.TokenAuthentication,)
+#     permission_classes = (permissions.IsAuthenticated,)
+#
+#     def post(self, request, id):
+#         serializer = OrderProductSerializer(data=request.data)
+#
+#         if serializer.is_valid():
+#             count = serializer.data.get('count')
+#             OrderProduct.objects.create(user=request.user, cart_product_id=id, count=count)
+#             return Response(status=status.HTTP_200_OK)
+#
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateOrderView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
+
+
