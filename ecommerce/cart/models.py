@@ -22,15 +22,6 @@ class Cart(models.Model):
         return self.user.email
 
 
-# class OrderProduct(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     cart_product = models.ForeignKey(CartProduct, on_delete=models.CASCADE)
-#     count = models.PositiveIntegerField(default=1)
-#     single_price = models.PositiveIntegerField()
-#
-#     def __str__(self):
-#         return self.cart_product.product.category.name
-
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

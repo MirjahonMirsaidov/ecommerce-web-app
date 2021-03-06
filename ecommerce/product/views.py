@@ -2,6 +2,7 @@ from rest_framework import generics, permissions, authentication, status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.views import APIView
 
 from .models import *
 from .serializers import *
@@ -71,3 +72,30 @@ class ProductDeleteView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
+
+
+class ImportedProductsView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.filter(is_import=True)
+
+
+class LocalProductsView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+    queryset = Product.objects.filter(is_import=False)
+
+
+class ProductByCategoryView(generics.ListAPIView):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        category_products = Product.objects.all()
+        slug = self.kwargs['slug']
+        print(slug)
+        category_id = Category.objects.get(slug=slug).id
+        print(category_id)
+        if category_id is not None:
+            category_products = Product.objects.filter(category_id=category_id)
+        return category_products
+
+
+

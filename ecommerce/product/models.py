@@ -17,6 +17,7 @@ class Brand(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+    slug = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -33,7 +34,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, )
     description = models.CharField(max_length=255, null=True, blank=True)
     price = models.PositiveIntegerField()
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
