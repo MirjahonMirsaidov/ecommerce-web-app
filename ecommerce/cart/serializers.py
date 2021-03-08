@@ -19,18 +19,11 @@ class CartSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# class OrderProductSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = OrderProduct
-#         fields = '__all__'
+class OrderSerializer(serializers.ModelSerializer):
 
-
-# class OrderSerializer(serializers.ModelSerializer):
-
-#     class Meta:
-#         model = Order
-#         fields = '__all__'
+    class Meta:
+        model = Order
+        fields = ('cart_product', )
 
 
 class HistorySerializer(serializers.ModelSerializer):
@@ -38,3 +31,7 @@ class HistorySerializer(serializers.ModelSerializer):
     class Meta:
         model = History
         fields = '__all__'
+
+
+class BuySerializer(serializers.Serializer):
+    url = serializers.CharField(max_length=50)

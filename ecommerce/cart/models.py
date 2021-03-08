@@ -22,11 +22,10 @@ class Cart(models.Model):
         return self.user.email
 
 
-
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    cart_product = models.ManyToManyField(CartProduct)
     overall_price = models.PositiveIntegerField()
+    is_paid = models.BooleanField(default=False)
     start_date = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

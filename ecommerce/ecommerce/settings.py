@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'clickuz',
     'main',
     'user',
     'product',
@@ -86,7 +87,7 @@ DATABASES = {
         'HOST': 'localhost',
         'NAME': 'ecommerce',
         'USER': 'postgres',
-        'PASSWORD': '',
+        'PASSWORD': '0214',
     }
 }
 
@@ -108,6 +109,14 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# Billing system click
+
+CLICK_SETTINGS = {
+    'service_id': '1',
+    'merchant_id': '1',
+    'secret_key': '1'
+}
 
 
 # Internationalization
