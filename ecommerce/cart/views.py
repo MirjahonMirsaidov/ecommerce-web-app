@@ -39,9 +39,11 @@ class AddToCartProductView(generics.GenericAPIView):
 
 
 
-# class CreateOrderView(generics.CreateAPIView):
-#     serializer_class = OrderSerializer
-#     authentication_classes = (authentication.TokenAuthentication,)
-#     permission_classes = (permissions.IsAuthenticated,)
+class CreateOrderView(generics.CreateAPIView):
+    serializer_class = OrderSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
 
 
