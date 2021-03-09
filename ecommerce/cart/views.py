@@ -89,18 +89,41 @@ class OrderCheckAndPayment(ClickUz):
     def check_order(self, order_id: str, amount: str):
         return self.ORDER_FOUND
 
-<<<<<<< HEAD
+
+
+
+class TestView(ClickUzMerchantAPIView):
+    VALIDATE_CLASS = OrderCheckAndPayment
+
+
+
 class CreateOrderView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
 
-=======
     def successfully_payment(self, order_id: str, transaction: object):
         print(order_id)
->>>>>>> 922f6f5ed67ea4f481466718c1c877ed72d9ae89
 
 
-class TestView(ClickUzMerchantAPIView):
-    VALIDATE_CLASS = OrderCheckAndPayment
+class AddWishListView(generics.GenericAPIView):
+    serializer_class = WishListSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, id):
+        if id:   
+            user_id = request.user.pk
+            wished = WishList.objects.filter(user_id=user_id, product_id=id)
+            if wished:
+                wished.delete()
+                return Response("Product successfully deleted from  WishList")
+            else:
+                WishList.objects.create(user_id=user_id, product_id=id)
+                return Response("Product successfully added to WishList")
+        else:
+            return Response({
+                'data' : 'Sahifa topilmadi', 
+                'status' : 400, 
+                })
