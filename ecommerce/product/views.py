@@ -96,4 +96,59 @@ class ProductByCategoryView(generics.ListAPIView):
         return category_products
 
 
+class AddCommentView(generics.GenericAPIView):
+    serializer_class = CommentSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        serializer = CommentSerializer(data=request.data)
+        user = request.user
+        product_id = request.data.get('product_id')
+        message = request.data.get('message')
+        point = request.data.get('point')
+        print(product_id)
+        if serializer.is_valid():
+            comment_check = Comment.objects.filter(product_id=product_id, user_id=user.pk)
+            if comment_check.exists():
+                return Response('Yes')
+            else:
+                Comment.objects.create(product_id=product_id, user_id=user.pk, message=message, point=point)
+            return Response('Okay')
+        return Response('Serializer not valid')
+
+
+class UpdateCommentView(generics.GenericAPIView):
+    serializer_class = CommentSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def patch(self, request, pk):
+        serializer = CommentSerializer(data=request.data)
+        comment = Comment.objects.get(id=pk)
+        serializer = CommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+class DeleteCommentView(generics.GenericAPIView):
+    serializer_class = CommentSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def delete(self, request, id):
+        user_id = request.user.pk
+
+        if id:
+            comment = Comment.objects.get(id=id)
+            if user_id==comment.user_id:
+                comment.delete()
+                return Response('Comment successfully deleted')
+            else:
+                return Response('You can only delete a comment you have written')
+        else:
+            return Response('Not found')
+
+
   

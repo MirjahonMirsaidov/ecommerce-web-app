@@ -1,4 +1,5 @@
 from django.db import models
+from main.models import User
 
 
 class Color(models.Model):
@@ -47,11 +48,21 @@ class Product(models.Model):
         return f"{self.brand} {self.category}"
 
 
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     images = models.ImageField()
 
     def __str__(self):
         return f"{self.product.brand} {self.product.category}"
+
+
+
+class Comment(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
+    message = models.TextField()
+    point = models.CharField(max_length=5)
+    created_time = models.DateTimeField(auto_now_add=True)
 
 

@@ -123,7 +123,4 @@ class AddWishListView(generics.GenericAPIView):
                 WishList.objects.create(user_id=user_id, product_id=id)
                 return Response("Product successfully added to WishList")
         else:
-            return Response({
-                'data' : 'Sahifa topilmadi', 
-                'status' : 400, 
-                })
+            return Response('Sahifa topilmadi')
