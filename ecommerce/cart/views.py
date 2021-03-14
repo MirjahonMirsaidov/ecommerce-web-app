@@ -65,7 +65,7 @@ class CreateOrderView(generics.GenericAPIView):
         if serializer.is_valid():
             overall_price = serializer.data.get('overall_price')
             is_paid = serializer.data.get('is_paid')
-            Order.objects.create(user=request.user.pk, overall_price=overall_price, is_paid=is_paid)
+            Order.objects.create(user=request.user, overall_price=overall_price, is_paid=is_paid)
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
