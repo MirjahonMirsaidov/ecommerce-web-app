@@ -68,11 +68,8 @@ def toggle_is_selected_status(request, id):
     else:
         cart_product[0].is_selected = True
     cart_product[0].save()
-<<<<<<< HEAD
+
     return HttpResponse('Bajarildi')
-=======
-    return HttpResponse('')
->>>>>>> 8c607df2e673605b9e213c7447af35df9817a42b
 
 
 class CreateOrderView(generics.GenericAPIView):
