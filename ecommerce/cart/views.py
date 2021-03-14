@@ -68,23 +68,25 @@ def toggle_is_selected_status(request, id):
     else:
         cart_product[0].is_selected = True
     cart_product[0].save()
+<<<<<<< HEAD
     return HttpResponse('Bajarildi')
+=======
+    return HttpResponse('')
+>>>>>>> 8c607df2e673605b9e213c7447af35df9817a42b
 
 
-class CreateOrderView(generics.CreateAPIView):
+class CreateOrderView(generics.GenericAPIView):
     serializer_class = OrderSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         serializer = OrderSerializer(data=request.data)
-        cart_products = request.data.get('cart_product')
-        user_id = request.user.pk
-        print(cart_products)
+
         if serializer.is_valid():
-            order = Order.objects.create(user_id=user_id, overall_price=15)
-            order.cart_product.set(cart_products)
-            order.save()
+            overall_price = serializer.data.get('overall_price')
+            is_paid = serializer.data.get('is_paid')
+            Order.objects.create(user=request.user.pk, overall_price=overall_price, is_paid=is_paid)
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -193,12 +195,10 @@ class TestView(ClickUzMerchantAPIView):
     VALIDATE_CLASS = OrderCheckAndPayment
 
 
-
 class CreateOrderView(generics.CreateAPIView):
     serializer_class = OrderSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-
 
     def successfully_payment(self, order_id: str, transaction: object):
         print(order_id)

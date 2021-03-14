@@ -9,7 +9,7 @@ class CartProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartProduct
-        fields = ('product', 'count')
+        fields = ('product', 'count', 'is_selected')
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('cart_product', )
+        fields = ('user', 'overall_price', 'is_paid', 'start_date')
 
 
 
@@ -62,13 +62,11 @@ class HistorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class WishListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WishList
         fields = '__all__'
-
 
 
 class BuySerializer(serializers.Serializer):
