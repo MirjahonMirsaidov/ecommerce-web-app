@@ -5,7 +5,6 @@ from random import randint
 from .models import *
 from .serializers import *
 from product.models import Product
-from twilio.rest import Client
 
 from clickuz import ClickUz
 from clickuz.views import ClickUzMerchantAPIView
@@ -83,11 +82,10 @@ class CreateOrderView(generics.GenericAPIView):
         if serializer.is_valid():
             overall_price = serializer.data.get('overall_price')
             is_paid = serializer.data.get('is_paid')
-            Order.objects.create(user=request.user.pk, overall_price=overall_price, is_paid=is_paid)
+            Order.objects.create(user=request.user, overall_price=overall_price, is_paid=is_paid)
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class CreateOrderProductBetaView(generics.GenericAPIView):
@@ -100,19 +98,29 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
         if serializer.is_valid():
+
+            order = OrderBeta.objects.create(phone_number=phone_number, name=name)
+            order.save()
+            finish_price = 0
             for product_num in range(0, int(length)):
                 product = request.data.get(f'product{product_num}')
                 count = int(request.data.get(f'count{product_num}'))
                 price = Product.objects.get(id=product).price
-                overall_price = price*count
-                print(overall_price)
+                single_overall_price = price*count
+                finish_price += single_overall_price
+                print(single_overall_price)
                 OrderProductBeta.objects.create(
+                    order_id = order.id,
                     product_id=product,
                     count=count,
-                    phone_number=phone_number,
-                    overall_price=overall_price,
-                    name=name,
+                    single_overall_price=single_overall_price,
+                    price=price,
+                    
                 )
+            print(finish_price)
+            order.finish_price = finish_price
+            order.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

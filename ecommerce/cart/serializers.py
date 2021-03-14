@@ -45,14 +45,8 @@ class OrderProductBetaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderProductBeta
-        fields = '__all__'
+        fields = ('id',)
 
-
-class SendPasswordSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SendPassword
-        fields = ('phone',)
 
 
 class HistorySerializer(serializers.ModelSerializer):

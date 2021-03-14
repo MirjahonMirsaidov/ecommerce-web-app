@@ -35,8 +35,11 @@ class Order(models.Model):
 class OrderBeta(models.Model):
     name = models.CharField(max_length=25)
     phone_number = models.CharField(max_length=15)
-    finish_price = models.PositiveIntegerField()
+    finish_price = models.PositiveIntegerField(default=0)
 
+
+    def __str__(self):
+        return self.name
 
 
 class OrderProductBeta(models.Model):
@@ -47,7 +50,7 @@ class OrderProductBeta(models.Model):
     single_overall_price = models.PositiveIntegerField()
 
     def __str__(self):
-        return self.product
+        return self.product.category.name
 
 
 
