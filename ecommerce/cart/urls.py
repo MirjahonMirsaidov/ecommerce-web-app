@@ -14,8 +14,6 @@ urlpatterns = [
     path('buy/', BuyProductViaClickView.as_view(), name='buy'),
     path('toggle-is-selected/<int:id>', toggle_is_selected_status, name='toggle-is-selected'),
     path('add-to-wishlist/<int:id>', AddWishListView.as_view(), name='add-to-wishlist'),
-    path('send-password/<int:id>', SendPasswordView.as_view(), name='send-password'),
-    path('phone-verify/', PhoneVerifyView.as_view(), name='phone-verify'),
     path('orderbeta-create/', CreateOrderProductBetaView.as_view(), name='orderbeta-create'),
     path('orderbeta-list/', OrderProductBetaListView.as_view(), name='orderbeta-list'),
 ]

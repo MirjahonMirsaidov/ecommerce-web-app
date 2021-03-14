@@ -73,11 +73,3 @@ class WishList(models.Model):
         return self.product.category.name
 
 
-
-class SendPassword(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=15)
-    verify_kod = models.PositiveIntegerField()
-
-    def __str__(self):
-        return self.phone

@@ -127,50 +127,6 @@ class OrderProductBetaListView(generics.ListAPIView):
     queryset = OrderProductBeta.objects.all()
 
 
-class SendPasswordView(generics.GenericAPIView):
-    serializer_class = SendPasswordSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-
-    def post(self, request):
-        serializer = SendPasswordSerializer(data=request.data)
-        account_sid = 'AC7af81e6d1db5667c0975584212b73e0d'
-        auth_token = 'a9a5ba04b9e4c9973e7619fc5acc007e'
-        client = Client(account_sid, auth_token)
-        verify_kod = randint(100000, 999999)
-        print(verify_kod)
-        user_id = request.user.pk
-        phone = request.data.get('phone')
-        if serializer.is_valid():
-            message = client.messages.create(
-                                 body=f'Sizning bir martalik parol: {verify_kod}',
-                                 from_='+14846015193',
-                                 to=phone)
-            SendPassword.objects.create(user_id=user_id, phone=phone, verify_kod=verify_kod)
-            
-            print(message.sid)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-class PhoneVerifyView(generics.GenericAPIView):
-    serializer_class = SendPasswordSerializer
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def post(self, request):
-        phone = request.data.get('phone')
-        verify_kod = request.data.get('verify_kod')
-        verify = SendPassword.objects.filter(phone=phone, verify_kod=verify_kod).exists()
-        print(verify)
-        if verify:
-            return Response("Success verified")
-        else:
-            return Response('Verified incorrect')
-
 
 
 class BuyProductViaClickView(generics.GenericAPIView):
