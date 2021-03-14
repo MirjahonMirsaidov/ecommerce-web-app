@@ -1,10 +1,11 @@
 from django.http import HttpResponse
 from rest_framework import generics, authentication, permissions, status
 from rest_framework.response import Response
-
+from random import randint
 from .models import *
 from .serializers import *
 from product.models import Product
+from twilio.rest import Client
 
 from clickuz import ClickUz
 from clickuz.views import ClickUzMerchantAPIView
@@ -17,6 +18,7 @@ class CartCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
 
+
 class CartDetailView(generics.ListAPIView):
     serializer_class = CartProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -27,10 +29,12 @@ class CartDetailView(generics.ListAPIView):
         return CartProduct.objects.filter(user=user)
 
 
+
 class AddToCartProductView(generics.GenericAPIView):
     serializer_class = CartProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
+
 
     def post(self, request, id):
         serializer = CartProductSerializer(data=request.data)
@@ -43,16 +47,28 @@ class AddToCartProductView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class DeleteFromCartView(generics.GenericAPIView):
+    serializer_class = CartProductSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def delete(self, request, id):
+        product = CartProduct.objects.get(id=id)
+        product.delete()
+        return Response("Successfully deleted")
+
+
+
 def toggle_is_selected_status(request, id):
     cart_product = CartProduct.objects.get_or_create(id=id)
     status = cart_product[0].is_selected
-    print(status)
     if status:
-        status = False
+        cart_product[0].is_selected = False
     else:
-        status = True
+        cart_product[0].is_selected = True
     cart_product[0].save()
-    return HttpResponse('ha')
+    return HttpResponse('Bajarildi')
 
 
 class CreateOrderView(generics.CreateAPIView):
@@ -74,6 +90,87 @@ class CreateOrderView(generics.CreateAPIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class CreateOrderProductBetaView(generics.GenericAPIView):
+    serializer_class = OrderProductBetaSerializer
+
+
+    def post(self, request):
+        serializer = OrderProductBetaSerializer(data=request.data)
+        length = request.data.get('length')
+        name = request.data.get('name')
+        phone_number = request.data.get('phone_number')
+        if serializer.is_valid():
+            for product_num in range(0, int(length)):
+                product = request.data.get(f'product{product_num}')
+                count = int(request.data.get(f'count{product_num}'))
+                price = Product.objects.get(id=product).price
+                overall_price = price*count
+                print(overall_price)
+                OrderProductBeta.objects.create(
+                    product_id=product,
+                    count=count,
+                    phone_number=phone_number,
+                    overall_price=overall_price,
+                    name=name,
+                )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class OrderProductBetaListView(generics.ListAPIView):
+    serializer_class = OrderProductBetaListSerializer
+    queryset = OrderProductBeta.objects.all()
+
+
+class SendPasswordView(generics.GenericAPIView):
+    serializer_class = SendPasswordSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+    def post(self, request):
+        serializer = SendPasswordSerializer(data=request.data)
+        account_sid = 'AC7af81e6d1db5667c0975584212b73e0d'
+        auth_token = 'a9a5ba04b9e4c9973e7619fc5acc007e'
+        client = Client(account_sid, auth_token)
+        verify_kod = randint(100000, 999999)
+        print(verify_kod)
+        user_id = request.user.pk
+        phone = request.data.get('phone')
+        if serializer.is_valid():
+            message = client.messages.create(
+                                 body=f'Sizning bir martalik parol: {verify_kod}',
+                                 from_='+14846015193',
+                                 to=phone)
+            SendPassword.objects.create(user_id=user_id, phone=phone, verify_kod=verify_kod)
+            
+            print(message.sid)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class PhoneVerifyView(generics.GenericAPIView):
+    serializer_class = SendPasswordSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        phone = request.data.get('phone')
+        verify_kod = request.data.get('verify_kod')
+        verify = SendPassword.objects.filter(phone=phone, verify_kod=verify_kod).exists()
+        print(verify)
+        if verify:
+            return Response("Success verified")
+        else:
+            return Response('Verified incorrect')
+
+
+
 class BuyProductViaClickView(generics.GenericAPIView):
     serializer_class = BuySerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -85,10 +182,10 @@ class BuyProductViaClickView(generics.GenericAPIView):
         return Response({'url': url})
 
 
+
 class OrderCheckAndPayment(ClickUz):
     def check_order(self, order_id: str, amount: str):
         return self.ORDER_FOUND
-
 
 
 

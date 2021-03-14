@@ -51,9 +51,14 @@ class ProductCreateView(generics.GenericAPIView):
 
 
 class ProductListView(generics.ListAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+
+
+class ProductDetailView(generics.RetrieveAPIView):
+    serializer_class = ProductDetailSerializer
     queryset = Product.objects.all()
 
 
@@ -131,6 +136,7 @@ class UpdateCommentView(generics.GenericAPIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class DeleteCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
