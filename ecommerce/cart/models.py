@@ -32,6 +32,25 @@ class Order(models.Model):
         return self.user.email
 
 
+class OrderBeta(models.Model):
+    name = models.CharField(max_length=25)
+    phone_number = models.CharField(max_length=15)
+    finish_price = models.PositiveIntegerField()
+
+
+
+class OrderProductBeta(models.Model):
+    order = models.ForeignKey(OrderBeta, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    count = models.PositiveIntegerField()
+    price = models.PositiveIntegerField()
+    single_overall_price = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.product
+
+
+
 class History(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -49,3 +68,16 @@ class History(models.Model):
 class WishList(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishes')
+
+    def __str__(self):
+        return self.product.category.name
+
+
+
+class SendPassword(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15)
+    verify_kod = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.phone
