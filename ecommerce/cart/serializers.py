@@ -26,7 +26,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ('user', 'overall_price', 'is_paid', 'start_date')
 
 
-
 class OrderBetaSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -46,13 +45,6 @@ class OrderProductBetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProductBeta
         fields = '__all__'
-
-
-class SendPasswordSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SendPassword
-        fields = ('phone',)
 
 
 class HistorySerializer(serializers.ModelSerializer):

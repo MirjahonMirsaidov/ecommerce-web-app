@@ -5,7 +5,6 @@ from random import randint
 from .models import *
 from .serializers import *
 from product.models import Product
-from twilio.rest import Client
 
 from clickuz import ClickUz
 from clickuz.views import ClickUzMerchantAPIView
@@ -68,11 +67,7 @@ def toggle_is_selected_status(request, id):
     else:
         cart_product[0].is_selected = True
     cart_product[0].save()
-<<<<<<< HEAD
     return HttpResponse('Bajarildi')
-=======
-    return HttpResponse('')
->>>>>>> 8c607df2e673605b9e213c7447af35df9817a42b
 
 
 class CreateOrderView(generics.GenericAPIView):
@@ -90,7 +85,6 @@ class CreateOrderView(generics.GenericAPIView):
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class CreateOrderProductBetaView(generics.GenericAPIView):
