@@ -27,19 +27,23 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 
-class OrderBetaSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = OrderBeta
-        fields = ('name', 'phone_number',)
-
-
 class OrderProductBetaListSerializer(serializers.ModelSerializer):
     product = ProductSerializer(required=False)
 
     class Meta:
         model = OrderProductBeta
         fields = '__all__'
+
+
+
+class OrderBetaSerializer(serializers.ModelSerializer):
+    orderproducts = OrderProductBetaListSerializer(many=True, required=False)
+    class Meta:
+        model = OrderBeta
+        fields = ('id', 'name', 'phone_number', 'orderproducts', 'finish_price',)
+
+
+
 
 class OrderProductBetaSerializer(serializers.ModelSerializer):
 

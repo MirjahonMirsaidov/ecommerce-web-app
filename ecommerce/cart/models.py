@@ -43,7 +43,7 @@ class OrderBeta(models.Model):
 
 
 class OrderProductBeta(models.Model):
-    order = models.ForeignKey(OrderBeta, on_delete=models.CASCADE)
+    order = models.ForeignKey(OrderBeta, on_delete=models.CASCADE, related_name='orderproducts')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     count = models.PositiveIntegerField()
     price = models.PositiveIntegerField()

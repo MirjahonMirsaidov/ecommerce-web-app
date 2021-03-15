@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from rest_framework import generics, authentication, permissions, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from random import randint
 from .models import *
 from .serializers import *
@@ -88,6 +89,7 @@ class CreateOrderView(generics.GenericAPIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class CreateOrderProductBetaView(generics.GenericAPIView):
     serializer_class = OrderProductBetaSerializer
 
@@ -108,7 +110,6 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
                 price = Product.objects.get(id=product).price
                 single_overall_price = price*count
                 finish_price += single_overall_price
-                print(single_overall_price)
                 OrderProductBeta.objects.create(
                     order_id = order.id,
                     product_id=product,
@@ -133,6 +134,18 @@ class OrderProductBetaListView(generics.ListAPIView):
 
 
 
+class OrderBetaListView(generics.ListAPIView):
+    serializer_class = OrderBetaSerializer
+    queryset = OrderBeta.objects.all()
+
+
+class OrderBetaDetailView(generics.RetrieveAPIView):
+    serializer_class = OrderBetaSerializer
+    
+    def get_queryset(self):
+        return OrderBeta.objects.all()
+        
+        
 
 class BuyProductViaClickView(generics.GenericAPIView):
     serializer_class = BuySerializer
