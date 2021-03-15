@@ -129,8 +129,6 @@ class OrderProductBetaListView(generics.ListAPIView):
 
 
 
-<<<<<<< HEAD
-=======
 class OrderBetaListView(generics.ListAPIView):
     serializer_class = OrderBetaSerializer
     queryset = OrderBeta.objects.all()
@@ -143,8 +141,6 @@ class OrderBetaDetailView(generics.RetrieveAPIView):
         return OrderBeta.objects.all()
         
         
-
->>>>>>> 92f1a6c46d925686ff515bf288c4b2bfe30a913e
 class BuyProductViaClickView(generics.GenericAPIView):
     serializer_class = BuySerializer
     authentication_classes = (authentication.TokenAuthentication,)
