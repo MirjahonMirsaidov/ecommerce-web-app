@@ -25,13 +25,6 @@ class BrandSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SizeSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Size
-        fields = '__all__'
-
-
 class ProductImageSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -39,13 +32,11 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ('images', )
 
 
-
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, required=False)
     class Meta:
         model = Comment
         fields = ( 'user', 'message', 'point', 'user_id',)
-
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -61,8 +52,8 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
-    
     comments = CommentSerializer(many=True, required=False)
+
     class Meta:
         model = Product
         fields = ('id', 'category', 'brand', 'name', 'cover_image', 'comments')
