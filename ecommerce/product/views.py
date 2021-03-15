@@ -23,10 +23,6 @@ class BrandCreateView(generics.CreateAPIView):
     queryset = Brand.objects.all()
 
 
-class SizeCreateView(generics.CreateAPIView):
-    serializer_class = SizeSerializer
-    queryset = Size.objects.all()
-
 
 class ProductCreateView(generics.CreateAPIView):
     serializer_class = ProductSerializer
