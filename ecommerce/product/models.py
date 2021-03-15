@@ -24,13 +24,6 @@ class Category(models.Model):
         return self.name
 
 
-class Size(models.Model):
-    name = models.CharField(max_length=10)
-
-    def __str__(self):
-        return self.name
-
-
 class Product(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
