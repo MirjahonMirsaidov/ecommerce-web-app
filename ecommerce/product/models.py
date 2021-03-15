@@ -35,26 +35,36 @@ class Product(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, )
-    description = models.CharField(max_length=255, null=True, blank=True)
-    price = models.PositiveIntegerField()
-    size = models.ForeignKey(Size, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
+    description = models.TextField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
+    cover_image = models.ImageField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.brand} {self.category}"
+        return f"{self.brand} {self.category.name}"
 
+
+class ProductVariation(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    size = models.CharField(max_length=255)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE)
+    price = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
+
+
+    def __str__(self):
+        return f"{self.product.brand.name} {self.product.category.name} {self.name}"
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    product = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name='images')
     images = models.ImageField()
 
     def __str__(self):
-        return f"{self.product.brand} {self.product.category}"
+        return f"{self.product.product.brand.name} {self.product.product.category.name}"
 
 
 

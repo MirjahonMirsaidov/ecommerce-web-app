@@ -49,26 +49,23 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
-    colors = ColorSerializer(many=True, required=False)
-    size = SizeSerializer(many=False, required=False)
+    
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'colors', 'size', 'price', 'quantity', 'images')
+        fields = ('id', 'category', 'brand', 'name', 'description', 'cover_image', )
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
-    colors = ColorSerializer(many=True, required=False)
-    size = SizeSerializer(many=False, required=False)
+    
     comments = CommentSerializer(many=True, required=False)
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'colors', 'size', 'price', 'quantity', 'images', 'comments')
+        fields = ('id', 'category', 'brand', 'name', 'cover_image', 'comments')
 
 
 

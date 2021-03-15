@@ -28,26 +28,27 @@ class SizeCreateView(generics.CreateAPIView):
     queryset = Size.objects.all()
 
 
-class ProductCreateView(generics.GenericAPIView):
+class ProductCreateView(generics.CreateAPIView):
     serializer_class = ProductSerializer
+    queryset = Product.objects.all()
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
 
-    def post(self, request):
-        serializer = ProductSerializer(data=request.data)
-        length = request.data.get('length')
-        product = request.data.get('product')
-        if serializer.is_valid():
-            product = serializer.save()
+    # def post(self, request):
+    #     serializer = ProductSerializer(data=request.data)
+    #     length = request.data.get('length')
+    #     product = request.data.get('product')
+    #     if serializer.is_valid():
+    #         product = serializer.save()
 
-            for file_num in range(0, int(length)):
-                images = request.FILES.get(f'images{file_num}')
-                ProductImage.objects.create(
-                    product=product,
-                    images=images
-                )
-            return Response(status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+    #         for file_num in range(0, int(length)):
+    #             images = request.FILES.get(f'images{file_num}')
+    #             ProductImage.objects.create(
+    #                 product=product,
+    #                 images=images
+    #             )
+    #         return Response(status=status.HTTP_201_CREATED)
+    #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):
