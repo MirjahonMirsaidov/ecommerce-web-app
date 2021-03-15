@@ -8,7 +8,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('name', )
 
 
 class ColorSerializer(serializers.ModelSerializer):
@@ -39,13 +39,20 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ( 'user', 'message', 'point', 'user_id',)
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class ProductGetSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
-    
+
     class Meta:
         model = Product
         fields = ('id', 'category', 'brand', 'name', 'description', 'cover_image', )
+
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):

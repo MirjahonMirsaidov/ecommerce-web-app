@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 from main.models import User
 
 
@@ -18,7 +19,15 @@ class Brand(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    slug = models.CharField(max_length=255)
+    slug = models.SlugField(
+        default='',
+        editable=False,
+    )
+
+    def save(self, *args, **kwargs):
+        value = self.name
+        self.slug = slugify(value, allow_unicode=True)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name

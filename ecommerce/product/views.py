@@ -50,7 +50,7 @@ class ProductCreateView(generics.CreateAPIView):
 class ProductListView(generics.ListAPIView):
     # authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (permissions.IsAdminUser,)
-    serializer_class = ProductSerializer
+    serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
 
 
@@ -77,17 +77,17 @@ class ProductDeleteView(generics.DestroyAPIView):
 
 
 class ImportedProductsView(generics.ListAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductGetSerializer
     queryset = Product.objects.filter(is_import=True)
 
 
 class LocalProductsView(generics.ListAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductGetSerializer
     queryset = Product.objects.filter(is_import=False)
 
 
 class ProductByCategoryView(generics.ListAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductGetSerializer
 
     def get_queryset(self):
         category_products = Product.objects.all()
@@ -124,7 +124,6 @@ class UpdateCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-
 
     def patch(self, request, pk):
         serializer = CommentSerializer(data=request.data)
