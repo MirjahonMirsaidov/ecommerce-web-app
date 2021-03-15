@@ -15,5 +15,8 @@ urlpatterns = [
     path('toggle-is-selected/<int:id>', toggle_is_selected_status, name='toggle-is-selected'),
     path('add-to-wishlist/<int:id>', AddWishListView.as_view(), name='add-to-wishlist'),
     path('orderbeta-create/', CreateOrderProductBetaView.as_view(), name='orderbeta-create'),
-    path('orderbeta-list/', OrderProductBetaListView.as_view(), name='orderbeta-list'),
+    path('orderproductbeta-list/', OrderProductBetaListView.as_view(), name='orderbeta-list'),
+    path('orderbeta-list/', OrderBetaListView.as_view(), name='orderbeta-list'),
+    path('orderbeta-detail/<int:pk>', OrderBetaDetailView.as_view(), name='orderbeta-detail'),
+
 ]

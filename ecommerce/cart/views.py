@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from rest_framework import generics, authentication, permissions, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from random import randint
 from .models import *
 from .serializers import *
@@ -62,6 +63,7 @@ def toggle_is_selected_status(request, id):
     else:
         cart_product[0].is_selected = True
     cart_product[0].save()
+
     return HttpResponse('Bajarildi')
 
 
@@ -82,6 +84,7 @@ class CreateOrderView(generics.GenericAPIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class CreateOrderProductBetaView(generics.GenericAPIView):
     serializer_class = OrderProductBetaSerializer
 
@@ -92,19 +95,28 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
         if serializer.is_valid():
+
+            order = OrderBeta.objects.create(phone_number=phone_number, name=name)
+            order.save()
+            finish_price = 0
             for product_num in range(0, int(length)):
                 product = request.data.get(f'product{product_num}')
                 count = int(request.data.get(f'count{product_num}'))
                 price = Product.objects.get(id=product).price
-                overall_price = price*count
-                print(overall_price)
+                single_overall_price = price*count
+                finish_price += single_overall_price
                 OrderProductBeta.objects.create(
+                    order_id = order.id,
                     product_id=product,
                     count=count,
-                    phone_number=phone_number,
-                    overall_price=overall_price,
-                    name=name,
+                    single_overall_price=single_overall_price,
+                    price=price,
+                    
                 )
+            print(finish_price)
+            order.finish_price = finish_price
+            order.save()
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -117,6 +129,22 @@ class OrderProductBetaListView(generics.ListAPIView):
 
 
 
+<<<<<<< HEAD
+=======
+class OrderBetaListView(generics.ListAPIView):
+    serializer_class = OrderBetaSerializer
+    queryset = OrderBeta.objects.all()
+
+
+class OrderBetaDetailView(generics.RetrieveAPIView):
+    serializer_class = OrderBetaSerializer
+    
+    def get_queryset(self):
+        return OrderBeta.objects.all()
+        
+        
+
+>>>>>>> 92f1a6c46d925686ff515bf288c4b2bfe30a913e
 class BuyProductViaClickView(generics.GenericAPIView):
     serializer_class = BuySerializer
     authentication_classes = (authentication.TokenAuthentication,)
