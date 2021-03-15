@@ -148,13 +148,10 @@ class DeleteCommentView(generics.GenericAPIView):
 
         if id:
             comment = Comment.objects.get(id=id)
-            if user_id==comment.user_id:
+            if user_id == comment.user_id:
                 comment.delete()
                 return Response('Comment successfully deleted')
             else:
                 return Response('You can only delete a comment you have written')
         else:
             return Response('Not found')
-
-
-  

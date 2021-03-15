@@ -17,7 +17,6 @@ class CartCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAuthenticated, )
 
 
-
 class CartDetailView(generics.ListAPIView):
     serializer_class = CartProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
@@ -28,12 +27,10 @@ class CartDetailView(generics.ListAPIView):
         return CartProduct.objects.filter(user=user)
 
 
-
 class AddToCartProductView(generics.GenericAPIView):
     serializer_class = CartProductSerializer
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
-
 
     def post(self, request, id):
         serializer = CartProductSerializer(data=request.data)
@@ -51,12 +48,10 @@ class DeleteFromCartView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAuthenticated,)
 
-
     def delete(self, request, id):
         product = CartProduct.objects.get(id=id)
         product.delete()
         return Response("Successfully deleted")
-
 
 
 def toggle_is_selected_status(request, id):
@@ -119,7 +114,6 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
 class OrderProductBetaListView(generics.ListAPIView):
     serializer_class = OrderProductBetaListSerializer
     queryset = OrderProductBeta.objects.all()
-
 
 
 
