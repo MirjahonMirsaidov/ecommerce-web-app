@@ -93,7 +93,7 @@ DATABASES = {
         'HOST': 'localhost',
         'NAME': 'ecommerce',
         'USER': 'postgres',
-        'PASSWORD': 'jdshjknmc',
+        'PASSWORD': '',
     }
 }
 
