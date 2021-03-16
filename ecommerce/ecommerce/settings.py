@@ -94,7 +94,6 @@ DATABASES = {
         'NAME': 'ecommerce',
         'USER': 'postgres',
         'PASSWORD': '0214',
-
     }
 }
 
