@@ -47,9 +47,18 @@ class ProductVariationSerializer(serializers.ModelSerializer):
         fields = ('product','name', 'description', 'size', 'color', 'price', 'quantity', 'images')
 
 
+class ProductVariationGetSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, required=False)
+
+    class Meta:
+        model = ProductVariation
+        fields = ('name', 'description', 'size', 'color', 'price', 'quantity', 'images')
+
+
 class ProductGetSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
+    variations = ProductVariationGetSerializer(many=True, required=False)
 
     class Meta:
         model = Product

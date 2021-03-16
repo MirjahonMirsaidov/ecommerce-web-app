@@ -62,6 +62,14 @@ class ProductVariationCreateView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProductVariationListView(generics.GenericAPIView):
+    
+    def get(self, request, id):
+        products = ProductVariation.objects.filter(product_id=id)
+        serializer = ProductVariationGetSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class ProductListView(generics.ListAPIView):
     # authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (permissions.IsAdminUser,)
