@@ -70,6 +70,11 @@ class ProductVariationListView(generics.GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class ProductFilterView(generics.GenericAPIView):
+
+    def 
+
+
 class ProductListView(generics.ListAPIView):
     # authentication_classes = (authentication.TokenAuthentication,)
     # permission_classes = (permissions.IsAdminUser,)
@@ -78,7 +83,7 @@ class ProductListView(generics.ListAPIView):
 
 
 class ProductDetailView(generics.RetrieveAPIView):
-    serializer_class = ProductDetailSerializer
+    serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
 
 
