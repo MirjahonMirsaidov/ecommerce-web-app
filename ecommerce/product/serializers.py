@@ -39,6 +39,14 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ( 'user', 'message', 'point', 'user_id',)
 
 
+class ProductVariationSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, required=False)
+
+    class Meta:
+        model = ProductVariation
+        fields = ('product','name', 'description', 'size', 'color', 'price', 'quantity', 'images')
+
+
 class ProductGetSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)

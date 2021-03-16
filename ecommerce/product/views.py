@@ -30,21 +30,36 @@ class ProductCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
 
-    # def post(self, request):
-    #     serializer = ProductSerializer(data=request.data)
-    #     length = request.data.get('length')
-    #     product = request.data.get('product')
-    #     if serializer.is_valid():
-    #         product = serializer.save()
 
-    #         for file_num in range(0, int(length)):
-    #             images = request.FILES.get(f'images{file_num}')
-    #             ProductImage.objects.create(
-    #                 product=product,
-    #                 images=images
-    #             )
-    #         return Response(status=status.HTTP_201_CREATED)
-    #     return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class ProductVariationCreateView(generics.GenericAPIView):
+    serializer_class = ProductVariationSerializer
+    authentication_classes = (authentication.TokenAuthentication, )
+    permission_classes = (permissions.IsAdminUser, )
+
+
+    def post(self, request):
+        serializer = ProductVariationSerializer(data=request.data)
+        length = request.data.get('length')
+        product = request.data.get('product')
+        name = request.data.get('name')
+        description = request.data.get('description')
+        size = request.data.get('size')
+        color = request.data.get('color')
+        price = request.data.get('price')
+        quantity = request.data.get('quantity')
+
+        if serializer.is_valid():
+            product = serializer.save()
+
+            for file_num in range(0, int(length)):
+                images = request.FILES.get(f'images{file_num}')
+                ProductImage.objects.create(
+                    product=product,
+                    images=images,
+                )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):
