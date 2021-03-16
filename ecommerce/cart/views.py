@@ -102,7 +102,7 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
             for product_num in range(0, int(length)):
                 product = request.data.get(f'product{product_num}')
                 count = int(request.data.get(f'count{product_num}'))
-                price = Product.objects.get(id=product).price
+                price = ProductVariation.objects.get(id=product).price
                 single_overall_price = price*count
                 finish_price += single_overall_price
                 OrderProductBeta.objects.create(
