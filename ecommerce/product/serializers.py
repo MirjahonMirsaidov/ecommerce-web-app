@@ -44,11 +44,12 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariation
-        fields = ('product','name', 'description', 'size', 'color', 'price', 'quantity', 'images')
+        fields = ('product', 'name', 'description', 'size', 'color', 'price', 'quantity', 'images')
 
 
 class ProductVariationGetSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
+    color = ColorSerializer(many=False, required=False)
 
     class Meta:
         model = ProductVariation
@@ -80,7 +81,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'cover_image', 'comments')
+        fields = ('id', 'category', 'brand', 'name', 'cover_image', 'images', 'comments')
 
 
 

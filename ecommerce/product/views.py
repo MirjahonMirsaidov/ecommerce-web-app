@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, authentication, status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
@@ -63,7 +64,9 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
 
 class ProductVariationListView(generics.GenericAPIView):
-    
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
     def get(self, request, id):
         products = ProductVariation.objects.filter(product_id=id)
         serializer = ProductVariationGetSerializer(products, many=True)
@@ -80,6 +83,8 @@ class ProductListView(generics.ListAPIView):
     # permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
+    filter_fields = ['category']
+
 
 
 class ProductDetailView(generics.RetrieveAPIView):
