@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'user',
     'product',
     'cart',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +79,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -87,7 +93,7 @@ DATABASES = {
         'HOST': 'localhost',
         'NAME': 'ecommerce',
         'USER': 'postgres',
-        'PASSWORD': 'admin',
+        'PASSWORD': '0214',
     }
 }
 
