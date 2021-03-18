@@ -16,7 +16,7 @@ urlpatterns = [
     path('delete/<int:pk>', ProductDeleteView.as_view(), name='delete'),
     
     path('variation-create/', ProductVariationCreateView.as_view(), name='variation-create'),
-    path('variation-list/<int:id>', ProductVariationListView.as_view(), name='variation-list'),
+    path('variations/<int:id>', ProductVariationListView.as_view(), name='variations'),
     path('variation-list/', VariationListView.as_view(), name='variation-list'),
     path('variation-by-category/<slug:slug>', ProductVariationByCategory.as_view(), name='variation-list'),
     
