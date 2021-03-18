@@ -42,7 +42,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
     def post(self, request):
         serializer = ProductVariationSerializer(data=request.data)
         length = request.data.get('length')
-        product = request.data.get('product')
+        parent = request.data.get('parent')
         name = request.data.get('name')
         description = request.data.get('description')
         size = request.data.get('size')
@@ -56,7 +56,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
             for file_num in range(0, int(length)):
                 images = request.FILES.get(f'images{file_num}')
                 ProductImage.objects.create(
-                    product=product,
+                    parent=parent,
                     images=images,
                 )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -68,11 +68,22 @@ class ProductVariationListView(generics.GenericAPIView):
     queryset = ProductVariation.objects.all()
 
     def get(self, request, id):
-        products = ProductVariation.objects.filter(product_id=id)
+        products = ProductVariation.objects.filter(parent_id=id)
         serializer = ProductVariationGetSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class ProductVariationByCategory(generics.GenericAPIView):
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
+    def get(self, request, slug):
+        category_id = Category.objects.get(slug=slug).id
+        print(category_id)
+        variations = ProductVariation.objects.filter(category_id=category_id)
+        serializer = ProductVariationGetSerializer(variations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
 
 class ProductListView(generics.ListAPIView):
     # authentication_classes = (authentication.TokenAuthentication,)
