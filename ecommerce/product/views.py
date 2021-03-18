@@ -70,6 +70,11 @@ class VariationListView(generics.ListAPIView):
     queryset = ProductVariation.objects.all()
 
 
+class VariationDetailView(generics.RetrieveAPIView):
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
+
 class ProductVariationListView(generics.GenericAPIView):
     serializer_class = ProductVariationGetSerializer
     queryset = ProductVariation.objects.all()
