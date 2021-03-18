@@ -47,10 +47,11 @@ class ProductVariationCreateView(generics.GenericAPIView):
         color = request.data.get('color')
         price = request.data.get('price')
         quantity = request.data.get('quantity')
+        name = Product.objects.get(id=parent).name
         category_id = Product.objects.get(id=parent).category_id
-        print(category_id)
+        description = Product.objects.get(id=parent).description
         if serializer.is_valid():
-            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, size=size, color_id=color, price=price, quantity=quantity)
+            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, description=description, size=size, color_id=color, price=price, quantity=quantity)
 
             for file_num in range(0, int(length)):
                 images = request.FILES.get(f'images{file_num}')

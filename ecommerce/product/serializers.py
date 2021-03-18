@@ -53,7 +53,7 @@ class ProductVariationGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariation
-        fields = ('id', 'parent_id', 'size', 'color', 'price', 'quantity', 'images')
+        fields = ('id', 'parent_id', 'name', 'description', 'size', 'color', 'price', 'quantity', 'images')
 
 
 class ProductGetSerializer(serializers.ModelSerializer):
