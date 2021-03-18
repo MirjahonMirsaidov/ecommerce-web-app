@@ -78,12 +78,13 @@ class ProductVariationByCategory(generics.GenericAPIView):
     queryset = ProductVariation.objects.all()
 
     def get(self, request, slug):
-        category_id = Category.objects.get(slug=slug).id
-        print(category_id)
-        variations = ProductVariation.objects.filter(category_id=category_id)
-        serializer = ProductVariationGetSerializer(variations, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-        
+        category = Category.objects.get(slug=slug)
+        if category:
+            variations = ProductVariation.objects.filter(category_id=category.id)
+            serializer = ProductVariationGetSerializer(variations, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response('Not found')
 
 class ProductListView(generics.ListAPIView):
     # authentication_classes = (authentication.TokenAuthentication,)
