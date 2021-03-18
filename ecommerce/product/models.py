@@ -52,6 +52,7 @@ class ProductVariation(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='variations')
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    variation_image = models.ImageField()
     size = models.CharField(max_length=255)
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     price = models.PositiveIntegerField()
