@@ -63,6 +63,12 @@ class ProductVariationCreateView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class VariationListView(generics.ListAPIView):
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
+
 class ProductVariationListView(generics.GenericAPIView):
     serializer_class = ProductVariationGetSerializer
     queryset = ProductVariation.objects.all()

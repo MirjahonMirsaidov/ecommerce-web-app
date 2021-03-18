@@ -17,6 +17,7 @@ urlpatterns = [
     
     path('variation-create/', ProductVariationCreateView.as_view(), name='variation-create'),
     path('variation-list/<int:id>', ProductVariationListView.as_view(), name='variation-list'),
+    path('variation-list/', VariationListView.as_view(), name='variation-list'),
     path('variation-by-category/<slug:slug>', ProductVariationByCategory.as_view(), name='variation-list'),
     
     path('imported/', ImportedProductsView.as_view(), name='imported'),
