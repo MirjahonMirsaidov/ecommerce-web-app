@@ -56,7 +56,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
             for file_num in range(0, int(length)):
                 images = request.FILES.get(f'images{file_num}')
                 ProductImage.objects.create(
-                    parent=parent,
+                    parent=product,
                     images=images,
                 )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
