@@ -22,7 +22,7 @@ class BrandSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Brand
-        fields = '__all__'
+        fields = ('name',)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -44,7 +44,7 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariation
-        fields = ('product', 'name', 'description', 'size', 'color', 'price', 'quantity', 'images')
+        fields = ('parent_id', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
 
 
 class ProductVariationGetSerializer(serializers.ModelSerializer):
@@ -53,7 +53,7 @@ class ProductVariationGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariation
-        fields = ('name', 'description', 'size', 'color', 'price', 'quantity', 'images')
+        fields = ('id', 'parent_id', 'name', 'description', 'is_import', 'created_at', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
 
 
 class ProductGetSerializer(serializers.ModelSerializer):

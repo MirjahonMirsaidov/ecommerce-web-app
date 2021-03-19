@@ -42,16 +42,19 @@ class ProductVariationCreateView(generics.GenericAPIView):
     def post(self, request):
         serializer = ProductVariationSerializer(data=request.data)
         length = request.data.get('length')
-        product = request.data.get('product')
-        name = request.data.get('name')
-        description = request.data.get('description')
+        parent = request.data.get('parent')
         size = request.data.get('size')
         color = request.data.get('color')
         price = request.data.get('price')
+        variation_image = request.data.get('variation_image')
         quantity = request.data.get('quantity')
-
+        name = Product.objects.get(id=parent).name
+        brand = Product.objects.get(id=parent).brand
+        category_id = Product.objects.get(id=parent).category_id
+        description = Product.objects.get(id=parent).description
+        is_import = Product.objects.get(id=parent).is_import
         if serializer.is_valid():
-            product = serializer.save()
+            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity)
 
             for file_num in range(0, int(length)):
                 images = request.FILES.get(f'images{file_num}')
@@ -63,15 +66,38 @@ class ProductVariationCreateView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class VariationListView(generics.ListAPIView):
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
+
+class VariationDetailView(generics.RetrieveAPIView):
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
+
 class ProductVariationListView(generics.GenericAPIView):
     serializer_class = ProductVariationGetSerializer
     queryset = ProductVariation.objects.all()
 
     def get(self, request, id):
-        products = ProductVariation.objects.filter(product_id=id)
+        products = ProductVariation.objects.filter(parent_id=id)
         serializer = ProductVariationGetSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+class ProductVariationByCategory(generics.GenericAPIView):
+    serializer_class = ProductVariationGetSerializer
+    queryset = ProductVariation.objects.all()
+
+    def get(self, request, slug):
+        category = Category.objects.get(slug=slug)
+        if category:
+            variation = ProductVariation.objects.filter(category_id=category.id)
+            serializer = ProductVariationGetSerializer(variation, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):
