@@ -71,7 +71,11 @@ class VariationListView(generics.ListAPIView):
     serializer_class = ProductVariationGetSerializer
     queryset = ProductVariation.objects.all()
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+<<<<<<< HEAD
     filter_fields = ['category', 'brand', 'size', 'color',]
+=======
+    filter_fields = ['category', 'size', 'color', 'brand', ]
+>>>>>>> 079d282adcd850335b2ddbcb8d68119bbb05ec44
 
 
 class VariationDetailView(generics.RetrieveAPIView):
@@ -108,6 +112,10 @@ class ProductListView(generics.ListAPIView):
     # permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
+<<<<<<< HEAD
+=======
+
+>>>>>>> 079d282adcd850335b2ddbcb8d68119bbb05ec44
 
 
 class ProductDetailView(generics.RetrieveAPIView):
