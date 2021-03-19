@@ -49,10 +49,12 @@ class ProductVariationCreateView(generics.GenericAPIView):
         variation_image = request.data.get('variation_image')
         quantity = request.data.get('quantity')
         name = Product.objects.get(id=parent).name
+        brand = Product.objects.get(id=parent).brand
         category_id = Product.objects.get(id=parent).category_id
         description = Product.objects.get(id=parent).description
+        is_import = Product.objects.get(id=parent).is_import
         if serializer.is_valid():
-            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, description=description, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity)
+            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity)
 
             for file_num in range(0, int(length)):
                 images = request.FILES.get(f'images{file_num}')
@@ -62,7 +64,6 @@ class ProductVariationCreateView(generics.GenericAPIView):
                 )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class VariationListView(generics.ListAPIView):
