@@ -63,7 +63,7 @@ class ProductGetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'description', 'cover_image', 'variations',)
+        fields = ('id', 'category', 'brand', 'name', 'description', 'variations',)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -81,7 +81,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'cover_image', 'images', 'comments')
+        fields = ('id', 'category', 'brand', 'name', 'images', 'comments')
 
 
 

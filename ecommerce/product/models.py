@@ -39,7 +39,6 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
-    cover_image = models.ImageField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
