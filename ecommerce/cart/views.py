@@ -1,11 +1,12 @@
 from django.http import HttpResponse
 from rest_framework import generics, authentication, permissions, status
+from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from random import randint
 from .models import *
 from .serializers import *
-from product.models import Product
+from product.models import Product, ProductVariation
 
 from clickuz import ClickUz
 from clickuz.views import ClickUzMerchantAPIView
@@ -121,6 +122,15 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = OrderBeta.objects.all()
+    serializer_class = OrderBetaSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
 class OrderProductBetaListView(generics.ListAPIView):
