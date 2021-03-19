@@ -36,7 +36,7 @@ class OrderBeta(models.Model):
     name = models.CharField(max_length=25)
     phone_number = models.CharField(max_length=15)
     finish_price = models.PositiveIntegerField(default=0)
-
+    is_finished = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -57,11 +57,7 @@ class OrderProductBeta(models.Model):
 class History(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    status = models.CharField(max_length=2, choices=(
-        ('P', 'is_paid'),
-        ('SH', 'is_shipped'),
-        ('F', 'is_finished')
-    ))
+    
 
     def __str__(self):
         return self.product.category.name
