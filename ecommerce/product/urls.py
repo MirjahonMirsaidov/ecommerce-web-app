@@ -23,7 +23,6 @@ urlpatterns = [
     
     path('imported/', ImportedProductsView.as_view(), name='imported'),
     path('local/', LocalProductsView.as_view(), name='local'),
-    path('by-category/<slug:slug>', ProductByCategoryView.as_view()),
 
     path('add-comment/', AddCommentView.as_view(), name='add-comment'),
     path('update-comment/<int:pk>', UpdateCommentView.as_view(), name='update-comment'),
