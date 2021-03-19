@@ -115,18 +115,6 @@ class LocalProductsView(generics.ListAPIView):
     queryset = Product.objects.filter(is_import=False)
 
 
-class ProductByCategoryView(generics.ListAPIView):
-    serializer_class = ProductGetSerializer
-
-    def get_queryset(self):
-        category_products = Product.objects.all()
-        slug = self.kwargs['slug']
-        category_id = Category.objects.get(slug=slug).id
-        if category_id is not None:
-            category_products = Product.objects.filter(category_id=category_id)
-        return category_products
-
-
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
     authentication_classes = (authentication.TokenAuthentication,)
