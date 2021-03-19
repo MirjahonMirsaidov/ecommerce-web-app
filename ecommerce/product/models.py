@@ -48,9 +48,9 @@ class Product(models.Model):
 
 class ProductVariation(models.Model):
     parent = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variations')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='category_variations')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='variations')
     name = models.CharField(max_length=255, null=True, blank=True)
-    brand = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='brand_variations')
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='variations')
     color = models.ForeignKey(Color, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
