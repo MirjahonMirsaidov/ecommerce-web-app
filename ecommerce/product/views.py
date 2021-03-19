@@ -1,3 +1,4 @@
+import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, authentication, status
 from rest_framework.response import Response
@@ -105,7 +106,8 @@ class ProductListView(generics.ListAPIView):
     # permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
-    filter_fields = ['category']
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
+    filter_fields = ['category', 'brand', 'size', 'color',]
 
 
 
