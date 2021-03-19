@@ -129,7 +129,7 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     queryset = OrderBeta.objects.all()
     serializer_class = OrderBetaSerializer
 
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
 
