@@ -26,7 +26,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ('user', 'overall_price', 'is_paid', 'start_date')
 
 
-
 class OrderProductBetaListSerializer(serializers.ModelSerializer):
     product = ProductVariationGetSerializer(required=False)
 
@@ -35,12 +34,11 @@ class OrderProductBetaListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class OrderBetaSerializer(serializers.ModelSerializer):
     orderproducts = OrderProductBetaListSerializer(many=True, required=False)
     class Meta:
         model = OrderBeta
-        fields = ('id', 'name', 'phone_number', 'orderproducts', 'status', 'finish_price',)
+        fields = ('id', 'name', 'phone_number', 'status', 'finish_price', 'orderproducts', )
 
 
 class OrderProductBetaSerializer(serializers.ModelSerializer):
