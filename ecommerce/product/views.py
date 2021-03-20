@@ -15,7 +15,17 @@ class CategoryCreateView(generics.CreateAPIView):
     queryset = Category.objects.all()
 
 
+class CategoryListView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+
 class ColorCreateView(generics.CreateAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+
+
+class ColorListView(generics.ListAPIView):
     serializer_class = ColorSerializer
     queryset = Color.objects.all()
 
@@ -24,6 +34,10 @@ class BrandCreateView(generics.CreateAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
+
+class BrandListView(generics.ListAPIView):
+    serializer_class = BrandSerializer
+    queryset = Brand.objects.all()
 
 
 class ProductCreateView(generics.CreateAPIView):

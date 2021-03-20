@@ -8,6 +8,10 @@ urlpatterns = [
     path('category-create/', CategoryCreateView.as_view(), name='category-create'),
     path('color-create/', ColorCreateView.as_view(), name='color-create'),
     path('brand-create/', BrandCreateView.as_view(), name='brand-create'),
+
+    path('category-list/', CategoryListView.as_view(), name='category-list'),
+    path('color-list/', ColorListView.as_view(), name='color-list'),
+    path('brand-list/', BrandListView.as_view(), name='brand-list'),
     
     path('create/', ProductCreateView.as_view(), name='create'),
     path('list/', ProductListView.as_view(), name='list'),
