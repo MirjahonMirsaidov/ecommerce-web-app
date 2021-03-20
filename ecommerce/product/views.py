@@ -214,6 +214,8 @@ class DeleteCommentView(generics.GenericAPIView):
 
 
 class StatisticsProductsView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = StatisticsSerializer
 
     def post(self, request):
@@ -233,6 +235,8 @@ class StatisticsProductsView(APIView):
 
 
 class StatisticsOrderNumberView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = StatisticsSerializer
 
     def post(self, request):
@@ -250,6 +254,8 @@ class StatisticsOrderNumberView(APIView):
 
 
 class StatisticsOrderMoneyView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = StatisticsSerializer
 
     def post(self, request):
