@@ -61,11 +61,11 @@ class ProductVariationCreateView(generics.GenericAPIView):
     def post(self, request):
         serializer = ProductVariationSerializer(data=request.data)
         leng = request.data.get('leng')
-        parent = request.data.get('parent')
+        parent = request.data.get('parent_id')
         size = request.data.get('size')
         color = request.data.get('color')
         price = request.data.get('price')
-        variation_image = request.data.get('variation_image')
+        variation_image = request.FILES.get('variation_image')
         quantity = request.data.get('quantity')
         name = Product.objects.get(id=parent).name
         brand = Product.objects.get(id=parent).brand
