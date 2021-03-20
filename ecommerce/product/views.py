@@ -154,16 +154,6 @@ class ProductVariationUpdateView(generics.GenericAPIView, UpdateModelMixin):
         return self.partial_update(request, *args, **kwargs)
 
 
-class ImportedProductsView(generics.ListAPIView):
-    serializer_class = ProductGetSerializer
-    queryset = Product.objects.filter(is_import=True)
-
-
-class LocalProductsView(generics.ListAPIView):
-    serializer_class = ProductGetSerializer
-    queryset = Product.objects.filter(is_import=False)
-
-
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
     authentication_classes = (authentication.TokenAuthentication,)
