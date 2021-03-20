@@ -37,7 +37,8 @@ class OrderBeta(models.Model):
     phone_number = models.CharField(max_length=15)
     finish_price = models.PositiveIntegerField(default=0)
     is_finished = models.BooleanField(default=False)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     def __str__(self):
         return self.name
 

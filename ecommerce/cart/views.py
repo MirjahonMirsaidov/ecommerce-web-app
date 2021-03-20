@@ -123,6 +123,14 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class OrderStatisticsView(APIView):
+    
+    def get(self, request):
+        finished_orders = OrderBeta.objects.filter(is_finished=True)
+        finished_order = OrderBetaSerializer(finished_orders, many=True)
+        return Response(finished_order)
+
+
 class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
@@ -159,7 +167,15 @@ class OrderBetaDetailView(generics.RetrieveAPIView):
     
     def get_queryset(self):
         return OrderBeta.objects.all()
+
+
+class OrderProductBetaDetailView(generics.RetrieveAPIView):
+    serializer_class = OrderProductBetaListSerializer
+    
+    def get_queryset(self):
+        return OrderProductBeta.objects.all()
         
+      
         
 class BuyProductViaClickView(generics.GenericAPIView):
     serializer_class = BuySerializer

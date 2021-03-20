@@ -16,9 +16,15 @@ urlpatterns = [
     path('add-to-wishlist/<int:id>', AddWishListView.as_view(), name='add-to-wishlist'),
     path('orderbeta-create/', CreateOrderProductBetaView.as_view(), name='orderbeta-create'),
     path('orderproductbeta-list/', OrderProductBetaListView.as_view(), name='orderbeta-list'),
+    path('orderproductbeta-detail/<int:pk>', OrderProductBetaDetailView.as_view(), name='orderproductbeta-detail'),
     path('orderbeta-list/', OrderBetaListView.as_view(), name='orderbeta-list'),
     path('orderbeta-detail/<int:pk>', OrderBetaDetailView.as_view(), name='orderbeta-detail'),
     path('orderbeta-update/<int:pk>', OrderBetaUpdateView.as_view(), name='orderbeta-update'),
+<<<<<<< HEAD
     path('orderproductbeta-update/<int:pk>', OrderProductBetaUpdateView.as_view(), name='orderproductbeta-update'),
+=======
+    path('statistics/', OrderStatisticsView.as_view(), name='statistics'),
+
+>>>>>>> 50a859b39a015de8ca659e1c9786225c99694190
 
 ]
