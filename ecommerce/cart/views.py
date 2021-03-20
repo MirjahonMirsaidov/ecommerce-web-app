@@ -123,14 +123,6 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderStatisticsView(APIView):
-    
-    def get(self, request):
-        finished_orders = OrderBeta.objects.filter(is_finished=True)
-        finished_order = OrderBetaSerializer(finished_orders, many=True)
-        return Response(finished_order)
-
-
 class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
@@ -140,6 +132,12 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
+class OrderBetaDeleteView(generics.DestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = OrderBeta.objects.all()
+    serializer_class = OrderBetaSerializer
+
 
 class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -147,7 +145,7 @@ class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     queryset = OrderProductBeta.objects.all()
     serializer_class = OrderProductBetaSerializer
 
-    def patch(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
 
@@ -155,6 +153,12 @@ class OrderProductBetaListView(generics.ListAPIView):
     serializer_class = OrderProductBetaListSerializer
     queryset = OrderProductBeta.objects.all()
 
+
+class OrderProductBetaDeleteView(generics.DestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = OrderProductBetaSerializer
+    queryset = OrderProductBeta.objects.all()
 
 
 class OrderBetaListView(generics.ListAPIView):

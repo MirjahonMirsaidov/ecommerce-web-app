@@ -33,12 +33,16 @@ class Order(models.Model):
 
 
 class OrderBeta(models.Model):
+
     name = models.CharField(max_length=25)
     phone_number = models.CharField(max_length=15)
     finish_price = models.PositiveIntegerField(default=0)
-    is_finished = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    status = models.CharField(max_length=255, null=True, choices = (
+        ('W', "Kutilmoqda"),
+        ('S', "Jo'natilgan"),
+        ('F', "Tugallangan"), ))
+
     def __str__(self):
         return self.name
 
