@@ -188,15 +188,13 @@ class BuyProductViaClickView(generics.GenericAPIView):
         return Response({'url': url})
 
 
-
-class OrderCheckAndPayment(ClickUz):
-    def check_order(self, order_id: str, amount: str):
-        return self.ORDER_FOUND
-
+# class OrderCheckAndPayment(ClickUz):
+#     def check_order(self, order_id: str, amount: str):
+#         return self.ORDER_FOUND
 
 
-class TestView(ClickUzMerchantAPIView):
-    VALIDATE_CLASS = OrderCheckAndPayment
+# class TestView(ClickUzMerchantAPIView):
+#     VALIDATE_CLASS = OrderCheckAndPayment
 
 
 class CreateOrderView(generics.CreateAPIView):

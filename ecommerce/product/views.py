@@ -1,5 +1,6 @@
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 from rest_framework import generics, permissions, authentication, status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
@@ -84,9 +85,9 @@ class ProductVariationCreateView(generics.GenericAPIView):
 class VariationListView(generics.ListAPIView):
     serializer_class = ProductVariationGetSerializer
     queryset = ProductVariation.objects.all()
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend]
-
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filter_fields = ['is_import', 'category', 'color', 'brand', ]
+    search_fields = ['name', ]
 
 
 class VariationDetailView(generics.RetrieveAPIView):
