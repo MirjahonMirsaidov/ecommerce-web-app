@@ -47,6 +47,10 @@ class ProductVariationSerializer(serializers.ModelSerializer):
         fields = ('parent_id', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
 
 
+class StatisticsSerializer(serializers.Serializer):
+    date = serializers.IntegerField()
+
+
 class ProductVariationGetSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     color = ColorSerializer(many=False, required=False)

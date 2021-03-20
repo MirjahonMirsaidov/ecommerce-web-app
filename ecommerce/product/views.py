@@ -1,3 +1,5 @@
+import datetime
+
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -9,6 +11,7 @@ from rest_framework.views import APIView
 
 from .models import *
 from .serializers import *
+from cart.models import OrderBeta
 
 
 class CategoryCreateView(generics.CreateAPIView):
@@ -228,3 +231,59 @@ class DeleteCommentView(generics.GenericAPIView):
                 return Response('You can only delete a comment you have written')
         else:
             return Response('Not found')
+
+
+class StatisticsProductsView(APIView):
+    serializer_class = StatisticsSerializer
+
+    def post(self, request):
+        days = int(request.data.get('date'))
+        date1 = datetime.datetime.now() - datetime.timedelta(days)
+        product_numbers = 0
+        for product in Product.objects.all():
+            date = datetime.datetime.strptime((str(product.created_at)[:10] + ' ' + str(product.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
+            if date > date1:
+                product_numbers += 1
+        for product_variation in ProductVariation.objects.all():
+            date = datetime.datetime.strptime((str(product_variation.created_at)[:10] + ' ' + str(product_variation.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
+            if date > date1:
+                product_numbers +=1
+
+        return Response({'number': product_numbers})
+
+
+class StatisticsOrderNumberView(APIView):
+    serializer_class = StatisticsSerializer
+
+    def post(self, request):
+        days = int(request.data.get('date'))
+        date1 = datetime.datetime.now() - datetime.timedelta(days)
+        order_numbers = 0
+        for order in OrderBeta.objects.all():
+            date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
+                                              '%Y-%m-%d %H:%M:%S')
+            if order.status == 'F':
+                if date > date1:
+                    order_numbers += 1
+
+        return Response({'number': order_numbers})
+
+
+class StatisticsOrderMoneyView(APIView):
+    serializer_class = StatisticsSerializer
+
+    def post(self, request):
+        days = int(request.data.get('date'))
+        date1 = datetime.datetime.now() - datetime.timedelta(days)
+        order_money = 0
+        for order in OrderBeta.objects.all():
+            date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
+                                              '%Y-%m-%d %H:%M:%S')
+            if order.status == 'F':
+                if date > date1:
+                    orders = OrderBeta.objects.filter(created_at=order.created_at)
+                    for order in orders:
+                        order_money += order.finish_price
+
+        return Response({'number': order_money})
+

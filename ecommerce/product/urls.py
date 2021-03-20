@@ -34,4 +34,8 @@ urlpatterns = [
     path('add-comment/', AddCommentView.as_view(), name='add-comment'),
     path('update-comment/<int:pk>', UpdateCommentView.as_view(), name='update-comment'),
     path('delete-comment/<int:id>', DeleteCommentView.as_view(), name='delete-comment'),
+
+    path('statistics/products/', StatisticsProductsView.as_view(), name='statistics-products'),
+    path('statistics/orders/number/', StatisticsOrderNumberView.as_view(), name='statistics-orders-number'),
+    path('statistics/orders/money/', StatisticsOrderMoneyView.as_view(), name='statistics-orders-money'),
 ]
