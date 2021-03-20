@@ -102,23 +102,23 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
             finish_price = 0
             for product_num in range(0, int(length)):
                 product = request.data.get(f'product{product_num}')
-                count = int(request.data.get(f'count{product_num}'))
-                price = ProductVariation.objects.get(id=product).price
-                single_overall_price = price*count
-                finish_price += single_overall_price
-                OrderProductBeta.objects.create(
-                    order_id = order.id,
-                    product_id=product,
-                    count=count,
-                    single_overall_price=single_overall_price,
-                    price=price,
-                    
-                )
-            print(finish_price)
-            order.finish_price = finish_price
-            order.save()
+                if ProductVariation.objects.get(id=product).quantity > 0:
+                    count = int(request.data.get(f'count{product_num}'))
+                    price = ProductVariation.objects.get(id=product).price
+                    single_overall_price = price*count
+                    finish_price += single_overall_price
+                    OrderProductBeta.objects.create(
+                        order_id=order.id,
+                        product_id=product,
+                        count=count,
+                        single_overall_price=single_overall_price,
+                        price=price,
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    )
+                order.finish_price = finish_price
+                order.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
