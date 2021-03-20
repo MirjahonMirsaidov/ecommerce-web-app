@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from rest_framework import generics, authentication, permissions, status
+from rest_framework import generics, authentication, permissions, status, filters
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -186,6 +186,8 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
 class OrderBetaListView(generics.ListAPIView):
     serializer_class = OrderBetaSerializer
     queryset = OrderBeta.objects.all()
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at', ]
 
 
 class OrderBetaDetailView(generics.RetrieveAPIView):

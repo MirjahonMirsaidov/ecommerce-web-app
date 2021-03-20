@@ -91,7 +91,7 @@ class VariationListView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['is_import', 'category', 'color', 'brand', ]
     search_fields = ['name', ]
-    ordering_fields = ['price', 'name', ]
+    ordering_fields = ['price', 'name', 'created_at', ]
 
 
 class VariationDetailView(generics.RetrieveAPIView):
