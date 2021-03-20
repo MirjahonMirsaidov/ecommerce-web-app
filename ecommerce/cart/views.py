@@ -141,6 +141,16 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
         return self.partial_update(request, *args, **kwargs)
 
 
+class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = OrderProductBeta.objects.all()
+    serializer_class = OrderProductBetaSerializer
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
 class OrderProductBetaListView(generics.ListAPIView):
     serializer_class = OrderProductBetaListSerializer
     queryset = OrderProductBeta.objects.all()
