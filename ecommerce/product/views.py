@@ -88,9 +88,10 @@ class ProductVariationCreateView(generics.GenericAPIView):
 class VariationListView(generics.ListAPIView):
     serializer_class = ProductVariationGetSerializer
     queryset = ProductVariation.objects.all()
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['is_import', 'category', 'color', 'brand', ]
     search_fields = ['name', ]
+    ordering_fields = ['price', 'name', ]
 
 
 class VariationDetailView(generics.RetrieveAPIView):
