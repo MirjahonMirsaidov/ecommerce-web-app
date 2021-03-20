@@ -8,7 +8,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ('name', )
+        fields = '__all__'
 
 
 class ColorSerializer(serializers.ModelSerializer):
@@ -22,7 +22,7 @@ class BrandSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Brand
-        fields = ('name',)
+        fields = '__all__'
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
