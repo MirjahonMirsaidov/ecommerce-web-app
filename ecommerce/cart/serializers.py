@@ -40,9 +40,7 @@ class OrderBetaSerializer(serializers.ModelSerializer):
     orderproducts = OrderProductBetaListSerializer(many=True, required=False)
     class Meta:
         model = OrderBeta
-        fields = ('id', 'name', 'phone_number', 'orderproducts', 'is_finished', 'finish_price',)
-
-
+        fields = ('id', 'name', 'phone_number', 'orderproducts', 'finish_price',)
 
 
 class OrderProductBetaSerializer(serializers.ModelSerializer):
@@ -50,7 +48,6 @@ class OrderProductBetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProductBeta
         fields = ('id',)
-
 
 
 class HistorySerializer(serializers.ModelSerializer):

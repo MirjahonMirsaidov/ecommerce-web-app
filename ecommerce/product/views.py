@@ -151,6 +151,23 @@ class ProductDeleteView(generics.DestroyAPIView):
     queryset = Product.objects.all()
 
 
+class ProductVariationDeleteView(generics.DestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = ProductVariationSerializer
+    queryset = ProductVariation.objects.all()
+
+
+class ProductVariationUpdateView(generics.GenericAPIView, UpdateModelMixin):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = ProductVariation.objects.all()
+    serializer_class = ProductVariationSerializer
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
+
 class ImportedProductsView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.filter(is_import=True)
