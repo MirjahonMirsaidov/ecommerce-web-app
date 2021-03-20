@@ -20,6 +20,7 @@ urlpatterns = [
     path('orderbeta-detail/<int:pk>', OrderBetaDetailView.as_view(), name='orderbeta-detail'),
     path('orderbeta-update/<int:pk>', OrderBetaUpdateView.as_view(), name='orderbeta-update'),
     path('orderbeta-delete/<int:pk>', OrderBetaDeleteView.as_view(), name='orderbeta-delete'),
+    path('change-status/<int:pk>', ChangeStatusView.as_view(), name='change-status'),
 
     path('orderproductbeta-list/', OrderProductBetaListView.as_view(), name='orderbeta-list'),
     path('orderproductbeta-update/<int:pk>', OrderProductBetaUpdateView.as_view(), name='orderproductbeta-update'),

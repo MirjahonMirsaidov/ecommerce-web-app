@@ -139,6 +139,28 @@ class OrderBetaDeleteView(generics.DestroyAPIView):
     serializer_class = OrderBetaSerializer
 
 
+class ChangeStatusView(generics.GenericAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    def post(self, request, pk):
+        status = request.data.get('status')
+        order = OrderBeta.objects.get(id=pk)
+        order.status=status
+        order.save()
+
+        if status == 'F':
+            order_products = OrderProductBeta.objects.filter(order_id=pk)
+            ids = [order.product_id for order in order_products]
+            for id in ids:
+                product = ProductVariation.objects.get(id=id)
+                print(product.quantity)
+                product.quantity -= 1
+                product.save()
+                print(product.quantity)
+
+        return Response('OKay')
+
+
 class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
