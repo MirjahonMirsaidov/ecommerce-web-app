@@ -40,7 +40,7 @@ class OrderBetaSerializer(serializers.ModelSerializer):
     orderproducts = OrderProductBetaListSerializer(many=True, required=False)
     class Meta:
         model = OrderBeta
-        fields = ('id', 'name', 'phone_number', 'orderproducts', 'finish_price',)
+        fields = ('id', 'name', 'phone_number', 'orderproducts', 'status', 'finish_price',)
 
 
 class OrderProductBetaSerializer(serializers.ModelSerializer):
