@@ -60,7 +60,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = ProductVariationSerializer(data=request.data)
-        length = request.data.get('length')
+        leng = request.data.get('leng')
         parent = request.data.get('parent')
         size = request.data.get('size')
         color = request.data.get('color')
@@ -75,7 +75,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
         if serializer.is_valid():
             product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity)
 
-            for file_num in range(0, int(length)):
+            for file_num in range(0, int(leng)):
                 images = request.FILES.get(f'images{file_num}')
                 ProductImage.objects.create(
                     product=product,

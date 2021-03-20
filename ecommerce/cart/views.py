@@ -92,7 +92,7 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = OrderProductBetaSerializer(data=request.data)
-        length = request.data.get('length')
+        leng = request.data.get('leng')
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
         if serializer.is_valid():
@@ -100,7 +100,7 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
             order = OrderBeta.objects.create(phone_number=phone_number, name=name)
             order.save()
             finish_price = 0
-            for product_num in range(0, int(length)):
+            for product_num in range(0, int(leng)):
                 product = request.data.get(f'product{product_num}')
                 if ProductVariation.objects.get(id=product).quantity > 0:
                     count = int(request.data.get(f'count{product_num}'))
