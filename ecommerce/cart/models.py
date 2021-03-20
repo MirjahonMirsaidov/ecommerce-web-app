@@ -41,7 +41,7 @@ class OrderBeta(models.Model):
     status = models.CharField(max_length=255, default='T', choices = (
         ('T', "Tushgan"),
         ('W', "Kutilmoqda"),
-        ('S', "Jo'natilgan"),
+        ('C', "Bekor qilingan"),
         ('F', "Tugallangan"), ))
 
     def __str__(self):
