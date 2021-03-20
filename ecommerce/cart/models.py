@@ -38,7 +38,8 @@ class OrderBeta(models.Model):
     phone_number = models.CharField(max_length=15)
     finish_price = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=255, null=True, choices = (
+    status = models.CharField(max_length=255, default='T', choices = (
+        ('T', "Tushgan"),
         ('W', "Kutilmoqda"),
         ('S', "Jo'natilgan"),
         ('F', "Tugallangan"), ))
