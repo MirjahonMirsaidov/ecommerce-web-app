@@ -110,9 +110,12 @@ class ProductVariationListView(generics.GenericAPIView):
 
 
 class ProductListView(generics.ListAPIView):
-    # authentication_classes = (authentication.TokenAuthentication,)
-    # permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductGetSerializer
+    queryset = Product.objects.all()
+
+
+class ParentProductListView(generics.ListAPIView):
+    serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
 
