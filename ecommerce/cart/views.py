@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, authentication, permissions, status, filters
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.response import Response
@@ -186,7 +187,8 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
 class OrderBetaListView(generics.ListAPIView):
     serializer_class = OrderBetaSerializer
     queryset = OrderBeta.objects.all()
-    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+    filter_fields = ['status', ]
     ordering_fields = ['created_at', ]
     search_fields = ['name', 'phone_number', ]
 
