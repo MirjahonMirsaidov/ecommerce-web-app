@@ -273,3 +273,40 @@ class StatisticsOrderMoneyView(APIView):
 
         return Response({'number': order_money})
 
+
+class SliderCreateView(generics.CreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.all()
+
+
+class SliderDeleteView(generics.DestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.all()
+
+
+class SliderListView(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.filter(is_slider=True)
+
+
+class NotSliderListView(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.filter(is_slider=False)
+
+
+class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)

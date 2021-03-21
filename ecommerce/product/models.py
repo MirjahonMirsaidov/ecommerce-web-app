@@ -73,12 +73,17 @@ class ProductImage(models.Model):
         return f"{self.product.parent.brand.name} {self.product.parent.category.name}"
 
 
-
 class Comment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     message = models.TextField()
     point = models.CharField(max_length=5)
     created_time = models.DateTimeField(auto_now_add=True)
+
+
+class Slider(models.Model):
+    image = models.ImageField()
+    text = models.CharField(max_length=255)
+    is_slider = models.BooleanField(default=False)
 
 

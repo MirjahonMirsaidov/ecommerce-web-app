@@ -35,4 +35,12 @@ urlpatterns = [
     path('statistics/products/', StatisticsProductsView.as_view(), name='statistics-products'),
     path('statistics/orders/number/', StatisticsOrderNumberView.as_view(), name='statistics-orders-number'),
     path('statistics/orders/money/', StatisticsOrderMoneyView.as_view(), name='statistics-orders-money'),
+
+    path('slider/create/', SliderCreateView.as_view(), name='slider-create'),
+    path('slider/list/', SliderListView.as_view(), name='slider-list'),
+    path('slider/nolist/', NotSliderListView.as_view(), name='slider-no-list'),
+    path('slider/delete/<int:pk>', SliderDeleteView.as_view(), name='slider-delete'),
+    path('slider/update/<int:pk>', SliderUpdateView.as_view(), name='slider-update'),
+
 ]
+

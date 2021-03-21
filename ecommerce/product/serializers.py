@@ -55,6 +55,7 @@ class ProductVariationGetSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     color = ColorSerializer(many=False, required=False)
     brand = BrandSerializer(many=False, required=False)
+    category = CategorySerializer(many=False, required=False)
 
     class Meta:
         model = ProductVariation
@@ -87,6 +88,13 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'category', 'brand', 'name', 'images', 'comments')
+
+
+class SliderSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Slider
+        fields = '__all__'
 
 
 
