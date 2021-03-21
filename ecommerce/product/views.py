@@ -73,7 +73,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
         description = Product.objects.get(id=parent).description
         is_import = Product.objects.get(id=parent).is_import
         if serializer.is_valid():
-            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity)
+            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity, is_active=True)
 
             for file_num in range(0, int(leng)):
                 images = request.FILES.get(f'images{file_num}')
@@ -87,7 +87,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
 class VariationListView(generics.ListAPIView):
     serializer_class = ProductVariationGetSerializer
-    queryset = ProductVariation.objects.all()
+    queryset = ProductVariation.objects.filter(is_active=True)
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['is_import', 'category', 'color', 'brand', ]
     search_fields = ['name', ]
@@ -104,7 +104,7 @@ class ProductVariationListView(generics.GenericAPIView):
     queryset = ProductVariation.objects.all()
 
     def get(self, request, id):
-        products = ProductVariation.objects.filter(parent_id=id)
+        products = ProductVariation.objects.filter(parent_id=id, is_active=True)
         serializer = ProductVariationGetSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

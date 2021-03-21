@@ -59,6 +59,7 @@ class ProductVariation(models.Model):
     size = models.CharField(max_length=255)
     price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
+    is_active = models.BooleanField(default=True)
 
 
     def __str__(self):

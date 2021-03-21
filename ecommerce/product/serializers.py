@@ -34,9 +34,10 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     user = UserSerializer(many=False, required=False)
+
     class Meta:
         model = Comment
-        fields = ( 'user', 'message', 'point', 'user_id',)
+        fields = ('user', 'message', 'point', 'user_id',)
 
 
 class ProductVariationSerializer(serializers.ModelSerializer):
@@ -44,7 +45,7 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariation
-        fields = ('parent_id', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
+        fields = ('parent_id', 'size', 'color', 'price', 'variation_image', 'quantity', 'images', 'is_active')
 
 
 class StatisticsSerializer(serializers.Serializer):
