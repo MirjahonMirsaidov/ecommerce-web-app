@@ -130,7 +130,7 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
 
