@@ -158,7 +158,7 @@ class ChangeStatusView(generics.GenericAPIView):
                 product.save()
                 print(product.quantity)
 
-        return Response('OKay')
+        return Response('Okay')
 
 
 class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
@@ -186,8 +186,9 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
 class OrderBetaListView(generics.ListAPIView):
     serializer_class = OrderBetaSerializer
     queryset = OrderBeta.objects.all()
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
     ordering_fields = ['created_at', ]
+    search_fields = ['name', 'phone_number', ]
 
 
 class OrderBetaDetailView(generics.RetrieveAPIView):
