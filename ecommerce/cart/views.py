@@ -96,32 +96,35 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
         leng = request.data.get('leng')
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
-        if serializer.is_valid():
-
-            order = OrderBeta.objects.create(phone_number=phone_number, name=name)
-            order.save()
-            finish_price = 0
-            for product_num in range(0, int(leng)):
-                product = request.data.get(f'product{product_num}')
+        finish_price = 0
+        for product_num in range(0, int(leng)):
+            product = request.data.get(f'product{product_num}')
+            try:
                 if ProductVariation.objects.get(id=product).quantity > 0:
                     count = int(request.data.get(f'count{product_num}'))
                     price = ProductVariation.objects.get(id=product).price
-                    single_overall_price = price*count
+                    single_overall_price = price * count
                     finish_price += single_overall_price
-                    OrderProductBeta.objects.create(
-                        order_id=order.id,
-                        product_id=product,
-                        count=count,
-                        single_overall_price=single_overall_price,
-                        price=price,
+                    if serializer.is_valid():
+                        order = OrderBeta.objects.get_or_create(phone_number=phone_number, name=name)[0]
+                        order.save()
 
-                    )
-                order.finish_price = finish_price
-                order.save()
+                        OrderProductBeta.objects.create(
+                            order_id=order.id,
+                            product_id=product,
+                            count=count,
+                            single_overall_price=single_overall_price,
+                            price=price,
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                        )
+                        order.finish_price = finish_price
+                        order.save()
+
+                        return Response(serializer.data, status=status.HTTP_201_CREATED)
+                    else:
+                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            except:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
