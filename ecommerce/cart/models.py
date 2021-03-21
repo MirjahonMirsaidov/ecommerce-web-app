@@ -23,7 +23,7 @@ class Cart(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
     overall_price = models.PositiveIntegerField()
     is_paid = models.BooleanField(default=False)
     start_date = models.DateTimeField(default=timezone.now)
@@ -38,11 +38,11 @@ class OrderBeta(models.Model):
     phone_number = models.CharField(max_length=15)
     finish_price = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=255, default='T', choices = (
-        ('T', "Tushgan"),
-        ('W', "Kutilmoqda"),
-        ('C', "Bekor qilingan"),
-        ('F', "Tugallangan"), ))
+    status = models.CharField(max_length=255, default='Tushgan', choices=(
+        ("Tushgan", "Tushgan"),
+        ("Kutilmoqda", "Kutilmoqda"),
+        ("Bekor qilingan", "Bekor qilingan"),
+        ("Tugallangan", "Tugallangan"), ))
 
     def __str__(self):
         return self.name

@@ -246,7 +246,7 @@ class StatisticsOrderNumberView(APIView):
         for order in OrderBeta.objects.all():
             date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
                                               '%Y-%m-%d %H:%M:%S')
-            if order.status == 'F':
+            if order.status == 'Tugallangan':
                 if date > date1:
                     order_numbers += 1
 
@@ -265,7 +265,7 @@ class StatisticsOrderMoneyView(APIView):
         for order in OrderBeta.objects.all():
             date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
                                               '%Y-%m-%d %H:%M:%S')
-            if order.status == 'F':
+            if order.status == 'Tugallangan':
                 if date > date1:
                     orders = OrderBeta.objects.filter(created_at=order.created_at)
                     for order in orders:
