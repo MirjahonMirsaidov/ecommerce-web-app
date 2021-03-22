@@ -86,5 +86,6 @@ class Slider(models.Model):
     image = models.ImageField()
     text = models.CharField(max_length=255)
     is_slider = models.BooleanField(default=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
