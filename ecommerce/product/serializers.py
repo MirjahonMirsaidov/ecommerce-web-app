@@ -57,7 +57,7 @@ class ProductVariationGetSerializer(serializers.ModelSerializer):
     color = ColorSerializer(many=False, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
-
+   
     class Meta:
         model = ProductVariation
         fields = ('id', 'parent_id', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
@@ -67,10 +67,11 @@ class ProductGetSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
     variations = ProductVariationGetSerializer(many=True, required=False)
+    # colors = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'description', 'variations',)
+        fields = ('id', 'category', 'brand', 'name', 'description', 'variations', )
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -84,11 +85,10 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
-    comments = CommentSerializer(many=True, required=False)
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'images', 'comments')
+        fields = ('id', 'category', 'brand', 'name', 'images', )
 
 
 class SliderSerializer(serializers.ModelSerializer):
@@ -96,6 +96,4 @@ class SliderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slider
         fields = '__all__'
-
-
 

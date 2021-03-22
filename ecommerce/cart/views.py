@@ -152,7 +152,7 @@ class ChangeStatusView(generics.GenericAPIView):
         order.status=status
         order.save()
 
-        if status == 'F':
+        if status == 'Tugallangan':
             order_products = OrderProductBeta.objects.filter(order_id=pk)
             ids = [order.product_id for order in order_products]
             for id in ids:

@@ -1,5 +1,5 @@
 import datetime
-
+from django.http import JsonResponse
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -51,7 +51,6 @@ class ProductCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAdminUser, )
 
 
-
 class ProductVariationCreateView(generics.GenericAPIView):
     serializer_class = ProductVariationSerializer
     authentication_classes = (authentication.TokenAuthentication, )
@@ -72,27 +71,45 @@ class ProductVariationCreateView(generics.GenericAPIView):
         category_id = Product.objects.get(id=parent).category_id
         description = Product.objects.get(id=parent).description
         is_import = Product.objects.get(id=parent).is_import
-        if serializer.is_valid():
-            product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity, is_active=True)
 
-            for file_num in range(0, int(leng)):
-                images = request.FILES.get(f'images{file_num}')
-                ProductImage.objects.create(
-                    product=product,
-                    images=images,
-                )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if serializer.is_valid():
+            check = ProductVariation.objects.filter(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color).exists()
+            if check:
+                return Response("Variation alreadiy exist!", status=status.HTTP_409_CONFLICT)
+            else:
+                product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity, is_active=True)
+
+                for file_num in range(0, int(leng)):
+                    images = request.FILES.get(f'images{file_num}')
+                    ProductImage.objects.create(
+                        product=product,
+                        images=images,
+                    )
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class VariationListView(generics.ListAPIView):
     serializer_class = ProductVariationGetSerializer
-    queryset = ProductVariation.objects.filter(is_active=True)
+    queryset = ProductVariation.objects.filter(is_active=True, )
+    size = django_filters.CharFilter(name='name')
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filter_fields = ['is_import', 'category', 'color', 'brand', ]
+    filter_fields = ['is_import', 'parent', 'category', 'color', 'brand', 'size']
     search_fields = ['name', ]
     ordering_fields = ['price', 'name', 'created_at', ]
 
+
+class SpecView(generics.GenericAPIView):
+    
+    def get(self, request):
+        parent_id = request.GET.get('parent_id')
+        color = request.GET.get('color')
+        size = request.GET.get('size')
+        
+        products = ProductVariation.objects.filter(is_active=True, parent_id=parent_id, color=color, size=size)
+        for product in products:
+            return Response(product.id)
+        
 
 class VariationDetailView(generics.RetrieveAPIView):
     serializer_class = ProductVariationGetSerializer

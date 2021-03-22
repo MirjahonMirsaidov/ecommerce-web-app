@@ -27,6 +27,7 @@ urlpatterns = [
     path('variation-delete/<int:pk>', ProductVariationDeleteView.as_view(), name='variation-delete'),
     path('variation-update/<int:pk>', ProductVariationUpdateView.as_view(), name='variation-update'),
     path('variation-list/', VariationListView.as_view(), name='variation-list'),
+    path('variation-spec/', SpecView.as_view(), name='variation-spec'),
 
     path('add-comment/', AddCommentView.as_view(), name='add-comment'),
     path('update-comment/<int:pk>', UpdateCommentView.as_view(), name='update-comment'),
