@@ -216,25 +216,6 @@ class ProductDetailView(generics.RetrieveAPIView):
             "variations": variations_list
         })
     queryset = Product.objects.all()
-<<<<<<< HEAD
-
-    # def get(self, request, id):
-    #     serializer = ProductGetSerializer
-    #     available_sizes = []
-    #     available_colors = []
-    #     product_variations = ProductVariation.objects.filter(parent_id=id)
-    #     for variation in product_variations:
-    #         if variation.size not in available_sizes:
-    #             available_sizes.append(variation.size)
-    #         if variation.color not in available_colors:
-    #             available_colors.append(variation.color.name)
-    #     return Response({
-    #         'available-colors': available_colors,
-    #         'available-sizes': available_sizes,
-    #         }
-    #     )
-=======
->>>>>>> 094dd7c1b18d3d1065ed67c458387b131658dbcc
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
