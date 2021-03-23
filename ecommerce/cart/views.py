@@ -174,6 +174,34 @@ class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     def put(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
+class OrderProductBetaUpdate(generics.GenericAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = OrderProductBetaSerializer
+
+    def post(self, request, pk):
+        order_product = OrderProductBeta.objects.get(id=pk)
+        count = int(request.data.get('count'))
+        product_id = request.data.get('product')
+        if product_id and count:
+            product = ProductVariation.objects.get(id=product_id)
+            price = product.price
+            single_overall_price = price * count
+            order_product.single_overall_price = single_overall_price
+            order_product.product_id = product_id
+            order_product.save()
+            order = OrderBeta.objects.get(id=order_product.order_id)
+            order_products = OrderProductBeta.objects.filter(order_id=order.id)
+            finish_price = 0
+            for order_product in order_products:
+                finish_price += order_product.single_overall_price
+                order.finish_price = finish_price
+                order.save()
+            print(single_overall_price)
+            return Response(order.finish_price, status=status.HTTP_200_OK)
+        
+
+
 
 class OrderProductBetaListView(generics.ListAPIView):
     serializer_class = OrderProductBetaListSerializer
