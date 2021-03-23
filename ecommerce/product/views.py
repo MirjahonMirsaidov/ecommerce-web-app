@@ -153,22 +153,23 @@ class ParentProductListView(generics.ListAPIView):
 
 class ProductDetailView(generics.GenericAPIView):
     serializer_class = ProductGetSerializer
-
-    def get(self, request, id):
-        serializer = ProductGetSerializer
-        available_sizes = []
-        available_colors = []
-        product_variations = ProductVariation.objects.filter(parent_id=id)
-        for variation in product_variations:
-            if variation.size not in available_sizes:
-                available_sizes.append(variation.size)
-            if variation.color not in available_colors:
-                available_colors.append(variation.color.name)
-        return Response({
-            'available-colors': available_colors,
-            'available-sizes': available_sizes,
-            }
-        )
+    queryset = Product.objects.all()
+    
+    # def get(self, request, id):
+    #     serializer = ProductGetSerializer
+    #     available_sizes = []
+    #     available_colors = []
+    #     product_variations = ProductVariation.objects.filter(parent_id=id)
+    #     for variation in product_variations:
+    #         if variation.size not in available_sizes:
+    #             available_sizes.append(variation.size)
+    #         if variation.color not in available_colors:
+    #             available_colors.append(variation.color.name)
+    #     return Response({
+    #         'available-colors': available_colors,
+    #         'available-sizes': available_sizes,
+    #         }
+    #     )
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
