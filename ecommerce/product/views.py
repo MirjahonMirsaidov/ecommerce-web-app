@@ -318,8 +318,15 @@ class SliderDeleteView(generics.DestroyAPIView):
     queryset = Slider.objects.all()
 
 
+class SliderDetailView(generics.RetrieveAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderGetSerializer
+    queryset = Slider.objects.all()
+
+
 class SliderListView(generics.ListAPIView):
-    serializer_class = SliderSerializer
+    serializer_class = SliderGetSerializer
     queryset = Slider.objects.filter(is_slider=True)
 
 
