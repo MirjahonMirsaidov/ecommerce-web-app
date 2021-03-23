@@ -165,7 +165,7 @@ class ProductDetailView(generics.RetrieveAPIView):
             if variation.size not in available_sizes:
                 available_sizes.append(variation.size)
             if variation.color not in available_colors:
-                available_colors.append(variation.color.name)
+                available_colors.append({'id': variation.color.id, 'name': variation.color.name})
             imagesa = []
             for image in ProductImage.objects.filter(product_id=variation.id):
                 imagesa.append("http://127.0.0.1:8000" + image.images.url)
