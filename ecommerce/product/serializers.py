@@ -92,8 +92,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class SliderSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(many=False, required=False)
     class Meta:
         model = Slider
-        fields = ('id', 'text', 'image', 'category')
+        fields = '__all__'
 
