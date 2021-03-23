@@ -76,6 +76,7 @@ class ProductVariationCreateView(generics.GenericAPIView):
         serializer = ProductVariationSerializer(data=request.data)
         leng = request.data.get('leng')
         parent = request.data.get('parent_id')
+        product_code = request.data.get('product_code')
         size = request.data.get('size')
         color = request.data.get('color')
         price = request.data.get('price')
@@ -88,11 +89,11 @@ class ProductVariationCreateView(generics.GenericAPIView):
         is_import = Product.objects.get(id=parent).is_import
 
         if serializer.is_valid():
-            check = ProductVariation.objects.filter(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color).exists()
+            check = ProductVariation.objects.filter(parent_id=parent, product_code=product_code, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color).exists()
             if check:
                 return Response("Variation alreadiy exist!", status=status.HTTP_409_CONFLICT)
             else:
-                product = ProductVariation.objects.create(parent_id=parent, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity, is_active=True)
+                product = ProductVariation.objects.create(parent_id=parent, product_code=product_code, category_id=category_id, name=name, brand=brand, description=description, is_import=is_import, size=size, color_id=color, price=price, variation_image=variation_image, quantity=quantity, is_active=True)
 
                 for file_num in range(0, int(leng)):
                     images = request.FILES.get(f'images{file_num}')
@@ -154,7 +155,7 @@ class ParentProductListView(generics.ListAPIView):
 class ProductDetailView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
-    
+
     # def get(self, request, id):
     #     serializer = ProductGetSerializer
     #     available_sizes = []

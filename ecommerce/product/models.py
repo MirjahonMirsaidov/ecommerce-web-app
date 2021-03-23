@@ -60,7 +60,7 @@ class ProductVariation(models.Model):
     price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
-
+    product_code = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.parent.brand.name} {self.category.name} "

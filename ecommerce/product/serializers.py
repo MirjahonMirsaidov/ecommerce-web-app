@@ -45,7 +45,7 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductVariation
-        fields = ('parent_id', 'size', 'color', 'price', 'variation_image', 'quantity', 'images', 'is_active')
+        fields = ('parent_id', 'product_code', 'size', 'color', 'price', 'variation_image', 'quantity', 'images', 'is_active')
 
 
 class StatisticsSerializer(serializers.Serializer):
@@ -60,7 +60,7 @@ class ProductVariationGetSerializer(serializers.ModelSerializer):
    
     class Meta:
         model = ProductVariation
-        fields = ('id', 'parent_id', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
+        fields = ('id', 'parent_id', 'product_code', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
 
 
 class ProductGetSerializer(serializers.ModelSerializer):
