@@ -119,9 +119,7 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
                         order.finish_price = finish_price
                         order.save()
 
-                        return Response(serializer.data, status=status.HTTP_201_CREATED)
-                    else:
-                        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_201_CREATED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

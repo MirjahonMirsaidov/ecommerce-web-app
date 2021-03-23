@@ -214,7 +214,6 @@ class ProductDetailView(generics.RetrieveAPIView):
             'available_colors': available_colors,
             "variations": variations_list
         })
-    queryset = Product.objects.all()
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
