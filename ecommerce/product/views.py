@@ -24,6 +24,11 @@ class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
 
 
+class CategoryDeleteView(generics.DestroyAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+
 class ColorCreateView(generics.CreateAPIView):
     serializer_class = ColorSerializer
     queryset = Color.objects.all()
@@ -34,12 +39,22 @@ class ColorListView(generics.ListAPIView):
     queryset = Color.objects.all()
 
 
+class ColorDeleteView(generics.DestroyAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+
+
 class BrandCreateView(generics.CreateAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
 
 class BrandListView(generics.ListAPIView):
+    serializer_class = BrandSerializer
+    queryset = Brand.objects.all()
+
+
+class BrandDeleteView(generics.DestroyAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
@@ -149,6 +164,8 @@ class ProductDetailView(generics.GenericAPIView):
             if variation.color not in available_colors:
                 available_colors.append(variation.color.name)
         return Response({
+            'status': 200,
+
             'available-colors': available_colors,
             'available-sizes': available_sizes,
         })
