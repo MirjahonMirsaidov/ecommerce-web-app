@@ -152,9 +152,71 @@ class ParentProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
 
 
-class ProductDetailView(generics.ListAPIView):
+class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductGetSerializer
+
+    def get(self, request, id):
+        available_sizes = []
+        available_colors = []
+        variations_list = []
+        product = Product.objects.get(id=id)
+        product_variations = ProductVariation.objects.filter(parent_id=id)
+        for variation in product_variations:
+            if variation.size not in available_sizes:
+                available_sizes.append(variation.size)
+            if variation.color not in available_colors:
+                available_colors.append(variation.color.name)
+            imagesa = []
+            for image in ProductImage.objects.filter(product_id=variation.id):
+                imagesa.append("http://127.0.0.1:8000" + image.images.url)
+
+            variations_list.append({
+                "id": variation.id,
+            "parent_id": variation.parent_id,
+            "name": variation.name,
+            "description": variation.description,
+            "is_import": variation.is_import,
+            "created_at": variation.created_at,
+            "category": {
+                "id": variation.category.id,
+                "name": variation.category.name,
+                "slug": variation.category.slug
+            },
+            "brand": {
+                "id": variation.brand.id,
+                "name": variation.brand.name,
+            },
+            "size": variation.size,
+            "color": {
+                "id": variation.color.id,
+                "name": variation.color.name,
+            },
+            "price": variation.price,
+            "variation_image": "http://127.0.0.1:8000" + variation.variation_image.url,
+            "quantity": variation.quantity,
+            "images": imagesa
+
+            })
+
+        return Response({
+            "id": 5,
+            "category": {
+                "id": product.category.id,
+                "name": product.category.name,
+                "slug": product.category.slug
+            },
+            "brand": {
+                "id": product.brand.id,
+                "name": product.brand.name
+            },
+            "name": product.name,
+            "description": product.description,
+            'available_sizes': available_sizes,
+            'available_colors': available_colors,
+            "variations": variations_list
+        })
     queryset = Product.objects.all()
+<<<<<<< HEAD
 
     # def get(self, request, id):
     #     serializer = ProductGetSerializer
@@ -171,6 +233,8 @@ class ProductDetailView(generics.ListAPIView):
     #         'available-sizes': available_sizes,
     #         }
     #     )
+=======
+>>>>>>> 094dd7c1b18d3d1065ed67c458387b131658dbcc
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):

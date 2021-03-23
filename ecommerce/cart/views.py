@@ -86,7 +86,6 @@ class CreateOrderView(generics.GenericAPIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class CreateOrderProductBetaView(generics.GenericAPIView):
     serializer_class = OrderProductBetaSerializer
 
@@ -97,9 +96,9 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
         finish_price = 0
-        for product_num in range(0, int(leng)):
-            product = request.data.get(f'product{product_num}')
-            try:
+        try:
+            for product_num in range(0, int(leng)):
+                product = request.data.get(f'product{product_num}')
                 if ProductVariation.objects.get(id=product).quantity > 0:
                     count = int(request.data.get(f'count{product_num}'))
                     price = ProductVariation.objects.get(id=product).price
@@ -123,8 +122,8 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
                         return Response(serializer.data, status=status.HTTP_201_CREATED)
                     else:
                         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            except:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):

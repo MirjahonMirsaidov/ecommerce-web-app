@@ -67,11 +67,10 @@ class ProductGetSerializer(serializers.ModelSerializer):
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
     variations = ProductVariationGetSerializer(many=True, required=False)
-    # colors = models.ForeignKey(Color, on_delete=models.CASCADE)
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'description', 'variations', )
+        fields = ('id', 'category', 'brand', 'name', 'description', 'variations')
 
 
 class ProductSerializer(serializers.ModelSerializer):
