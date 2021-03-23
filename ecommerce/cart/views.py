@@ -102,6 +102,7 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
                 if ProductVariation.objects.get(id=product).quantity > 0:
                     count = int(request.data.get(f'count{product_num}'))
                     price = ProductVariation.objects.get(id=product).price
+                    product_code = ProductVariation.objects.get(id=product).product_code
                     single_overall_price = price * count
                     finish_price += single_overall_price
                     if serializer.is_valid():
@@ -114,6 +115,7 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
                             count=count,
                             single_overall_price=single_overall_price,
                             price=price,
+                            product_code=product_code,
 
                         )
                         order.finish_price = finish_price
