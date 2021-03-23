@@ -151,7 +151,7 @@ class ParentProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
 
 
-class ProductDetailView(generics.ListAPIView):
+class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
     
