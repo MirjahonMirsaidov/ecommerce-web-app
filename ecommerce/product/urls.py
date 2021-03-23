@@ -13,11 +13,15 @@ urlpatterns = [
     path('color-list/', ColorListView.as_view(), name='color-list'),
     path('brand-list/', BrandListView.as_view(), name='brand-list'),
     
+    path('category-delete/<int:pk>', CategoryDeleteView.as_view(), name='category-delete'),
+    path('color-delete/<int:pk>', ColorDeleteView.as_view(), name='color-delete'),
+    path('brand-delete/<int:pk>', BrandDeleteView.as_view(), name='brand-delete'),
+
     path('create/', ProductCreateView.as_view(), name='create'),
     path('list/', ProductListView.as_view(), name='list'),
     path('parent-list/', ParentProductListView.as_view(), name='parent-list'),
 
-    path('detail/<int:id>', ProductDetailView.as_view(), name='detail'),
+    path('detail/<int:pk>', ProductDetailView.as_view(), name='detail'),
     path('update/<int:pk>', ProductUpdateView.as_view(), name='update'),
     path('delete/<int:pk>', ProductDeleteView.as_view(), name='delete'),
     

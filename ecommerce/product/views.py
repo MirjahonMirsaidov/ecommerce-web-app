@@ -24,6 +24,11 @@ class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
 
 
+class CategoryDeleteView(generics.DestroyAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+
 class ColorCreateView(generics.CreateAPIView):
     serializer_class = ColorSerializer
     queryset = Color.objects.all()
@@ -34,12 +39,22 @@ class ColorListView(generics.ListAPIView):
     queryset = Color.objects.all()
 
 
+class ColorDeleteView(generics.DestroyAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+
+
 class BrandCreateView(generics.CreateAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
 
 class BrandListView(generics.ListAPIView):
+    serializer_class = BrandSerializer
+    queryset = Brand.objects.all()
+
+
+class BrandDeleteView(generics.DestroyAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
@@ -136,7 +151,7 @@ class ParentProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
 
 
-class ProductDetailView(generics.GenericAPIView):
+class ProductDetailView(generics.RetrieveAPIView):
     serializer_class = ProductGetSerializer
 
     def get(self, request, id):
@@ -199,6 +214,7 @@ class ProductDetailView(generics.GenericAPIView):
             'available_colors': available_colors,
             "variations": variations_list
         })
+    queryset = Product.objects.all()
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
