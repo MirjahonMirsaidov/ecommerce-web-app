@@ -40,37 +40,23 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('user', 'message', 'point', 'user_id',)
 
 
-class ProductVariationSerializer(serializers.ModelSerializer):
-    images = ProductImageSerializer(many=True, required=False)
+class ProductAttributesSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ProductVariation
-        fields = ('parent_id', 'product_code', 'size', 'color', 'price', 'variation_image', 'quantity', 'images', 'is_active')
+        model = ProductAttributes
+        fields = '__all__'
 
 
-class StatisticsSerializer(serializers.Serializer):
-    date = serializers.IntegerField()
-
-
-class ProductVariationGetSerializer(serializers.ModelSerializer):
+class ProductAttributesGetSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     color = ColorSerializer(many=False, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
    
     class Meta:
-        model = ProductVariation
+        model = ProductAttributes
         fields = ('id', 'parent_id', 'product_code', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
 
-
-class ProductGetSerializer(serializers.ModelSerializer):
-    brand = BrandSerializer(many=False, required=False)
-    category = CategorySerializer(many=False, required=False)
-    variations = ProductVariationGetSerializer(many=True, required=False)
-
-    class Meta:
-        model = Product
-        fields = ('id', 'category', 'brand', 'name', 'description', 'variations')
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -88,6 +74,10 @@ class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'category', 'brand', 'name', 'images', )
+
+
+class StatisticsSerializer(serializers.Serializer):
+    date = serializers.IntegerField()
 
 
 class SliderSerializer(serializers.ModelSerializer):

@@ -19,6 +19,9 @@ class Brand(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+    parent_id = models.PositiveIntegerField (null=True, blank=True)
+    image = models.ImageField()
+    order = models.IntegerField()
     slug = models.SlugField(
         default='',
         editable=False,
@@ -36,38 +39,31 @@ class Category(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
+    price = models.PositiveIntegerField()
+    parent_id = models.PositiveIntegerField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.brand} {self.category.name}"
+        return f"{self.brand} {self.name}"
 
 
-class ProductVariation(models.Model):
-    parent = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variations')
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='variations')
-    name = models.CharField(max_length=255, null=True, blank=True)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='variations')
-    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='colors')
-    description = models.TextField(null=True, blank=True)
-    is_import = models.BooleanField(default=False)
+class ProductAttributes(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='attributes')
+    is_main = models.BooleanField(default=True)
+    key = models.CharField(max_length=255)
+    label = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
-    variation_image = models.ImageField()
-    size = models.CharField(max_length=255)
-    price = models.PositiveIntegerField()
-    quantity = models.PositiveIntegerField()
-    is_active = models.BooleanField(default=True)
-    product_code = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.parent.brand.name} {self.category.name} "
+        return f"{self.product.brand.name}"
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name='images')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     images = models.ImageField()
 
     def __str__(self):
