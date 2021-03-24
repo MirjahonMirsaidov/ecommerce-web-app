@@ -3,6 +3,13 @@ from django.utils.text import slugify
 from main.models import User
 
 
+class Color(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
 class Brand(models.Model):
     name = models.CharField(max_length=255)
 
@@ -11,10 +18,9 @@ class Brand(models.Model):
 
 
 class Category(models.Model):
-    parent = models.IntegerField()
     name = models.CharField(max_length=255)
-    image = models.ImageField()
     slug = models.SlugField(
+        default='',
         editable=False,
     )
 
@@ -28,25 +34,40 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    parent = models.IntegerField(null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE,)
-    category = models.ManyToManyField(Category)
-    cover_image = models.ImageField()
-    price = models.PositiveIntegerField()
     is_import = models.BooleanField(default=False)
-    product_code = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.brand} {self.category.name}"
+
+
+class ProductVariation(models.Model):
+    parent = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variations')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='variations')
+    name = models.CharField(max_length=255, null=True, blank=True)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='variations')
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, related_name='colors')
+    description = models.TextField(null=True, blank=True)
+    is_import = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    variation_image = models.ImageField()
+    size = models.CharField(max_length=255)
+    price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    product_code = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.parent.brand.name} {self.category.name} "
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    product = models.ForeignKey(ProductVariation, on_delete=models.CASCADE, related_name='images')
     images = models.ImageField()
 
     def __str__(self):

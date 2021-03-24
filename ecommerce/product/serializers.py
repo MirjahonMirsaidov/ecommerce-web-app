@@ -11,6 +11,13 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ColorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Color
+        fields = '__all__'
+
+
 class BrandSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -25,25 +32,62 @@ class ProductImageSerializer(serializers.ModelSerializer):
         fields = ('images', )
 
 
-class ProductSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(many=False, required=False)
 
     class Meta:
-        model = Product
-        fields = ('parent_id', 'product_code', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'price', 'cover_image', 'quantity')
+        model = Comment
+        fields = ('user', 'message', 'point', 'user_id',)
 
 
-class ProductGetSerializer(serializers.ModelSerializer):
+class ProductVariationSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
-    brand = BrandSerializer(many=False, required=False)
-    category = CategorySerializer(many=True, required=False)
 
     class Meta:
-        model = Product
-        fields = ('id', 'parent_id', 'product_code', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'price', 'cover_image', 'quantity', 'images')
+        model = ProductVariation
+        fields = ('parent_id', 'product_code', 'size', 'color', 'price', 'variation_image', 'quantity', 'images', 'is_active')
 
 
 class StatisticsSerializer(serializers.Serializer):
     date = serializers.IntegerField()
+
+
+class ProductVariationGetSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, required=False)
+    color = ColorSerializer(many=False, required=False)
+    brand = BrandSerializer(many=False, required=False)
+    category = CategorySerializer(many=False, required=False)
+   
+    class Meta:
+        model = ProductVariation
+        fields = ('id', 'parent_id', 'product_code', 'name', 'description', 'is_import', 'created_at', 'category', 'brand', 'size', 'color', 'price', 'variation_image', 'quantity', 'images')
+
+
+class ProductGetSerializer(serializers.ModelSerializer):
+    brand = BrandSerializer(many=False, required=False)
+    category = CategorySerializer(many=False, required=False)
+    variations = ProductVariationGetSerializer(many=True, required=False)
+
+    class Meta:
+        model = Product
+        fields = ('id', 'category', 'brand', 'name', 'description', 'variations')
+
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, required=False)
+    brand = BrandSerializer(many=False, required=False)
+    category = CategorySerializer(many=False, required=False)
+
+    class Meta:
+        model = Product
+        fields = ('id', 'category', 'brand', 'name', 'images', )
 
 
 class SliderSerializer(serializers.ModelSerializer):
@@ -57,12 +101,3 @@ class SliderGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Slider
         fields = ('id', 'image', 'text', 'category')
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(many=False, required=False)
-
-    class Meta:
-        model = Comment
-        fields = ('user', 'message', 'point', 'user_id',)
-

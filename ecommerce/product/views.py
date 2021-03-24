@@ -29,6 +29,21 @@ class CategoryDeleteView(generics.DestroyAPIView):
     queryset = Category.objects.all()
 
 
+class ColorCreateView(generics.CreateAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+
+
+class ColorListView(generics.ListAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+
+
+class ColorDeleteView(generics.DestroyAPIView):
+    serializer_class = ColorSerializer
+    queryset = Color.objects.all()
+
+
 class BrandCreateView(generics.CreateAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
