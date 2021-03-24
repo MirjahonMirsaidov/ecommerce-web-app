@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import *
-from product.serializers import ProductSerializer, ProductVariationGetSerializer
+from product.serializers import ProductSerializer, ProductAttributesGetSerializer
 
 
 class CartProductSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderProductBetaListSerializer(serializers.ModelSerializer):
-    product = ProductVariationGetSerializer(required=False)
+    product = ProductAttributesGetSerializer(required=False)
 
     class Meta:
         model = OrderProductBeta

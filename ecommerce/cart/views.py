@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from random import randint
 from .models import *
 from .serializers import *
-from product.models import Product, ProductVariation
+from product.models import Product, ProductAttributes
 
 from clickuz import ClickUz
 from clickuz.views import ClickUzMerchantAPIView
@@ -99,10 +99,10 @@ class CreateOrderProductBetaView(generics.GenericAPIView):
         try:
             for product_num in range(0, int(leng)):
                 product = request.data.get(f'product{product_num}')
-                if ProductVariation.objects.get(id=product).quantity > 0:
+                if ProductAttributes.objects.get(id=product).quantity > 0:
                     count = int(request.data.get(f'count{product_num}'))
-                    price = ProductVariation.objects.get(id=product).price
-                    product_code = ProductVariation.objects.get(id=product).product_code
+                    price = ProductAttributes.objects.get(id=product).price
+                    product_code = ProductAttributes.objects.get(id=product).product_code
                     single_overall_price = price * count
                     finish_price += single_overall_price
                     if serializer.is_valid():
@@ -155,7 +155,7 @@ class ChangeStatusView(generics.GenericAPIView):
             order_products = OrderProductBeta.objects.filter(order_id=pk)
             ids = [order.product_id for order in order_products]
             for id in ids:
-                product = ProductVariation.objects.get(id=id)
+                product = ProductAttributes.objects.get(id=id)
                 print(product.quantity)
                 product.quantity -= 1
                 product.save()
@@ -183,7 +183,7 @@ class OrderProductBetaUpdate(generics.GenericAPIView):
         count = int(request.data.get('count'))
         product_id = request.data.get('product')
         if product_id and count:
-            product = ProductVariation.objects.get(id=product_id)
+            product = ProductAttributes.objects.get(id=product_id)
             price = product.price
             single_overall_price = price * count
             order_product.single_overall_price = single_overall_price

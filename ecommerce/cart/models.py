@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from product.models import Product
+from product.models import Product, ProductAttributes
 from main.models import User
 
 
@@ -50,7 +50,7 @@ class OrderBeta(models.Model):
 
 class OrderProductBeta(models.Model):
     order = models.ForeignKey(OrderBeta, on_delete=models.CASCADE, related_name='orderproducts')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(ProductAttributes, on_delete=models.CASCADE)
     product_code = models.CharField(max_length=7)
     count = models.PositiveIntegerField()
     price = models.PositiveIntegerField()
