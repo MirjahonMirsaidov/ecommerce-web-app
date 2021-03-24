@@ -200,8 +200,6 @@ class OrderProductBetaUpdate(generics.GenericAPIView):
             return Response(order.finish_price, status=status.HTTP_200_OK)
         
 
-
-
 class OrderProductBetaListView(generics.ListAPIView):
     serializer_class = OrderProductBetaListSerializer
     queryset = OrderProductBeta.objects.all()
