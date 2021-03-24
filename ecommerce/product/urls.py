@@ -10,11 +10,7 @@ urlpatterns = [
     path('category-delete/<int:pk>', CategoryDeleteView.as_view(), name='category-delete'),
     path('category-detail/<int:pk>', CategoryDetailView.as_view(), name='category-detail'),
     path('category-update/<int:pk>', CategoryUpdateView.as_view(), name='category-detail'),
-    
-    path('color-create/', ColorCreateView.as_view(), name='color-create'),
-    path('color-list/', ColorListView.as_view(), name='color-list'),
-    path('color-delete/<int:pk>', ColorDeleteView.as_view(), name='color-delete'),
-    
+
     path('brand-create/', BrandCreateView.as_view(), name='brand-create'),
     path('brand-list/', BrandListView.as_view(), name='brand-list'),
     path('brand-delete/<int:pk>', BrandDeleteView.as_view(), name='brand-delete'),

@@ -11,13 +11,6 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ColorSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Color
-        fields = '__all__'
-
-
 class BrandSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -49,7 +42,6 @@ class ProductAttributesSerializer(serializers.ModelSerializer):
 
 class ProductAttributesGetSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
-    color = ColorSerializer(many=False, required=False)
     brand = BrandSerializer(many=False, required=False)
     category = CategorySerializer(many=False, required=False)
    

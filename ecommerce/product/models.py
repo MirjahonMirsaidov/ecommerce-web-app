@@ -3,13 +3,6 @@ from django.utils.text import slugify
 from main.models import User
 
 
-class Color(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
 class Brand(models.Model):
     name = models.CharField(max_length=255)
 
