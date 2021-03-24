@@ -39,11 +39,7 @@ class Product(models.Model):
     product_code = models.CharField(max_length=255)
     quantity = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
-<<<<<<< HEAD
-    product_code = models.CharField(max_length=7)
-=======
     created_at = models.DateTimeField(auto_now_add=True)
->>>>>>> cf4cc2e07195874efc7d0166a91ef08c999d6ab0
 
     def __str__(self):
         return f"{self.parent.brand.name} {self.category.name} "
