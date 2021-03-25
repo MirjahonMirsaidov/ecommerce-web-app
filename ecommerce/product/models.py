@@ -14,7 +14,7 @@ class Category(models.Model):
     name = models.CharField(max_length=255)
     parent_id = models.PositiveIntegerField (null=True, blank=True)
     image = models.ImageField()
-    order = models.IntegerField()
+    order = models.IntegerField(default=0)
     slug = models.SlugField(
         default='',
         editable=False,
@@ -39,7 +39,7 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     product_code = models.CharField(max_length=7)
     quantity = models.PositiveIntegerField()
-    
+
     def __str__(self):
         return f"{self.brand} {self.name}"
 
