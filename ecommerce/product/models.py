@@ -37,15 +37,24 @@ class Product(models.Model):
     parent_id = models.PositiveIntegerField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
+    product_code = models.CharField(max_length=7)
+    quantity = models.PositiveIntegerField()
+    
     def __str__(self):
         return f"{self.brand} {self.name}"
 
 
+class CategoryProduct(models.Model):
+    category_id = models.PositiveIntegerField()
+    product_id = models.PositiveIntegerField()
+
+    def __int__(self):
+        return f"{self.category_id}"
+
+
 class ProductAttributes(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='attributes')
-    is_main = models.BooleanField(default=True)
+    is_main = models.BooleanField(default=False)
     key = models.CharField(max_length=255)
     label = models.CharField(max_length=255)
     value = models.CharField(max_length=255)

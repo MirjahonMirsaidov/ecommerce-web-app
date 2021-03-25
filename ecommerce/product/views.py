@@ -56,9 +56,41 @@ class BrandDeleteView(generics.DestroyAPIView):
 
 class ProductCreateView(generics.CreateAPIView):
     serializer_class = ProductSerializer
-    queryset = Product.objects.all()
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
+    def post(self, request):
+        try:
+            serializer = ProductSerializer(data=request.data)
+            name = request.data.get('name')
+            description = request.data.get('description')
+            brand = request.data.get('brand')
+            is_import = request.data.get('is_import')
+            price = request.data.get('price')
+            parent_id = request.data.get('parent_id')
+            quantity = request.data.get('quantity')
+            product_code = request.data.get('product_code')
+            leng = request.data.get('leng')
+            lengs = request.data.get('lengs')
+            if serializer.is_valid():
+                product = serializer.save()
+                for category_num in range(0, int(leng)):
+                    category = request.data.get(f'category{category_num}')
+                    CategoryProduct.objects.create(category_id=category, product_id=product.id)
+                for attr_num in range(0, int(lengs)):
+                    is_main = request.data.get(f'is_main{attr_num}')
+                    key = request.data.get(f'key{attr_num}')
+                    label = request.data.get(f'label{attr_num}')
+                    value = request.data.get(f'value{attr_num}')
+                    ProductAttributes.objects.create(product_id=product.id, is_main=is_main, key=key, label=label, value=value,)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Error", status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductListView(generics.ListAPIView):
+    serializer_class = ProductGetSerializer
+    queryset = Product.objects.all()
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
@@ -74,33 +106,6 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
 class ProductDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = ProductSerializer
-    queryset = Product.objects.all()
-
-
-class ProductAttributesCreateView(generics.CreateAPIView):
-    serializer_class = ProductAttributesSerializer
-    queryset = ProductAttributes.objects.all()
-    # authentication_classes = (authentication.TokenAuthentication, )
-    # permission_classes = (permissions.IsAdminUser, )
-    
-
-class VariationListView(generics.ListAPIView):
-    serializer_class = ProductAttributesGetSerializer
-    queryset = ProductAttributes.objects.all()
-        
-
-class VariationDetailView(generics.RetrieveAPIView):
-    serializer_class = ProductAttributesGetSerializer
-    queryset = ProductAttributes.objects.all()
-
-
-class ProductAttributesListView(generics.ListAPIView):
-    serializer_class = ProductAttributesSerializer
-    queryset = ProductAttributes.objects.all()
-
-
-class ProductListView(generics.ListAPIView):
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
 
@@ -170,6 +175,17 @@ class ProductDetailView(generics.ListAPIView):
 #         })
 
 
+class ProductAttributesCreateView(generics.CreateAPIView):
+    serializer_class = ProductAttributesSerializer
+    queryset = ProductAttributes.objects.all()
+    # authentication_classes = (authentication.TokenAuthentication, )
+    # permission_classes = (permissions.IsAdminUser, )
+    
+
+class ProductAttributesListView(generics.ListAPIView):
+    serializer_class = ProductAttributesSerializer
+    queryset = ProductAttributes.objects.all()
+
 
 class ProductAttributesDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -186,6 +202,15 @@ class ProductAttributesUpdateView(generics.GenericAPIView, UpdateModelMixin):
 
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
+
+class VariationListView(generics.ListAPIView):
+    serializer_class = ProductGetSerializer
+    queryset = ProductAttributes.objects.all()
+        
+
+class VariationDetailView(generics.RetrieveAPIView):
+    serializer_class = ProductGetSerializer
+    queryset = ProductAttributes.objects.all()
 
 
 class AddCommentView(generics.GenericAPIView):
