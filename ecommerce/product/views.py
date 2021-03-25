@@ -21,7 +21,17 @@ class CategoryCreateView(generics.CreateAPIView):
 
 class CategoryListView(generics.ListAPIView):
     serializer_class = CategorySerializer
-    queryset = Category.objects.all()
+
+    def get_queryset(self):
+        return Category.objects.filter(parent_id=0)
+
+
+class CategoryChildListView(APIView):
+
+    def get(self, request, id):
+        categories = Category.objects.filter(parent_id=id)
+        categories = CategorySerializer(categories, many=True)
+        return Response(categories.data)
 
 
 class CategoryDeleteView(generics.DestroyAPIView):

@@ -12,7 +12,7 @@ class Brand(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
-    parent_id = models.PositiveIntegerField (null=True, blank=True)
+    parent_id = models.PositiveIntegerField(default=0)
     image = models.ImageField()
     order = models.IntegerField()
     slug = models.SlugField(
