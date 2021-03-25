@@ -1,5 +1,5 @@
 import datetime
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -80,18 +80,12 @@ class ProductCreateView(generics.CreateAPIView):
             quantity = request.data.get('quantity')
             product_code = request.data.get('product_code')
             leng = request.data.get('leng')
-            lengs = request.data.get('lengs')
             if serializer.is_valid():
                 product = serializer.save()
                 for category_num in range(0, int(leng)):
                     category = request.data.get(f'category{category_num}')
                     CategoryProduct.objects.create(category_id=category, product_id=product.id)
-                for attr_num in range(0, int(lengs)):
-                    is_main = request.data.get(f'is_main{attr_num}')
-                    key = request.data.get(f'key{attr_num}')
-                    label = request.data.get(f'label{attr_num}')
-                    value = request.data.get(f'value{attr_num}')
-                    ProductAttributes.objects.create(product_id=product.id, is_main=is_main, key=key, label=label, value=value,)
+                
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -101,6 +95,20 @@ class ProductCreateView(generics.CreateAPIView):
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
+
+
+class ProductsByCategoryView(APIView):
+    serializer_class = ProductGetSerializer
+    def get(self, request, slug):
+        category = Category.objects.get(slug=slug)
+        
+        categories = CategoryProduct.objects.filter(category_id=category.id)
+        products = []
+        for category in categories:
+            product = Product.objects.get(id=category.product_id)
+            products.append(product)
+        products = ProductGetSerializer(products, many=True)
+        return Response(products.data)
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):

@@ -18,12 +18,13 @@ urlpatterns = [
 
     path('create/', ProductCreateView.as_view(), name='create'),
     path('list/', ProductListView.as_view(), name='list'),
+    path('by-category/<slug:slug>', ProductsByCategoryView.as_view(), name='by-category'),
 
     path('detail/<int:id>', ProductDetailView.as_view(), name='detail'),
     path('update/<int:pk>', ProductUpdateView.as_view(), name='update'),
     path('delete/<int:pk>', ProductDeleteView.as_view(), name='delete'),
     
-    path('attributes-create/', ProductAttributesCreateView.as_view(), name='variation-create'),
+    path('attributes-create/', ProductAttributesCreateView.as_view(), name='attributes-create'),
     path('attributes-list/', ProductAttributesListView.as_view(), name='attributes-list'),
     path('variation-detail/<int:pk>', VariationDetailView.as_view(), name='variation-detail'),
     path('variation-delete/<int:pk>', ProductAttributesDeleteView.as_view(), name='variation-delete'),

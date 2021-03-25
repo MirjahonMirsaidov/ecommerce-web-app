@@ -60,11 +60,10 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductDetailSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     brand = BrandSerializer(many=False, required=False)
-    category = CategorySerializer(many=False, required=False)
 
     class Meta:
         model = Product
-        fields = ('id', 'category', 'brand', 'name', 'images', )
+        fields = ('id', 'brand', 'name', 'images', )
 
 
 class StatisticsSerializer(serializers.Serializer):
