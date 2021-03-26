@@ -2,7 +2,7 @@ import datetime
 from django.http import JsonResponse, HttpResponse
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters
+from rest_framework import filters, mixins
 from rest_framework import generics, permissions, authentication, status
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
@@ -111,18 +111,34 @@ class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
 
 
-class ProductsByCategoryView(APIView):
+class ProductsByCategoryView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
-    def get(self, request, slug):
+    queryset = Product.objects.all()
+    def get_queryset(self):
+        slug = self.kwargs['slug']
         category = Category.objects.get(slug=slug)
-        
-        categories = CategoryProduct.objects.filter(category_id=category.id)
         products = []
-        for category in categories:
-            product = Product.objects.get(id=category.product_id)
-            products.append(product)
-        products = ProductGetSerializer(products, many=True)
-        return Response(products.data)
+        if category.parent_id:
+            categories = CategoryProduct.objects.filter(category_id=category.id)
+
+            for category in categories:
+                product = Product.objects.get(id=category.product_id)
+                products.append(product)
+        elif category.parent_id == 0:
+            categories = Category.objects.filter(parent_id=category.id)
+            for item in categories:
+                singl = CategoryProduct.objects.filter(category_id=item.id)
+                for iterr in singl:
+                    product = Product.objects.get(id=iterr.product_id)
+                    products.append(product)
+        products = [product.id for product in products]
+
+        return Product.objects.filter(id__in=products)
+
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_fields = ['brand', ]
+    search_fields = ['name', ]
+    ordering_fields = ['created_at', 'price']
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
