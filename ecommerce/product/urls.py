@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from .views import *
 
@@ -18,7 +18,7 @@ urlpatterns = [
 
     path('create/', ProductCreateView.as_view(), name='create'),
     path('list/', ProductListView.as_view(), name='list'),
-    path('by-category/<slug:slug>', ProductsByCategoryView.as_view(), name='by-category'),
+    re_path('by-category/(?P<slug>.+)/$', ProductsByCategoryView.as_view(), name='by-category'),
 
     path('detail/<int:id>', ProductDetailView.as_view(), name='detail'),
     path('update/<int:pk>', ProductUpdateView.as_view(), name='update'),
