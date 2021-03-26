@@ -69,7 +69,7 @@ class ProductImage(models.Model):
     images = models.ImageField()
 
     def __str__(self):
-        return f"{self.product.parent.brand.name} {self.product.parent.category.name}"
+        return f"{self.product.name}"
 
 
 class Comment(models.Model):
