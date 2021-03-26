@@ -106,7 +106,6 @@ class CreateOrderBetaView(generics.GenericAPIView):
             
             # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
             #     order.delete()
-                return Response(status=status.HTTP_404_NOT_FOUND)
             return Response(status=status.HTTP_201_CREATED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -146,39 +145,7 @@ class OrderBetaDeleteView(generics.DestroyAPIView):
     serializer_class = OrderBetaSerializer
 
 
-class ChangeStatusView(generics.GenericAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    def post(self, request, pk):
-        status = request.data.get('status')
-        order = OrderBeta.objects.get(id=pk)
-        order.status=status
-        order.save()
-
-        if status == 'Tugallangan':
-            order_products = OrderProductBeta.objects.filter(order_id=pk)
-            ids = [order.product_id for order in order_products]
-            for id in ids:
-                product = ProductAttributes.objects.get(id=id)
-                print(product.quantity)
-                product.quantity -= 1
-                product.save()
-                print(product.quantity)
-
-        return Response('Okay')
-
-
-class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    queryset = OrderProductBeta.objects.all()
-    serializer_class = OrderProductBetaSerializer
-
-    def put(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-
-
-class OrderProductBetaUpdate(generics.GenericAPIView):
+class OrderProductBetaUpdateView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderProductBetaSerializer
@@ -188,11 +155,12 @@ class OrderProductBetaUpdate(generics.GenericAPIView):
         count = int(request.data.get('count'))
         product_id = request.data.get('product')
         if product_id and count:
-            product = ProductAttributes.objects.get(id=product_id)
+            product = Product.objects.get(id=product_id)
             price = product.price
             single_overall_price = price * count
             order_product.single_overall_price = single_overall_price
             order_product.product_id = product_id
+            order_product.count = count
             order_product.save()
             order = OrderBeta.objects.get(id=order_product.order_id)
             order_products = OrderProductBeta.objects.filter(order_id=order.id)
@@ -224,7 +192,28 @@ class OrderProductBetaDetailView(generics.RetrieveAPIView):
         return OrderProductBeta.objects.all()
         
       
-        
+class ChangeStatusView(generics.GenericAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    def post(self, request, pk):
+        status = request.data.get('status')
+        order = OrderBeta.objects.get(id=pk)
+        order.status=status
+        order.save()
+
+        if status == 'Tugallangan':
+            order_products = OrderProductBeta.objects.filter(order_id=pk)
+            ids = [order.product_id for order in order_products]
+            for id in ids:
+                product = ProductAttributes.objects.get(id=id)
+                print(product.quantity)
+                product.quantity -= 1
+                product.save()
+                print(product.quantity)
+
+        return Response('Okay')
+
+       
 class BuyProductViaClickView(generics.GenericAPIView):
     serializer_class = BuySerializer
     authentication_classes = (authentication.TokenAuthentication,)
