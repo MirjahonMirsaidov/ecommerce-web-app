@@ -19,13 +19,6 @@ class CartSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OrderSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Order
-        fields = ('user', 'overall_price', 'is_paid', 'start_date')
-
-
 class OrderProductBetaListSerializer(serializers.ModelSerializer):
     product = ProductGetSerializer(required=False)
 
