@@ -79,23 +79,23 @@ class ProductCreateView(generics.CreateAPIView):
             parent_id = request.data.get('parent_id')
             quantity = request.data.get('quantity')
             product_code = request.data.get('product_code')
-            leng = request.data.get('leng')  # category length
-            lengs = request.data.get('lengs')  # attributes length
-            lengz = request.data.get('lengz')  # images length
+            category_length = request.data.get('leng')  # category length
+            atributes_length = request.data.get('lengs')  # attributes length
+            images_length = request.data.get('lengz')  # images length
             if serializer.is_valid():
                 product = serializer.save()
-                for category_num in range(0, int(leng)):
+                for category_num in range(0, int(category_length)):
                     category = request.data.get(f'category{category_num}')
                     CategoryProduct.objects.create(category_id=category, product_id=product.id)
                 
-                for attr in range(0, int(lengs)):
+                for attr in range(0, int(atributes_length)):
                     is_main = request.data.get(f'is_main{attr}')
                     key = request.data.get(f'key{attr}')
                     label = request.data.get(f'label{attr}')
                     value = request.data.get(f'value{attr}')
                     ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
 
-                for image in range(0, int(lengz)):
+                for image in range(0, int(images_length)):
                     image = request.data.get(f'image{image}')
                     ProductImage.objects.create(images=image, product_id=product.id)
 
