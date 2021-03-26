@@ -90,7 +90,7 @@ class ProductCreateView(generics.CreateAPIView):
                 CategoryProduct.objects.create(category_id=category, product_id=product.id)
 
             for attr in range(0, int(atributes_length)):
-                is_main = request.data.get(f'is_main{attr}')
+                is_main = str(request.data.get(f'is_main{attr}')).capitalize()
                 key = request.data.get(f'key{attr}')
                 label = request.data.get(f'label{attr}')
                 value = request.data.get(f'value{attr}')
