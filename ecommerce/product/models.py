@@ -30,15 +30,16 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    parent_id = models.PositiveIntegerField(null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     description = models.TextField(null=True, blank=True)
-    price = models.PositiveIntegerField()
-    parent_id = models.PositiveIntegerField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
     product_code = models.CharField(max_length=7)
+    image = models.ImageField()
+    price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.brand} {self.name}"

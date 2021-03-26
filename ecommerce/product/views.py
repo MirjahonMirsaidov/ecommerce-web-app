@@ -78,6 +78,7 @@ class ProductCreateView(generics.CreateAPIView):
             price = request.data.get('price')
             parent_id = request.data.get('parent_id')
             quantity = request.data.get('quantity')
+            image = request.data.get('image')
             product_code = request.data.get('product_code')
             category_length = request.data.get('leng')  # category length
             atributes_length = request.data.get('lengs')  # attributes length
