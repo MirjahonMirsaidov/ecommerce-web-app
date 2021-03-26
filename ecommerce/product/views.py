@@ -115,12 +115,20 @@ class ProductsByCategoryView(APIView):
     serializer_class = ProductGetSerializer
     def get(self, request, slug):
         category = Category.objects.get(slug=slug)
-        
-        categories = CategoryProduct.objects.filter(category_id=category.id)
         products = []
-        for category in categories:
-            product = Product.objects.get(id=category.product_id)
-            products.append(product)
+        if category.parent_id:
+            categories = CategoryProduct.objects.filter(category_id=category.id)
+
+            for category in categories:
+                product = Product.objects.get(id=category.product_id)
+                products.append(product)
+        elif category.parent_id == 0:
+            categories = Category.objects.filter(parent_id=category.id)
+            for item in categories:
+                singl = CategoryProduct.objects.filter(category_id=item.id)
+                for iterr in singl:
+                    product = Product.objects.get(id=iterr.product_id)
+                    products.append(product)
         products = ProductGetSerializer(products, many=True)
         return Response(products.data)
 
