@@ -173,6 +173,7 @@ class OrderProductBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     def put(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
+
 class OrderProductBetaUpdate(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
