@@ -69,41 +69,41 @@ class ProductCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
     def post(self, request):
-        try:
-            serializer = ProductSerializer(data=request.data)
-            name = request.data.get('name')
-            description = request.data.get('description')
-            brand = request.data.get('brand')
-            is_import = request.data.get('is_import')
-            price = request.data.get('price')
-            parent_id = request.data.get('parent_id')
-            quantity = request.data.get('quantity')
-            image = request.data.get('image')
-            product_code = request.data.get('product_code')
-            category_length = request.data.get('leng')  # category length
-            atributes_length = request.data.get('lengs')  # attributes length
-            images_length = request.data.get('lengz')  # images length
-            if serializer.is_valid():
-                product = serializer.save()
-                for category_num in range(0, int(category_length)):
-                    category = request.data.get(f'category{category_num}')
-                    CategoryProduct.objects.create(category_id=category, product_id=product.id)
-                
-                for attr in range(0, int(atributes_length)):
-                    is_main = request.data.get(f'is_main{attr}')
-                    key = request.data.get(f'key{attr}')
-                    label = request.data.get(f'label{attr}')
-                    value = request.data.get(f'value{attr}')
-                    ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
+        # try:
+        serializer = ProductSerializer(data=request.data)
+        name = request.data.get('name')
+        description = request.data.get('description')
+        brand = request.data.get('brand')
+        is_import = request.data.get('is_import')
+        price = request.data.get('price')
+        parent_id = request.data.get('parent_id')
+        quantity = request.data.get('quantity')
+        image = request.data.get('image')
+        product_code = request.data.get('product_code')
+        category_length = request.data.get('category_length')  # category length
+        atributes_length = request.data.get('attributes_length')  # attributes length
+        images_length = request.data.get('images_length')  # images length
+        if serializer.is_valid():
+            product = serializer.save()
+            for category_num in range(0, int(category_length)):
+                category = request.data.get(f'category{category_num}')
+                CategoryProduct.objects.create(category_id=category, product_id=product.id)
 
-                for image in range(0, int(images_length)):
-                    image = request.data.get(f'image{image}')
-                    ProductImage.objects.create(images=image, product_id=product.id)
+            for attr in range(0, int(atributes_length)):
+                is_main = request.data.get(f'is_main{attr}')
+                key = request.data.get(f'key{attr}')
+                label = request.data.get(f'label{attr}')
+                value = request.data.get(f'value{attr}')
+                ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
 
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response("Error", status=status.HTTP_400_BAD_REQUEST)
+            for image in range(0, int(images_length)):
+                image = request.data.get(f'image{image}')
+                ProductImage.objects.create(images=image, product_id=product.id)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # except:
+        #     return Response("Error", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):
