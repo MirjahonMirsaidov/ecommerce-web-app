@@ -27,7 +27,6 @@ SECRET_KEY = 'u#0q04ozathu)4ltl&&-lh9%dr+pv*e)a$0(@0gv(cs_#w2j2s'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -47,7 +46,7 @@ INSTALLED_APPS = [
     'product',
     'cart',
     'django_filters',
-    'corsheaders',
+
 ]
 
 MIDDLEWARE = [
@@ -94,7 +93,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': 'localhost',
-        'NAME': 'ecommerce',
+        'NAME': 'ecommerce_db',
         'USER': 'postgres',
         'PASSWORD': '0214',
     }
