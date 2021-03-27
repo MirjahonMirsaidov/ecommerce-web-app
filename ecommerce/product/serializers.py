@@ -70,11 +70,12 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     image = serializers.CharField(max_length=1000000)
     attributes = serializers.DictField()
     images = serializers.CharField(max_length=1000000)
+    categories = serializers.ListField()
 
     class Meta:
         model = Product
         fields = ('parent_id', 'product_code', 'name', 'description', 'image', 'is_import', 'brand',
-                  'price', 'quantity', 'images', 'attributes', 'variations')
+                  'price', 'quantity', 'images', 'attributes', 'variations', 'categories')
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
