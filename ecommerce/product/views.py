@@ -155,7 +155,7 @@ class ProductListView(generics.ListAPIView):
     queryset = Product.objects.all()
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['brand', ]
-    search_fields = ['name', ]
+    search_fields = ['name', 'product_code', ]
     ordering_fields = ['created_at', 'price']
 
 
