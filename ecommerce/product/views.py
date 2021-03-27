@@ -119,6 +119,14 @@ class ProductCreateView(generics.CreateAPIView):
         variations = request.data.get('variations')
         if serializer.is_valid():
             product = serializer.save()
+            if categories:
+                save_category(categories, product)
+
+            if attributes:
+                save_attribute(attributes, product)
+
+            if images:
+                save_image(images, product)
 
             if variations:
                 for variation in variations:
