@@ -118,9 +118,6 @@ class ProductCreateView(generics.CreateAPIView):
         if serializer.is_valid():
             product = serializer.save()
 
-            save_category(categories, product)
-            save_attribute(attributes, product)
-            save_image(images, product)
             if variations:
                 for variation in variations:
                     var_product = Product.objects.create(
@@ -135,13 +132,16 @@ class ProductCreateView(generics.CreateAPIView):
                         product_code=variation['product_code'],
                     )
                     categories = variation['categories']
-                    save_category(categories, var_product)
+                    if categories:
+                        save_category(categories, var_product)
 
                     attributes = variation['attributes']
-                    save_attribute(attributes, var_product)
+                    if attributes:
+                        save_attribute(attributes, var_product)
 
                     images = variation['images']
-                    save_image(images, var_product)
+                    if images:
+                        save_image(images, var_product)
 
 
             return Response(serializer.data, status=status.HTTP_200_OK)
