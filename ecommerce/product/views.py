@@ -9,9 +9,40 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
 
+import base64
+
 from .models import *
 from .serializers import *
 from cart.models import OrderBeta
+
+def save_attribute(attributes, product):
+
+    for attr in attributes:
+        is_main = str(attr['is_main']).capitalize()
+        key = attr['key']
+        label = attr['label']
+        value = attr['value']
+        ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
+
+
+def decode_image(image):
+    decodeit = open('image.jpeg', 'wb')
+    decodeit.write(base64.b64decode((image)))
+    decodeit.close()
+    return decodeit
+
+
+def save_image(images, product):
+
+    for image in images:
+        image = decode_image(image)
+        ProductImage.objects.create(images=image, product_id=product.id)
+
+
+def save_category(categories, product):
+
+    for category in categories:
+        CategoryProduct.objects.create(category_id=category, product_id=product.id)
 
 
 class CategoryCreateView(generics.CreateAPIView):
@@ -65,12 +96,12 @@ class BrandDeleteView(generics.DestroyAPIView):
 
 
 class ProductCreateView(generics.CreateAPIView):
-    serializer_class = ProductSerializer
+    serializer_class = ProductCreateSerializer
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
     def post(self, request):
         # try:
-        serializer = ProductSerializer(data=request.data)
+        serializer = ProductCreateSerializer(data=request.data)
         name = request.data.get('name')
         description = request.data.get('description')
         brand = request.data.get('brand')
@@ -80,25 +111,38 @@ class ProductCreateView(generics.CreateAPIView):
         quantity = request.data.get('quantity')
         image = request.data.get('image')
         product_code = request.data.get('product_code')
-        category_length = request.data.get('category_length')  # category length
-        atributes_length = request.data.get('attributes_length')  # attributes length
-        images_length = request.data.get('images_length')  # images length
+        categories = request.data.get('categories')
+        attributes = request.data.get('attributes')
+        images = request.data.get('images')
+        variations = request.data.get('variations')
         if serializer.is_valid():
             product = serializer.save()
-            for category_num in range(0, int(category_length)):
-                category = request.data.get(f'category{category_num}')
-                CategoryProduct.objects.create(category_id=category, product_id=product.id)
 
-            for attr in range(0, int(atributes_length)):
-                is_main = str(request.data.get(f'is_main{attr}')).capitalize()
-                key = request.data.get(f'key{attr}')
-                label = request.data.get(f'label{attr}')
-                value = request.data.get(f'value{attr}')
-                ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
+            save_category(categories, product)
+            save_attribute(attributes, product)
+            save_image(images, product)
+            if variations:
+                for variation in variations:
+                    var_product = Product.objects.create(
+                        name=variation['name'],
+                        description=variation['description'],
+                        brand=variation['brand'],
+                        is_import=variation['is_import'],
+                        price=variation['price'],
+                        parent_id=product.id,
+                        quantity=variation['quantity'],
+                        image=decode_image(variation['image']),
+                        product_code=variation['product_code'],
+                    )
+                    categories = variation['categories']
+                    save_category(categories, var_product)
 
-            for image in range(0, int(images_length)):
-                image = request.data.get(f'image{image}')
-                ProductImage.objects.create(images=image, product_id=product.id)
+                    attributes = variation['attributes']
+                    save_attribute(attributes, var_product)
+
+                    images = variation['images']
+                    save_image(images, var_product)
+
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

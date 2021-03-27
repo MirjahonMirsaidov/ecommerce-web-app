@@ -47,7 +47,8 @@ class ProductGetSerializer(serializers.ModelSerializer):
    
     class Meta:
         model = Product
-        fields = ('id', 'parent_id', 'product_code', 'name', 'description', 'image', 'is_import', 'created_at', 'brand', 'price', 'quantity', 'images', 'attributes')
+        fields = ('id', 'parent_id', 'product_code', 'name', 'description', 'image', 'is_import', 'created_at', 'brand',
+                  'price', 'quantity', 'images', 'attributes')
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -55,6 +56,14 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+class ProductCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('parent_id', 'product_code', 'name', 'description', 'image', 'is_import', 'created_at', 'brand',
+                  'price', 'quantity', 'images', 'attributes', 'variations')
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
