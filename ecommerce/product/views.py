@@ -27,7 +27,7 @@ def save_attribute(attributes, product):
 
 def decode_image(image):
     decodeit = open('image.jpeg', 'wb')
-    decodeit.write(base64.b64decode((image)))
+    decodeit.write(base64.b64decode((image.split(',')[1])))
     decodeit.close()
     return decodeit
 
