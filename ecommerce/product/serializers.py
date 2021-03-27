@@ -59,6 +59,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductVariationSerializer(serializers.ModelSerializer):
+    image = serializers.CharField(max_length=1000000)
+    attributes = serializers.DictField()
+    images = serializers.CharField(max_length=1000000)
+    categories = serializers.ListField()
 
     class Meta:
         model = Product
