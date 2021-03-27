@@ -61,7 +61,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductVariationSerializer(serializers.ModelSerializer):
     image = serializers.CharField(max_length=100000000000)
     attributes = serializers.ListField()
-    images = serializers.CharField(max_length=100000000000)
+    images = serializers.JSONField()
     categories = serializers.ListField()
 
     class Meta:
@@ -71,9 +71,9 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
 class ProductCreateSerializer(serializers.ModelSerializer):
     variations = ProductVariationSerializer(required=False, many=True)
-    image = serializers.CharField(max_length=100000000000)
+    image = serializers.JSONField()
     attributes = serializers.ListField()
-    images = serializers.CharField(max_length=100000000000)
+    images = serializers.JSONField()
     categories = serializers.ListField()
 
     class Meta:
