@@ -58,15 +58,22 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProductVariationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('product_code', 'name', 'description', 'image', 'price', 'quantity', 'images', 'attributes', 'categories')
+
+
 class ProductCreateSerializer(serializers.ModelSerializer):
-    variations = ProductSerializer(required=False, many=True)
+    variations = ProductVariationSerializer(required=False, many=True)
     image = serializers.CharField(max_length=1000000)
     attributes = serializers.DictField()
     images = serializers.CharField(max_length=1000000)
 
     class Meta:
         model = Product
-        fields = ('parent_id', 'product_code', 'name', 'description', 'image', 'is_import', 'created_at', 'brand',
+        fields = ('parent_id', 'product_code', 'name', 'description', 'image', 'is_import', 'brand',
                   'price', 'quantity', 'images', 'attributes', 'variations')
 
 
