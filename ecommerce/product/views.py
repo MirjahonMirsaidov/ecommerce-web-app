@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
+from django.core.files import File
 
 import base64
 
@@ -28,7 +29,7 @@ def save_attribute(attributes, product):
 def decode_image(image):
     image_source = image.split(',')[1]
     image_type = image.split(';')[0].split('/')[1]
-    decodeit = open(f'image.{image_type}', 'wb')
+    decodeit = File(open(f'image.{image_type}', 'wb'))
     decodeit.write(base64.b64decode((image_source)))
     decodeit.close()
     return decodeit
