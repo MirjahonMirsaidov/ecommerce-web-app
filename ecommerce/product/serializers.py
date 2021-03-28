@@ -66,14 +66,15 @@ class ProductVariationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('product_code', 'name', 'description', 'image', 'price', 'quantity', 'images', 'attributes', 'categories')
+        fields = ('product_code', 'name', 'description', 'image', 'price', 'quantity', 'images',
+                  'attributes', 'categories')
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
     variations = ProductVariationSerializer(required=False, many=True)
     image = serializers.CharField(max_length=100000000000)
     attributes = serializers.ListField()
-    images = serializers.ListField(str)
+    images = serializers.CharField(max_length=100000000000)
     categories = serializers.ListField()
 
     class Meta:
