@@ -117,7 +117,6 @@ class ProductCreateView(generics.CreateAPIView):
         attributes = request.data.get('attributes')
         images = request.data.get('images')
         print('working 119', type(images))
-        print(images)
         variations = request.data.get('variations')
         if serializer.is_valid():
             print('working 122')
