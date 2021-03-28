@@ -30,7 +30,7 @@ def decode_image(image):
     image_source = image.split(',')[1]
     image_type = image.split(';')[0].split('/')[1]
     decodeit = File(open(f'image.{image_type}', 'wb'))
-    decodeit.write(base64.b64decode((image_source)))
+    decodeit.write(base64.b64decode(image_source))
     decodeit.close()
     return decodeit
 
@@ -38,8 +38,12 @@ def decode_image(image):
 def save_image(images, product):
 
     for image in images:
-        image = decode_image(image)
+        image_source = image.split(',')[1]
+        image_type = image.split(';')[0].split('/')[1]
+        image = File(open(f'image.{image_type}', 'wb'))
+        image.write(base64.b64decode(image_source))
         ProductImage.objects.create(images=image, product_id=product.id)
+        image.close()
 
 
 def save_category(categories, product):
@@ -121,7 +125,11 @@ class ProductCreateView(generics.CreateAPIView):
         variations = request.data.get('variations')
         if serializer.is_valid():
             print('working 122')
-            image = decode_image(image)
+            image_source = image.split(',')[1]
+            image_type = image.split(';')[0].split('/')[1]
+            image = File(open(f'image.{image_type}', 'wb'))
+            image.write(base64.b64decode(image_source))
+
             product = Product.objects.create(
                 name=name,
                 description=description,
@@ -133,6 +141,7 @@ class ProductCreateView(generics.CreateAPIView):
                 image=image,
                 product_code=product_code,
             )
+            image.close()
             if categories:
                 save_category(categories, product)
 
@@ -145,6 +154,10 @@ class ProductCreateView(generics.CreateAPIView):
             if variations:
                 print('working 134')
                 for variation in variations:
+                    image_source = (variation['image']).split(',')[1]
+                    image_type = (variation['image']).split(';')[0].split('/')[1]
+                    image = File(open(f'image.{image_type}', 'wb'))
+                    image.write(base64.b64decode(image_source))
                     var_product = Product.objects.create(
                         name=variation['name'],
                         description=variation['description'],
@@ -156,6 +169,7 @@ class ProductCreateView(generics.CreateAPIView):
                         image=decode_image(variation['image']),
                         product_code=variation['product_code'],
                     )
+                    image.close()
                     categories = variation['categories']
                     if categories:
                         save_category(categories, var_product)
