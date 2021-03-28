@@ -120,7 +120,18 @@ class ProductCreateView(generics.CreateAPIView):
         variations = request.data.get('variations')
         if serializer.is_valid():
             print('working 122')
-            product = serializer.save()
+            image = decode_image(image)
+            product = Product.objects.create(
+                name=name,
+                description=description,
+                brand=brand,
+                is_import=is_import,
+                price=price,
+                parent_id=0,
+                quantity=quantity,
+                image=image,
+                product_code=product_code,
+            )
             if categories:
                 save_category(categories, product)
 
