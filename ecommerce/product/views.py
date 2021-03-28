@@ -124,7 +124,7 @@ class ProductCreateView(generics.CreateAPIView):
             product = Product.objects.create(
                 name=name,
                 description=description,
-                brand=brand,
+                brand_id=brand,
                 is_import=is_import,
                 price=price,
                 parent_id=0,
