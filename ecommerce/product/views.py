@@ -223,7 +223,7 @@ class ProductDetailView(generics.GenericAPIView):
                 "name": variation.brand.name,
             },
             "categories": get_categories(variation),
-            "attributes": get_attributes(id),
+            "attributes": get_attributes(variation.id),
             "price": variation.price,
             "image": "http://127.0.0.1:8000" + variation.image.url,
             "quantity": variation.quantity,
