@@ -211,14 +211,6 @@ class ProductDetailView(generics.GenericAPIView):
         # getting product childs
         for variation in product_variations:
 
-            categories = []
-            for category in CategoryProduct.objects.filter(product_id=variation.id):
-                category = Category.objects.get(id=category.category_id)
-                categories.append({
-                    "id": category.id,
-                    "name": category.name,
-                })
-
             variations_list.append({
             "id": variation.id,
             "parent_id": variation.parent_id,
@@ -229,7 +221,7 @@ class ProductDetailView(generics.GenericAPIView):
                 "id": variation.brand.id,
                 "name": variation.brand.name,
             },
-            "categories": categories,
+            "categories": get_categories(variation),
             "attributes": get_attributes(id),
             "price": variation.price,
             "image": "http://127.0.0.1:8000" + variation.image.url,
@@ -249,7 +241,7 @@ class ProductDetailView(generics.GenericAPIView):
                 "id": product.brand.id,
                 "name": product.brand.name,
             },
-            "categories": categories,
+            "categories": get_categories(product),
             "attributes": get_attributes(id),
             "price": product.price,
             "image": "http://127.0.0.1:8000" + product.image.url,
