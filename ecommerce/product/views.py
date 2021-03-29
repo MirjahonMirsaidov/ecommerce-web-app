@@ -216,6 +216,7 @@ class ProductDetailView(generics.GenericAPIView):
             "parent_id": variation.parent_id,
             "name": variation.name,
             "description": variation.description,
+            "product_code": variation.product_code,
             "is_import": variation.is_import,
             "brand": {
                 "id": variation.brand.id,
@@ -236,6 +237,7 @@ class ProductDetailView(generics.GenericAPIView):
             "parent_id": product.parent_id,
             "name": product.name,
             "description": product.description,
+            "product_code": product.product_code,
             "is_import": product.is_import,
             "brand": {
                 "id": product.brand.id,

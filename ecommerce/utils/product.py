@@ -92,3 +92,5 @@ def get_categories(product):
             "id": category.id,
             "name": category.name,
         })
+
+    return categories
