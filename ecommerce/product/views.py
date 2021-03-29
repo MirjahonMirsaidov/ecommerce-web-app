@@ -199,69 +199,65 @@ class ProductDeleteView(generics.DestroyAPIView):
     queryset = Product.objects.all()
 
 
-class ProductDetailView(generics.ListAPIView):
-    serializer_class = ProductSerializer
+class ProductDetailView(generics.GenericAPIView):
+    serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
-#     def get(self, request, id):
-#         available_sizes = []
-#         available_colors = []
-#         variations_list = []
-#         product = Product.objects.get(id=id)
-#         product_variations = ProductAttributes.objects.filter(parent_id=id)
-#         for variation in product_variations:
-#             if variation.size not in available_sizes:
-#                 available_sizes.append(variation.size)
-#             if variation.color not in available_colors:
-#                 available_colors.append({'id': variation.color.id, 'name': variation.color.name})
-#             imagesa = []
-#             for image in ProductImage.objects.filter(product_id=variation.id):
-#                 imagesa.append("http://127.0.0.1:8000" + image.images.url)
 
-#             variations_list.append({
-#                 "id": variation.id,
-#             "parent_id": variation.parent_id,
-#             "name": variation.name,
-#             "description": variation.description,
-#             "is_import": variation.is_import,
-#             "created_at": variation.created_at,
-#             "category": {
-#                 "id": variation.category.id,
-#                 "name": variation.category.name,
-#                 "slug": variation.category.slug
-#             },
-#             "brand": {
-#                 "id": variation.brand.id,
-#                 "name": variation.brand.name,
-#             },
-#             "size": variation.size,
-#             "color": {
-#                 "id": variation.color.id,
-#                 "name": variation.color.name,
-#             },
-#             "price": variation.price,
-#             "variation_image": "http://127.0.0.1:8000" + variation.variation_image.url,
-#             "quantity": variation.quantity,
-#             "images": imagesa
+    def get(self, request, id):
+        variations_list = []
+        product = Product.objects.get(id=id)
+        product_variations = Product.objects.filter(parent_id=id)
 
-#             })
+        # getting product childs
+        for variation in product_variations:
 
-#         return Response({
-#             "id": 5,
-#             "category": {
-#                 "id": product.category.id,
-#                 "name": product.category.name,
-#                 "slug": product.category.slug
-#             },
-#             "brand": {
-#                 "id": product.brand.id,
-#                 "name": product.brand.name
-#             },
-#             "name": product.name,
-#             "description": product.description,
-#             'available_sizes': available_sizes,
-#             'available_colors': available_colors,
-#             "variations": variations_list
-#         })
+            categories = []
+            for category in CategoryProduct.objects.filter(product_id=variation.id):
+                category = Category.objects.get(id=category.category_id)
+                categories.append({
+                    "id": category.id,
+                    "name": category.name,
+                })
+
+            variations_list.append({
+            "id": variation.id,
+            "parent_id": variation.parent_id,
+            "name": variation.name,
+            "description": variation.description,
+            "is_import": variation.is_import,
+            "brand": {
+                "id": variation.brand.id,
+                "name": variation.brand.name,
+            },
+            "categories": categories,
+            "attributes": get_attributes(id),
+            "price": variation.price,
+            "image": "http://127.0.0.1:8000" + variation.image.url,
+            "quantity": variation.quantity,
+            "images": get_images(variation),
+            "created_at": variation.created_at,
+
+            })
+
+        return Response({
+            "id": product.id,
+            "parent_id": product.parent_id,
+            "name": product.name,
+            "description": product.description,
+            "is_import": product.is_import,
+            "brand": {
+                "id": product.brand.id,
+                "name": product.brand.name,
+            },
+            "categories": categories,
+            "attributes": get_attributes(id),
+            "price": product.price,
+            "image": "http://127.0.0.1:8000" + product.image.url,
+            "quantity": product.quantity,
+            "images": get_images(product),
+            "created_at": product.created_at,
+            "variations": variations_list,
+        })
 
 
 class ProductAttributesCreateView(generics.CreateAPIView):
