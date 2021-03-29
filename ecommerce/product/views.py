@@ -8,9 +8,10 @@ from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
-from django.core.files import File
+from PIL import Image
+from django.core.files.base import ContentFile
 
-import base64
+import base64, secrets, io
 
 from .models import *
 from .serializers import *
@@ -26,24 +27,43 @@ def save_attribute(attributes, product):
         ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
 
 
-def decode_image(image):
-    image_source = image.split(',')[1]
-    image_type = image.split(';')[0].split('/')[1]
-    decodeit = File(open(f'image.{image_type}', 'wb'))
-    decodeit.write(base64.b64decode(image_source))
-    decodeit.close()
-    return decodeit
+def get_image_from_data_url( data_url, resize=True, base_width=600 ):
+
+    # getting the file format and the necessary dataURl for the file
+    _format, _dataurl       = data_url.split(';base64,')
+    # file name and extension
+    _filename, _extension   = secrets.token_hex(20), _format.split('/')[-1]
+
+    # generating the contents of the file
+    file = ContentFile( base64.b64decode(_dataurl), name=f"{_filename}.{_extension}")
+
+    # resizing the image, reducing quality and size
+    if resize:
+
+        # opening the file with the pillow
+        image = Image.open(file)
+        # using BytesIO to rewrite the new content without using the filesystem
+        image_io = io.BytesIO()
+
+        # resize
+        w_percent = (base_width/float(image.size[0]))
+        h_size = int((float(image.size[1])*float(w_percent)))
+        image = image.resize((base_width,h_size), Image.ANTIALIAS)
+
+        # save resized image
+        image.save(image_io, format=_extension)
+
+        # generating the content of the new image
+        file = ContentFile( image_io.getvalue(), name=f"{_filename}.{_extension}" )
+
+    # file and filename
+    return file, (_filename, _extension)
 
 
 def save_image(images, product):
 
     for image in images:
-        image_source = image.split(',')[1]
-        image_type = image.split(';')[0].split('/')[1]
-        image = File(open(f'image.{image_type}', 'wb'))
-        image.write(base64.b64decode(image_source))
-        ProductImage.objects.create(images=image, product_id=product.id)
-        image.close()
+        ProductImage.objects.create(images=get_image_from_data_url(image)[0], product_id=product.id)
 
 
 def save_category(categories, product):
@@ -125,10 +145,6 @@ class ProductCreateView(generics.CreateAPIView):
         variations = request.data.get('variations')
         if serializer.is_valid():
             print('working 122')
-            image_source = image.split(',')[1]
-            image_type = image.split(';')[0].split('/')[1]
-            image = File(open(f'image.{image_type}', 'wb'))
-            image.write(base64.b64decode(image_source))
 
             product = Product.objects.create(
                 name=name,
@@ -138,10 +154,9 @@ class ProductCreateView(generics.CreateAPIView):
                 price=price,
                 parent_id=0,
                 quantity=quantity,
-                image=image,
+                image=get_image_from_data_url(image)[0],
                 product_code=product_code,
             )
-            image.close()
             if categories:
                 save_category(categories, product)
 
@@ -154,10 +169,7 @@ class ProductCreateView(generics.CreateAPIView):
             if variations:
                 print('working 134')
                 for variation in variations:
-                    image_source = (variation['image']).split(',')[1]
-                    image_type = (variation['image']).split(';')[0].split('/')[1]
-                    image = File(open(f'image.{image_type}', 'wb'))
-                    image.write(base64.b64decode(image_source))
+
                     var_product = Product.objects.create(
                         name=variation['name'],
                         description=variation['description'],
@@ -166,10 +178,9 @@ class ProductCreateView(generics.CreateAPIView):
                         price=variation['price'],
                         parent_id=product.id,
                         quantity=variation['quantity'],
-                        image=decode_image(variation['image']),
+                        image=get_image_from_data_url(variation['image'])[0],
                         product_code=variation['product_code'],
                     )
-                    image.close()
                     categories = variation['categories']
                     if categories:
                         save_category(categories, var_product)
