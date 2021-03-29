@@ -3,7 +3,8 @@ from django.core.files.base import ContentFile
 
 import base64, secrets, io
 
-from product.models import ProductAttributes, ProductImage, CategoryProduct
+from product.models import ProductAttributes, ProductImage\
+                            , CategoryProduct, Category
 
 def save_attribute(attributes, product):
 
@@ -58,3 +59,36 @@ def save_category(categories, product):
 
     for category in categories:
         CategoryProduct.objects.create(category_id=category, product_id=product.id)
+
+
+def get_attributes(id):
+    attributes = []
+    for attribut in ProductAttributes.objects.filter(product=id):
+        attributes.append(
+            {
+                "id": attribut.id,
+                "is_main": attribut.is_main,
+                "key": attribut.key,
+                "label": attribut.label,
+                "value": attribut.value,
+                "created_at": attribut.created_at,
+            }
+        )
+    return attributes
+
+
+def get_images(product):
+    images = []
+    for image in ProductImage.objects.filter(product_id=product.id):
+        images.append("http://127.0.0.1:8000" + image.images.url)
+
+    return images
+
+def get_categories(product):
+    categories = []
+    for category in CategoryProduct.objects.filter(product_id=product.id):
+        category = Category.objects.get(id=category.category_id)
+        categories.append({
+            "id": category.id,
+            "name": category.name,
+        })
