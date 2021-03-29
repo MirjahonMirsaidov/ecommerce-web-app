@@ -282,6 +282,24 @@ class ProductAttributesUpdateView(generics.GenericAPIView, UpdateModelMixin):
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
+
+class ProductCategoryUpdateView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request):
+        product = request.data.get('product')
+        categories_list = request.data.get('categories')
+        for item in CategoryProduct.objects.filter(product_id=product):
+            if item.category_id not in categories_list:
+                item.delete()
+        for category in categories_list:
+            CategoryProduct.objects.get_or_create(category_id=category,
+                                                 product_id=product)
+
+        return Response(status=status.HTTP_200_OK)
+
+
 class VariationListView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = ProductAttributes.objects.all()
