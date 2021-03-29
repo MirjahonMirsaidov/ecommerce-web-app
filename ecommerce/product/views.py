@@ -273,14 +273,34 @@ class ProductAttributesDeleteView(generics.DestroyAPIView):
     queryset = ProductAttributes.objects.all()
 
 
-class ProductAttributesUpdateView(generics.GenericAPIView, UpdateModelMixin):
+
+class ProductAttributesUpdateView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    queryset = ProductAttributes.objects.all()
-    serializer_class = ProductAttributesSerializer
 
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+    def post(self, request):
+        try:
+            attributes = request.data.get('attributes')
+            if attributes:
+                product = attributes[0]['product']
+                for item in ProductAttributes.objects.filter(product_id=product):
+                    if item.id not in [atr['id'] for atr in attributes]:
+                        item.delete()
+
+                for attr in attributes:
+                    if attr['id']:
+                        attribut = ProductAttributes.objects.get(id=attr['id'])
+                        serializer = ProductAttributesSerializer(attribut, data=attr)
+
+                    else:
+                        serializer = ProductAttributesSerializer(data=attr)
+
+                    if serializer.is_valid():
+                        serializer.save()
+
+                return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCategoryUpdateView(APIView):

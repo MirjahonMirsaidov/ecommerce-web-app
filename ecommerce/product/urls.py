@@ -24,13 +24,11 @@ urlpatterns = [
     path('update/<int:pk>', ProductUpdateView.as_view(), name='update'),
     path('delete/<int:pk>', ProductDeleteView.as_view(), name='delete'),
     
-    path('attributes-create/', ProductAttributesCreateView.as_view(), name='attributes-create'),
     path('attributes-list/', ProductAttributesListView.as_view(), name='attributes-list'),
-    path('attributes-update/<int:pk>', ProductAttributesUpdateView.as_view(), name='attributes-update'),
+    path('update-attributes/', ProductAttributesUpdateView.as_view(), name='attributes-update'),
     path('attributes-delete/<int:pk>', ProductAttributesDeleteView.as_view(), name='variation-delete'),
-    path('attributes-update/<int:pk>', ProductAttributesUpdateView.as_view(), name='variation-update'),
     path('variation-list/', VariationListView.as_view(), name='variation-list'),
-    path('update-product-category', ProductCategoryUpdateView.as_view(), name='update-product-category'),
+    path('update-category', ProductCategoryUpdateView.as_view(), name='update-product-category'),
 
     path('add-comment/', AddCommentView.as_view(), name='add-comment'),
     path('update-comment/<int:pk>', UpdateCommentView.as_view(), name='update-comment'),
