@@ -40,13 +40,6 @@ class ProductAttributesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProductAttributeUpdatesSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ProductAttributes
-        fields = ('is_main', 'key', 'value', 'label', 'product')
-
-
 class ProductGetSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     brand = BrandSerializer(many=False, required=False)

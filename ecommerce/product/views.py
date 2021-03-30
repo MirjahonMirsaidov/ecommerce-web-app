@@ -280,17 +280,17 @@ class ProductAttributesUpdateView(APIView):
                             item.delete()
 
                 for attr in attributes:
+                    attr['product'] = product
                     if attr['id']:
                         attribut = ProductAttributes.objects.get(id=attr['id'])
                         serializer = ProductAttributesSerializer(attribut, data=attr)
 
                     else:
-                        print('else')
-                        attr['product'] = product
                         serializer = ProductAttributesSerializer(data=attr)
 
                     if serializer.is_valid():
                         serializer.save()
+
 
 
                 return Response(status=status.HTTP_200_OK)
