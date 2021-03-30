@@ -27,7 +27,6 @@ urlpatterns = [
     path('attributes-list/', ProductAttributesListView.as_view(), name='attributes-list'),
     path('update-attributes/', ProductAttributesUpdateView.as_view(), name='attributes-update'),
     path('attributes-delete/<int:pk>', ProductAttributesDeleteView.as_view(), name='variation-delete'),
-    path('variation-list/', VariationListView.as_view(), name='variation-list'),
     path('update-category/', ProductCategoryUpdateView.as_view(), name='update-product-category'),
     path('update-images/', ProductImagesUpdateView.as_view(), name='update-product-images'),
 

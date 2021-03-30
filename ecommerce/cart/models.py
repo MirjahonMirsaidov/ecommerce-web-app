@@ -22,16 +22,6 @@ class Cart(models.Model):
         return self.user.email
 
 
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT)
-    overall_price = models.PositiveIntegerField()
-    is_paid = models.BooleanField(default=False)
-    start_date = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.user.email
-
-
 class OrderBeta(models.Model):
 
     name = models.CharField(max_length=25)

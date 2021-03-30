@@ -334,16 +334,6 @@ class ProductCategoryUpdateView(APIView):
         return Response(status=status.HTTP_200_OK)
 
 
-class VariationListView(generics.ListAPIView):
-    serializer_class = ProductGetSerializer
-    queryset = ProductAttributes.objects.all()
-        
-
-class VariationDetailView(generics.RetrieveAPIView):
-    serializer_class = ProductGetSerializer
-    queryset = ProductAttributes.objects.all()
-
-
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
     authentication_classes = (authentication.TokenAuthentication,)
