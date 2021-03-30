@@ -206,6 +206,9 @@ class ProductDetailView(generics.GenericAPIView):
     def get(self, request, id):
         variations_list = []
         product = Product.objects.get(id=id)
+        if product.parent_id:
+            id = product.parent_id
+            product = Product.objects.get(id=id)
         product_variations = Product.objects.filter(parent_id=id)
 
         # getting product childs
