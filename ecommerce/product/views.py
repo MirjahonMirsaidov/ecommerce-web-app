@@ -250,6 +250,8 @@ class ProductDetailView(generics.GenericAPIView):
             "quantity": product.quantity,
             "images": get_images(product),
             "created_at": product.created_at,
+            "available_colors": get_available_colors_and_sizes(id)[0],
+            "available_sizes": get_available_colors_and_sizes(id)[1],
             "variations": variations_list,
         })
 
