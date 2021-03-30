@@ -266,7 +266,6 @@ class ProductAttributesDeleteView(generics.DestroyAPIView):
     queryset = ProductAttributes.objects.all()
 
 
-
 class ProductAttributesUpdateView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
