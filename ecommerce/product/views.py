@@ -254,13 +254,6 @@ class ProductDetailView(generics.GenericAPIView):
         })
 
 
-class ProductAttributesCreateView(generics.CreateAPIView):
-    serializer_class = ProductAttributesSerializer
-    queryset = ProductAttributes.objects.all()
-    # authentication_classes = (authentication.TokenAuthentication, )
-    # permission_classes = (permissions.IsAdminUser, )
-    
-
 class ProductAttributesListView(generics.ListAPIView):
     serializer_class = ProductAttributesSerializer
     queryset = ProductAttributes.objects.all()
@@ -305,8 +298,8 @@ class ProductAttributesUpdateView(APIView):
 
 
 class ProductImagesUpdateView(APIView):
-    # authentication_classes = (authentication.TokenAuthentication,)
-    # permission_classes = (permissions.IsAdminUser,)
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
         product = request.data.get('product')
