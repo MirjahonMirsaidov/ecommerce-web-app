@@ -112,6 +112,6 @@ def get_available_colors_and_sizes(id):
                 available_colors.append({
                     "product_id": product.id,
                     "color": attribute.value,
-                    "image": product.image,
+                    "image": "http://127.0.0.1:8000" + product.image.url,
                 })
     return available_colors, available_sizes
