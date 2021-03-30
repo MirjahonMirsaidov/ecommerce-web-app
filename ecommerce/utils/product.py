@@ -3,8 +3,9 @@ from django.core.files.base import ContentFile
 
 import base64, secrets, io
 
+from django.db.models import Q
 from product.models import ProductAttributes, ProductImage\
-                            , CategoryProduct, Category
+                            , CategoryProduct, Category, Product
 
 def save_attribute(attributes, product):
 
@@ -84,6 +85,7 @@ def get_images(product):
 
     return images
 
+
 def get_categories(product):
     categories = []
     for category in CategoryProduct.objects.filter(product_id=product.id):
@@ -94,3 +96,22 @@ def get_categories(product):
         })
 
     return categories
+
+
+def get_available_colors_and_sizes(id):
+    available_colors = []
+    available_sizes = []
+    for product in Product.objects.filter(Q(parent_id=id) | Q(id=id)):
+        for attribute in ProductAttributes.objects.filter(product=product):
+            if attribute.key == 'size':
+                available_sizes.append({
+                    "product_id": product.id,
+                    "size": attribute.value
+                })
+            elif attribute.key == 'color':
+                available_colors.append({
+                    "product_id": product.id,
+                    "color": attribute.value,
+                    "image": "http://127.0.0.1:8000" + product.image.url,
+                })
+    return available_colors, available_sizes

@@ -206,6 +206,9 @@ class ProductDetailView(generics.GenericAPIView):
     def get(self, request, id):
         variations_list = []
         product = Product.objects.get(id=id)
+        if product.parent_id:
+            id = product.parent_id
+            product = Product.objects.get(id=id)
         product_variations = Product.objects.filter(parent_id=id)
 
         # getting product childs
@@ -250,6 +253,8 @@ class ProductDetailView(generics.GenericAPIView):
             "quantity": product.quantity,
             "images": get_images(product),
             "created_at": product.created_at,
+            "available_colors": get_available_colors_and_sizes(id)[0],
+            "available_sizes": get_available_colors_and_sizes(id)[1],
             "variations": variations_list,
         })
 
@@ -276,24 +281,22 @@ class ProductAttributesUpdateView(APIView):
             product = int(request.data.get('product'))
             if attributes:
                 for item in ProductAttributes.objects.filter(product_id=product):
-                    if hasattr(item, 'id'):
-                        if item.id not in [atr['id'] for atr in attributes if hasattr(atr, 'id')]:
+                        if item.id not in [atr.get('id') for atr in attributes]:
                             item.delete()
 
                 for attr in attributes:
-                    if attr.get('id'):
-                        try:
-                            attribut = ProductAttributes.objects.get(id=attr['id'])
-                            serializer = ProductAttributesSerializer(attribut, data=attr)
-                        except:
-                            continue
+                    attr['product'] = product
+                    if attr['id']:
+                        attribut = ProductAttributes.objects.get(id=attr['id'])
+                        serializer = ProductAttributesSerializer(attribut, data=attr)
 
                     else:
-                        attr['product_id'] = product
                         serializer = ProductAttributesSerializer(data=attr)
 
                     if serializer.is_valid():
                         serializer.save()
+
+
 
                 return Response(status=status.HTTP_200_OK)
             return Response(status=status.HTTP_404_NOT_FOUND)
