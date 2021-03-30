@@ -281,8 +281,8 @@ class ProductAttributesUpdateView(APIView):
     def post(self, request):
         try:
             attributes = request.data.get('attributes')
+            product = request.data.get('product')
             if attributes:
-                product = attributes[0]['product']
                 for item in ProductAttributes.objects.filter(product_id=product):
                     if item.id not in [atr['id'] for atr in attributes]:
                         item.delete()
@@ -293,6 +293,7 @@ class ProductAttributesUpdateView(APIView):
                         serializer = ProductAttributesSerializer(attribut, data=attr)
 
                     else:
+                        attr['product_id'] = product
                         serializer = ProductAttributesSerializer(data=attr)
 
                     if serializer.is_valid():
