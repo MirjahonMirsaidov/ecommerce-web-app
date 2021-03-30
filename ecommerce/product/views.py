@@ -277,13 +277,16 @@ class ProductAttributesUpdateView(APIView):
             if attributes:
                 for item in ProductAttributes.objects.filter(product_id=product):
                     if hasattr(item, 'id'):
-                        if item.id not in [atr['id'] for atr in attributes]:
+                        if item.id not in [atr['id'] for atr in attributes if hasattr(atr, 'id')]:
                             item.delete()
 
                 for attr in attributes:
-                    if attr['id']:
-                        attribut = ProductAttributes.objects.get(id=attr['id'])
-                        serializer = ProductAttributesSerializer(attribut, data=attr)
+                    if attr.get('id'):
+                        try:
+                            attribut = ProductAttributes.objects.get(id=attr['id'])
+                            serializer = ProductAttributesSerializer(attribut, data=attr)
+                        except:
+                            continue;
 
                     else:
                         attr['product_id'] = product
