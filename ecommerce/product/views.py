@@ -303,6 +303,26 @@ class ProductAttributesUpdateView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+class ProductImagesUpdateView(APIView):
+    # authentication_classes = (authentication.TokenAuthentication,)
+    # permission_classes = (permissions.IsAdminUser,)
+
+    def post(self, request):
+        product = request.data.get('product')
+        images = request.data.get('images')
+        for image in ProductImage.objects.filter(product_id=product):
+            if image.images not in [img.split('media/')[-1] for img in images]:
+                image.delete()
+        for image in images:
+            image = image.split('media/')[-1]
+            if not ProductImage.objects.filter(product_id=product, images=image).exists():
+                ProductImage.objects.create(
+                    product_id=product,
+                    images=get_image_from_data_url(image)[0],
+                )
+        return Response(status=status.HTTP_200_OK)
+
+
 class ProductCategoryUpdateView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
