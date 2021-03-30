@@ -273,10 +273,10 @@ class ProductAttributesUpdateView(APIView):
     def post(self, request):
         # try:
             attributes = request.data.get('attributes')
-            product = request.data.get('product')
+            product = int(request.data.get('product'))
             if attributes:
                 for item in ProductAttributes.objects.filter(product_id=product):
-                    if item.id not in [atr['id'] for atr in attributes]:
+                    if item.id and item.id not in [atr['id'] for atr in attributes]:
                         item.delete()
 
                 for attr in attributes:
@@ -302,7 +302,7 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        product = request.data.get('product')
+        product = int(request.data.get('product'))
         images = request.data.get('images')
         for image in ProductImage.objects.filter(product_id=product):
             if image.images not in [img.split('media/')[-1] for img in images]:
