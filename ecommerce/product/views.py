@@ -271,7 +271,7 @@ class ProductAttributesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        try:
+        # try:
             attributes = request.data.get('attributes')
             product = request.data.get('product')
             if attributes:
@@ -292,8 +292,9 @@ class ProductAttributesUpdateView(APIView):
                         serializer.save()
 
                 return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductImagesUpdateView(APIView):
