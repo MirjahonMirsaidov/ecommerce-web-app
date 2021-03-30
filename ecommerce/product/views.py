@@ -286,7 +286,7 @@ class ProductAttributesUpdateView(APIView):
                             attribut = ProductAttributes.objects.get(id=attr['id'])
                             serializer = ProductAttributesSerializer(attribut, data=attr)
                         except:
-                            continue;
+                            continue
 
                     else:
                         attr['product_id'] = product
