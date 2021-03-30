@@ -266,24 +266,27 @@ class ProductAttributesDeleteView(generics.DestroyAPIView):
     queryset = ProductAttributes.objects.all()
 
 
-
 class ProductAttributesUpdateView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        try:
+        # try:
             attributes = request.data.get('attributes')
-            product = request.data.get('product')
+            product = int(request.data.get('product'))
             if attributes:
                 for item in ProductAttributes.objects.filter(product_id=product):
-                    if item.id not in [atr['id'] for atr in attributes]:
-                        item.delete()
+                    if hasattr(item, 'id'):
+                        if item.id not in [atr['id'] for atr in attributes if hasattr(atr, 'id')]:
+                            item.delete()
 
                 for attr in attributes:
-                    if attr['id']:
-                        attribut = ProductAttributes.objects.get(id=attr['id'])
-                        serializer = ProductAttributesSerializer(attribut, data=attr)
+                    if attr.get('id'):
+                        try:
+                            attribut = ProductAttributes.objects.get(id=attr['id'])
+                            serializer = ProductAttributesSerializer(attribut, data=attr)
+                        except:
+                            continue
 
                     else:
                         attr['product_id'] = product
@@ -293,8 +296,9 @@ class ProductAttributesUpdateView(APIView):
                         serializer.save()
 
                 return Response(status=status.HTTP_200_OK)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        # except:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductImagesUpdateView(APIView):
@@ -302,7 +306,7 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        product = request.data.get('product')
+        product = int(request.data.get('product'))
         images = request.data.get('images')
         for image in ProductImage.objects.filter(product_id=product):
             if image.images not in [img.split('media/')[-1] for img in images]:
