@@ -20,6 +20,11 @@ class CategoryCreateView(generics.CreateAPIView):
     queryset = Category.objects.all()
 
 
+class CategoryAllListView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+
+
 class CategoryListView(generics.ListAPIView):
     serializer_class = CategorySerializer
 
