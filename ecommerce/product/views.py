@@ -157,6 +157,21 @@ class ProductListView(generics.ListAPIView):
     ordering_fields = ['created_at', 'price']
 
 
+class CodeSizeListView(APIView):
+
+    def get(self, request):
+        li = []
+        for product in Product.objects.all():
+            if ProductAttributes.objects.filter(product=product).exists():
+                for attr in ProductAttributes.objects.filter(product=product):
+                    if attr.key == 'size':
+                        li.append({
+                            "id": product.id,
+                            "codesize": f'{product.product_code}    {attr.value}'
+                        })
+        return Response(li)
+
+
 class ProductsByCategoryView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
