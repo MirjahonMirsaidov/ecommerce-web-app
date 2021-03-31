@@ -147,7 +147,7 @@ class ProductListView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filter_fields = ['brand', 'parent_id']
+    filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', 'product_code', ]
     ordering_fields = ['created_at', 'price']
 
@@ -177,7 +177,7 @@ class ProductsByCategoryView(generics.ListAPIView):
         return Product.objects.filter(id__in=products)
 
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filter_fields = ['brand', 'parent_id']
+    filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', ]
     ordering_fields = ['created_at', 'price']
 
