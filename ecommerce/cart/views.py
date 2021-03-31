@@ -74,27 +74,28 @@ class CreateOrderBetaView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = OrderProductBetaSerializer(data=request.data)
-        leng = request.data.get('leng')
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
+        products = request.data.get('products')
         order = OrderBeta.objects.get_or_create(phone_number=phone_number, name=name)[0]
         order.save()
 
         finish_price = 0
         try:
-            for product_num in range(0, int(leng)):
-                product = request.data.get(f'product{product_num}')
-                if Product.objects.get(id=product).quantity > 0:
-                    count = int(request.data.get(f'count{product_num}'))
-                    price = Product.objects.get(id=product).price
-                    product_code = Product.objects.get(id=product).product_code
+            for prod in products:
+                product_id = prod['product_id']
+                count = int(prod['count'])
+                product = Product.objects.get(id=product_id)
+                if product.quantity > 0:
+                    price = product.price
+                    product_code = product.product_code
                     single_overall_price = price * count
                     finish_price += single_overall_price
                     if serializer.is_valid():
                         
                         OrderProductBeta.objects.create(
                             order_id=order.id,
-                            product_id=product,
+                            product_id=product.id,
                             count=count,
                             single_overall_price=single_overall_price,
                             price=price,
