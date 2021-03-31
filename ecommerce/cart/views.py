@@ -173,7 +173,46 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
                 order.save()
             print(single_overall_price)
             return Response(order.finish_price, status=status.HTTP_200_OK)
-        
+
+
+class OrderProductBetaCreateView(generics.GenericAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = OrderProductBetaSerializer
+
+    def post(self, request):
+        order_id = request.data.get('order_id')
+        product_id = request.data.get('product_id')
+        count = int(request.data.get('count'))
+        print(order_id)
+        print(count)
+        print(product_id)
+        if product_id and count:
+            product = Product.objects.get(id=product_id)
+            price = product.price
+            single_overall_price = price * count
+            product_code = product.product_code
+            OrderProductBeta.objects.get_or_create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
+            order = OrderBeta.objects.get(id=order_id)
+            order.finish_price += single_overall_price
+            order.save()
+            # order_product.single_overall_price = single_overall_price
+            # order_product.product_id = product.id
+            # order_product.product_code = product.product_code
+            # order_product.count = count
+            # order_product.price = price
+            # order_product.save()
+            # order = OrderBeta.objects.get(id=order_product.order_id)
+            # order_products = OrderProductBeta.objects.filter(order_id=order.id)
+            # finish_price = 0
+            # for order_product in order_products:
+            #     finish_price += order_product.single_overall_price
+            #     order.finish_price = finish_price
+            #     order.save()
+            # print(single_overall_price)
+            return Response(order.finish_price, status=status.HTTP_200_OK)        
+        # else:
+        #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class OrderProductBetaListView(generics.ListAPIView):
     serializer_class = OrderProductBetaListSerializer
