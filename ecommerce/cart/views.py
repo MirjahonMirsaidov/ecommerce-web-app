@@ -185,9 +185,6 @@ class OrderProductBetaCreateView(generics.GenericAPIView):
         order_id = request.data.get('order_id')
         product_id = request.data.get('product_id')
         count = int(request.data.get('count'))
-        print(order_id)
-        print(count)
-        print(product_id)
         if product_id and count:
             product = Product.objects.get(id=product_id)
             price = product.price
