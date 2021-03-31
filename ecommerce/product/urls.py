@@ -30,6 +30,7 @@ urlpatterns = [
     path('attributes-delete/<int:pk>', ProductAttributesDeleteView.as_view(), name='variation-delete'),
     path('update-category/', ProductCategoryUpdateView.as_view(), name='update-product-category'),
     path('update-images/', ProductImagesUpdateView.as_view(), name='update-product-images'),
+    path('codesize/', CodeSizeListView.as_view(), name='codesize'),
 
     path('add-comment/', AddCommentView.as_view(), name='add-comment'),
     path('update-comment/<int:pk>', UpdateCommentView.as_view(), name='update-comment'),
