@@ -126,9 +126,15 @@ class ProductCreateView(generics.CreateAPIView):
                         price=variation['price'],
                         parent_id=product.id,
                         quantity=variation['quantity'],
-                        image=get_image_from_data_url(variation['image'])[0],
                         product_code=variation['product_code'],
                     )
+                    if variation['image']:
+                        img = get_image_from_data_url(variation['image'])[0],
+                    else:
+                        img = get_image_from_data_url(image)[0]
+                    var_product.image = img
+                    var_product.save()
+
                     categories = variation['categories']
                     if categories:
                         save_category(categories, var_product)
@@ -137,8 +143,10 @@ class ProductCreateView(generics.CreateAPIView):
                     if attributes:
                         save_attribute(attributes, var_product)
 
-                    images = variation['images']
-                    if images:
+                    imagesa = variation['images']
+                    if imagesa:
+                        save_image(imagesa, var_product)
+                    else:
                         save_image(images, var_product)
 
 
