@@ -135,8 +135,10 @@ class ProductCreateView(generics.CreateAPIView):
                     var_product.image = img
                     var_product.save()
 
-                    categories = variation['categories']
-                    if categories:
+                    var_categories = variation['categories']
+                    if var_categories:
+                        save_category(categories, var_product)
+                    else:
                         save_category(categories, var_product)
 
                     attributes = variation['attributes']
