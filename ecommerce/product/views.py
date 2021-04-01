@@ -125,6 +125,7 @@ class ProductCreateView(generics.CreateAPIView):
                         is_import=product.is_import,
                         price=variation['price'],
                         parent_id=product.id,
+                        image=null,
                         quantity=variation['quantity'],
                         product_code=variation['product_code'],
                     )
