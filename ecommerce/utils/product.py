@@ -63,17 +63,15 @@ def save_category(categories, product):
 
 
 def get_attributes(id):
-    attributes = []
+    attributes = {}
     for attribut in ProductAttributes.objects.filter(product=id):
-        attributes.append(
-            {attribut.key: {
+        attributes.append[str(attribut.key)] = {
                 "id": attribut.id,
                 "is_main": attribut.is_main,
                 "label": attribut.label,
                 "value": attribut.value,
-                "created_at": attribut.created_at,}
-            }
-        )
+                "created_at": attribut.created_at}
+
     return attributes
 
 
