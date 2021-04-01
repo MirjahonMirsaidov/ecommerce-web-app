@@ -65,7 +65,7 @@ def save_category(categories, product):
 def get_attributes(id):
     attributes = {}
     for attribut in ProductAttributes.objects.filter(product=id):
-        attributes.append[str(attribut.key)] = {
+        attributes[str(attribut.key)] = {
                 "id": attribut.id,
                 "is_main": attribut.is_main,
                 "label": attribut.label,
