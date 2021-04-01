@@ -130,8 +130,10 @@ class ProductCreateView(generics.CreateAPIView):
                         product_code=variation['product_code'],
                     )
                     if variation['image']:
+                        print('yes')
                         img = get_image_from_data_url(variation['image'])[0],
                     else:
+                        print('blank')
                         img = get_image_from_data_url(image)[0]
                     var_product.image = img
                     var_product.save()
