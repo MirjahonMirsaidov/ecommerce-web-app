@@ -59,7 +59,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductVariationSerializer(serializers.ModelSerializer):
-    image = serializers.CharField(max_length=100000000000)
+    image = serializers.CharField(max_length=100000000000, allow_blank=True)
     attributes = serializers.ListField()
     images = serializers.ListField(str)
     categories = serializers.ListField()
