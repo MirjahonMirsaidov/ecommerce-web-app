@@ -234,6 +234,7 @@ class ProductDetailView(generics.GenericAPIView):
     def get(self, request, id):
         variations_list = []
         product = Product.objects.get(id=id)
+        child = Product.objects.get(id=id)
         if product.parent_id:
             id = product.parent_id
             product = Product.objects.get(id=id)
@@ -262,7 +263,6 @@ class ProductDetailView(generics.GenericAPIView):
             "created_at": variation.created_at,
 
             })
-
         return Response({
             "id": product.id,
             "parent_id": product.parent_id,
@@ -280,6 +280,7 @@ class ProductDetailView(generics.GenericAPIView):
             "image": "http://127.0.0.1:8000" + product.image.url,
             "quantity": product.quantity,
             "images": get_images(product),
+            "slider_images": get_images(child),
             "created_at": product.created_at,
             "available_colors": get_available_colors_and_sizes(id)[0],
             "available_sizes": get_available_colors_and_sizes(id)[1],
