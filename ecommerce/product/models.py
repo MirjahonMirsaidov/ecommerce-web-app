@@ -36,7 +36,7 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
     is_import = models.BooleanField(default=False)
     product_code = models.CharField(max_length=7)
-    image = models.ImageField(null=True)
+    image = models.ImageField(null=True, blank=True)
     price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
