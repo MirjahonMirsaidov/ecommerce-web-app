@@ -14,8 +14,7 @@ def save_attribute(attributes, product):
         key = attr['key']
         label = attr['label']
         value = attr['value']
-        type = attr['type']
-        ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, type=type, product_id=product.id)
+        ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
 
 
 def get_image_from_data_url( data_url, resize=True, base_width=600 ):
@@ -70,7 +69,6 @@ def get_attributes(id):
                 "id": attribut.id,
                 "is_main": attribut.is_main,
                 "label": attribut.label,
-                "type": attribut.type,
                 "value": attribut.value,
                 "created_at": attribut.created_at}
 
