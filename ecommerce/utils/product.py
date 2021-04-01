@@ -66,11 +66,10 @@ def get_attributes(id):
     attributes = {}
     for attribut in ProductAttributes.objects.filter(product=id):
         attributes[str(attribut.key)] = {
-                "id": attribut.id,
                 "is_main": attribut.is_main,
                 "label": attribut.label,
                 "value": attribut.value,
-                "created_at": attribut.created_at}
+}
 
     return attributes
 
