@@ -1,4 +1,6 @@
 import datetime
+
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -40,9 +42,12 @@ class CategoryChildListView(APIView):
         return Response(categories.data)
 
 
-class CategoryDeleteView(generics.DestroyAPIView):
-    serializer_class = CategorySerializer
-    queryset = Category.objects.all()
+class CategoryDeleteView(APIView):
+
+    def delete(self, request, id):
+        for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
+            category.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
