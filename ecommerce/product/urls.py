@@ -24,7 +24,8 @@ urlpatterns = [
     path('detail/<int:id>', ProductDetailView.as_view(), name='detail'),
     path('update/<int:pk>', ProductUpdateView.as_view(), name='update'),
     path('delete/<int:pk>', ProductDeleteView.as_view(), name='delete'),
-    
+    path('specific/<int:id>', ProductSpecificDetailView.as_view(), name='specific'),
+
     path('attributes-list/', ProductAttributesListView.as_view(), name='attributes-list'),
     path('update-attributes/', ProductAttributesUpdateView.as_view(), name='attributes-update'),
     path('attributes-delete/<int:pk>', ProductAttributesDeleteView.as_view(), name='variation-delete'),

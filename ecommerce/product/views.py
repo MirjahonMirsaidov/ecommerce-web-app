@@ -302,6 +302,35 @@ class ProductDetailView(generics.GenericAPIView):
         })
 
 
+class ProductSpecificDetailView(generics.GenericAPIView):
+    serializer_class = ProductGetSerializer
+    queryset = Product.objects.all()
+
+    def get(self, request, id):
+        product = Product.objects.get(id=id)
+
+        return Response({
+            "id": product.id,
+            "parent_id": product.parent_id,
+            "name": product.name,
+            "description": product.description,
+            "product_code": product.product_code,
+            "is_import": product.is_import,
+            "brand": {
+                "id": product.brand.id,
+                "name": product.brand.name,
+            },
+            "categories": get_categories(product),
+            "attributes": get_attributes(id),
+            "price": product.price,
+            "image": "http://127.0.0.1:8000" + product.image.url,
+            "quantity": product.quantity,
+            "images": get_images(product),
+            "slider_images": get_images(child),
+            "created_at": product.created_at,
+        })
+
+
 class ProductAttributesListView(generics.ListAPIView):
     serializer_class = ProductAttributesSerializer
     queryset = ProductAttributes.objects.all()
