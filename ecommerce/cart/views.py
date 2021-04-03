@@ -83,6 +83,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
         finish_price = 0
         try:
             for prod in products:
+                print(prod)
                 product_id = prod['product_id']
                 count = int(prod['count'])
                 product = Product.objects.get(id=product_id)
@@ -92,7 +93,8 @@ class CreateOrderBetaView(generics.GenericAPIView):
                     single_overall_price = price * count
                     finish_price += single_overall_price
                     if serializer.is_valid():
-                        
+                        print('valid')
+
                         OrderProductBeta.objects.create(
                             order_id=order.id,
                             product_id=product.id,
@@ -104,9 +106,9 @@ class CreateOrderBetaView(generics.GenericAPIView):
                         )
                         order.finish_price = finish_price
                         order.save()
-            
-            # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
-            #     order.delete()
+
+                # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
+                #     order.delete()
             return Response(status=status.HTTP_201_CREATED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -220,7 +222,7 @@ class OrderProductBetaDetailView(generics.RetrieveAPIView):
         return OrderProductBeta.objects.all()
         
       
-class ChangeStatusView(generics.GenericAPIView):
+class ChangeStatusView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     def post(self, request, pk):
@@ -233,7 +235,7 @@ class ChangeStatusView(generics.GenericAPIView):
             order_products = OrderProductBeta.objects.filter(order_id=pk)
             ids = [order.product_id for order in order_products]
             for id in ids:
-                product = ProductAttributes.objects.get(id=id)
+                product = Product.objects.get(id=id)
                 print(product.quantity)
                 product.quantity -= 1
                 product.save()

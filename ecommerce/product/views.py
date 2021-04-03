@@ -117,25 +117,32 @@ class ProductCreateView(generics.CreateAPIView):
             if variations:
                 print('working 134')
                 for variation in variations:
-
-                    var_product = Product.objects.create(
-                        name=variation['name'],
-                        description=variation['description'],
-                        brand=product.brand,
-                        is_import=product.is_import,
-                        price=variation['price'],
-                        parent_id=product.id,
-                        quantity=variation['quantity'],
-                        product_code=variation['product_code'],
-                    )
                     if variation['image']:
                         print('yes')
-                        img = get_image_from_data_url(variation['image'])[0],
+                        var_product = Product.objects.create(
+                            name=variation['name'],
+                            description=variation['description'],
+                            brand=product.brand,
+                            is_import=product.is_import,
+                            price=variation['price'],
+                            parent_id=product.id,
+                            image=get_image_from_data_url(variation['image'])[0],
+                            quantity=variation['quantity'],
+                            product_code=variation['product_code'],
+                        )
                     else:
-                        print('blank')
-                        img = get_image_from_data_url(image)[0]
-                    var_product.image = img
-                    var_product.save()
+                        var_product = Product.objects.create(
+                            name=variation['name'],
+                            description=variation['description'],
+                            brand=product.brand,
+                            is_import=product.is_import,
+                            price=variation['price'],
+                            parent_id=product.id,
+                            image=get_image_from_data_url(image)[0],
+                            quantity=variation['quantity'],
+                            product_code=variation['product_code'],
+                        )
+
 
                     var_categories = variation['categories']
                     if var_categories:
@@ -224,11 +231,16 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
         return self.partial_update(request, *args, **kwargs)
 
 
-class ProductDeleteView(generics.DestroyAPIView):
+class ProductDeleteView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = ProductSerializer
-    queryset = Product.objects.all()
+
+    def delete(self, request, pk):
+        product = Product.objects.get(pk=pk)
+        product.delete()
+        for item in CategoryProduct.objects.filter(product_id=pk):
+            item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ProductDetailView(generics.GenericAPIView):
@@ -346,7 +358,6 @@ class ProductImagesUpdateView(APIView):
             if image.images not in [img.split('media/')[-1] for img in images]:
                 image.delete()
         for image in images:
-            image = image.split('media/')[-1]
             if not ProductImage.objects.filter(product_id=product, images=image).exists():
                 ProductImage.objects.create(
                     product_id=product,
