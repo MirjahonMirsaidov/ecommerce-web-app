@@ -263,9 +263,9 @@ class ProductVariationCreateView(generics.GenericAPIView):
         if images:
             save_image(images, var_product)
         else:
-            images = ProductImage.objects.filter(product_id=parent_id):
+            images = ProductImage.objects.filter(product_id=parent_id)
             save_image(images, var_product)
-
+        return Response(status=status.HTTP_200_OK)
 
 
 class ProductListView(generics.ListAPIView):
