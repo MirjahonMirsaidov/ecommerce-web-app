@@ -1,5 +1,5 @@
 import datetime
-from datetime import datetime
+import os
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 import django_filters
@@ -64,7 +64,7 @@ class CategoryUpdateView(generics.RetrieveUpdateAPIView):
         category.image = request.data.get('image')
         category.order = request.data.get('order')
         category.parent_id = request.data.get('parent_id')
-        category.updated_at = datetime.now()
+        category.updated_at = datetime.datetime.now()
         category.save()
         return Response("succes")
 
@@ -137,30 +137,19 @@ class ProductCreateView(generics.CreateAPIView):
                 print('working 134')
                 for variation in variations:
                     if variation['image']:
-                        print('yes')
-                        var_product = Product.objects.create(
-                            name=variation['name'],
-                            description=variation['description'],
-                            brand=product.brand,
-                            is_import=product.is_import,
-                            price=variation['price'],
-                            parent_id=product.id,
-                            image=get_image_from_data_url(variation['image'])[0],
-                            quantity=variation['quantity'],
-                            product_code=variation['product_code'],
-                        )
-                    else:
-                        var_product = Product.objects.create(
-                            name=variation['name'],
-                            description=variation['description'],
-                            brand=product.brand,
-                            is_import=product.is_import,
-                            price=variation['price'],
-                            parent_id=product.id,
-                            image=get_image_from_data_url(image)[0],
-                            quantity=variation['quantity'],
-                            product_code=variation['product_code'],
-                        )
+                        image = variation['image']
+
+                    var_product = Product.objects.create(
+                        name=variation['name'],
+                        description=variation['description'],
+                        brand=product.brand,
+                        is_import=product.is_import,
+                        price=variation['price'],
+                        parent_id=product.id,
+                        image=get_image_from_data_url(image)[0],
+                        quantity=variation['quantity'],
+                        product_code=variation['product_code'],
+                    )
 
 
                     var_categories = variation['categories']
@@ -178,51 +167,6 @@ class ProductCreateView(generics.CreateAPIView):
                         save_image(imagesa, var_product)
                     else:
                         save_image(images, var_product)
-
-            # else:
-            #     product = Product.objects.get(id=parent_id)
-            #     if image:
-            #         var_product = Product.objects.create(
-            #         name=name,
-            #         description=description,
-            #         brand_id=product.brand,
-            #         is_import=product.is_import,
-            #         price=price,
-            #         parent_id=parent_id,
-            #         quantity=quantity,
-            #         image=get_image_from_data_url(image)[0],
-            #         product_code=product_code,
-            #         )
-            #         save_category(categories, var_product)
-            #         save_attribute(attributes, var_product)
-            #         if images:
-            #             save_image(images, var_product)
-            #         else:
-            #             images = ProductImage.objects.filter(product_id=parent_id):
-            #             save_image(images, var_product)
-
-            #         return Response(status=status.HTTP_200_OK)
-            #     else:
-            #         var_product = Product.objects.create(
-            #         name=name,
-            #         description=description,
-            #         brand_id=product.brand,
-            #         is_import=product.is_import,
-            #         price=price,
-            #         parent_id=parent_id,
-            #         quantity=quantity,
-            #         image=get_image_from_data_url(product.image)[0],
-            #         product_code=product_code,
-            #         )
-            #         save_category(categories, var_product)
-            #         save_attribute(attributes, var_product)
-            #         if images:
-            #             save_image(images, var_product)
-            #         else:
-            #             images = ProductImage.objects.filter(product_id=parent_id):
-            #             save_image(images, var_product)
-
-            #         return Response(status=status.HTTP_200_OK)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -246,34 +190,23 @@ class ProductVariationCreateView(generics.GenericAPIView):
         image = request.data.get('image')
         images = request.data.get('images')
         product = Product.objects.get(id=parent_id)
-        if image:
-            var_product = Product.objects.create(
-                name=name,
-                description=description,
-                brand=product.brand,
-                is_import=product.is_import,
-                price=price,
-                parent_id=product.id,
-                image=get_image_from_data_url(image)[0],
-                quantity=quantity,
-                product_code=product_code,
-                )
-            save_attribute(attributes, var_product)
-            save_category(categories, var_product)
-        else:
-            var_product = Product.objects.create(
-                name=name,
-                description=description,
-                brand=product.brand,
-                is_import=product.is_import,
-                price=price,
-                parent_id=product.id,
-                image=get_image_from_data_url(product.image)[0],
-                quantity=quantity,
-                product_code=product_code,
-                )
-            save_attribute(attributes, var_product)
-            save_category(categories, var_product)
+        
+        if not image:
+            image = product.image
+
+        var_product = Product.objects.create(
+            name=name,
+            description=description,
+            brand=product.brand,
+            is_import=product.is_import,
+            price=price,
+            parent_id=product.id,
+            image=get_image_from_data_url(image)[0],
+            quantity=quantity,
+            product_code=product_code,
+            )
+        save_attribute(attributes, var_product)
+        save_category(categories, var_product)
         if images:
             save_image(images, var_product)
         else:
@@ -492,20 +425,25 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        product = request.data.get('product')
-        imagess = request.data.get('images')
-
-        for image in ProductImage.objects.filter(product_id=product):
-            print(image.images)
-            print("deleted")
-            if image.images not in [img.split('media/')[-1] for img in imagess]:
-                image.delete()
-        for image in imagess:
-            product_id = Product.objects.get(id=product)
-            image = image.split('media/')[-1]
-            print(image)
-            print("create")
-            save_image(image, product_id)
+        product = int(request.data.get('product'))
+        images = request.data.get('images')
+        deleted_images = request.data.get('deleted_images')
+        for image in deleted_images:
+            img = image.split('media/')[1]
+            print(img)
+            image = ProductImage.objects.filter(product_id=product, images=img)
+            image.delete()
+            try:
+                os.remove(img)
+                print("% s removed successfully" % img)
+            except:
+                print("File path can not be removed")
+            # os.remove('http://127.0.0.1:8000/media/' + img)
+        for image in images:
+                ProductImage.objects.create(
+                    product_id=product,
+                    images=get_image_from_data_url(image)[0],
+                )
         return Response(status=status.HTTP_200_OK)
 
 
@@ -665,14 +603,7 @@ class SliderDetailView(generics.RetrieveAPIView):
 
 class SliderListView(generics.ListAPIView):
     serializer_class = SliderGetSerializer
-    queryset = Slider.objects.filter(is_slider=True)
-
-
-class NotSliderListView(generics.ListAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = SliderSerializer
-    queryset = Slider.objects.filter(is_slider=False)
+    queryset = Slider.objects.all().order_by('-id')[:5]
 
 
 class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):

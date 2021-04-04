@@ -74,6 +74,10 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"{self.product.name}"
 
+    def delete(self, *args, **kwargs):
+        self.images.delete()
+        super().delete(*args, **kwargs)
+
 
 class Comment(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')
@@ -86,7 +90,6 @@ class Comment(models.Model):
 class Slider(models.Model):
     image = models.ImageField()
     text = models.CharField(max_length=255)
-    is_slider = models.BooleanField(default=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
