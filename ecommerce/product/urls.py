@@ -18,7 +18,9 @@ urlpatterns = [
     path('brand-delete/<int:pk>', BrandDeleteView.as_view(), name='brand-delete'),
 
     path('create/', ProductCreateView.as_view(), name='create'),
+    path('variation-create/', ProductVariationCreateView.as_view(), name='variation-create'),
     path('list/', ProductListView.as_view(), name='list'),
+
     re_path('by-category/(?P<slug>.+)/$', ProductsByCategoryView.as_view(), name='by-category'),
 
     path('detail/<int:id>', ProductDetailView.as_view(), name='detail'),
