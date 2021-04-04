@@ -165,50 +165,50 @@ class ProductCreateView(generics.CreateAPIView):
                     else:
                         save_image(images, var_product)
 
-            else:
-                product = Product.objects.get(id=parent_id)
-                if image:
-                    var_product = Product.objects.create(
-                    name=name,
-                    description=description,
-                    brand_id=product.brand,
-                    is_import=product.is_import,
-                    price=price,
-                    parent_id=parent_id,
-                    quantity=quantity,
-                    image=get_image_from_data_url(image)[0],
-                    product_code=product_code,
-                    )
-                    save_category(categories, var_product)
-                    save_attribute(attributes, var_product)
-                    if images:
-                        save_image(images, var_product)
-                    else:
-                        images = ProductImage.objects.filter(product_id=parent_id):
-                        save_image(images, var_product)
+            # else:
+            #     product = Product.objects.get(id=parent_id)
+            #     if image:
+            #         var_product = Product.objects.create(
+            #         name=name,
+            #         description=description,
+            #         brand_id=product.brand,
+            #         is_import=product.is_import,
+            #         price=price,
+            #         parent_id=parent_id,
+            #         quantity=quantity,
+            #         image=get_image_from_data_url(image)[0],
+            #         product_code=product_code,
+            #         )
+            #         save_category(categories, var_product)
+            #         save_attribute(attributes, var_product)
+            #         if images:
+            #             save_image(images, var_product)
+            #         else:
+            #             images = ProductImage.objects.filter(product_id=parent_id):
+            #             save_image(images, var_product)
 
-                    return Response(status=status.HTTP_200_OK)
-                else:
-                    var_product = Product.objects.create(
-                    name=name,
-                    description=description,
-                    brand_id=product.brand,
-                    is_import=product.is_import,
-                    price=price,
-                    parent_id=parent_id,
-                    quantity=quantity,
-                    image=get_image_from_data_url(product.image)[0],
-                    product_code=product_code,
-                    )
-                    save_category(categories, var_product)
-                    save_attribute(attributes, var_product)
-                    if images:
-                        save_image(images, var_product)
-                    else:
-                        images = ProductImage.objects.filter(product_id=parent_id):
-                        save_image(images, var_product)
+            #         return Response(status=status.HTTP_200_OK)
+            #     else:
+            #         var_product = Product.objects.create(
+            #         name=name,
+            #         description=description,
+            #         brand_id=product.brand,
+            #         is_import=product.is_import,
+            #         price=price,
+            #         parent_id=parent_id,
+            #         quantity=quantity,
+            #         image=get_image_from_data_url(product.image)[0],
+            #         product_code=product_code,
+            #         )
+            #         save_category(categories, var_product)
+            #         save_attribute(attributes, var_product)
+            #         if images:
+            #             save_image(images, var_product)
+            #         else:
+            #             images = ProductImage.objects.filter(product_id=parent_id):
+            #             save_image(images, var_product)
 
-                    return Response(status=status.HTTP_200_OK)
+            #         return Response(status=status.HTTP_200_OK)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -216,55 +216,55 @@ class ProductCreateView(generics.CreateAPIView):
         #     return Response("Error", status=status.HTTP_400_BAD_REQUEST)
 
 
-# class ProductVariationCreateView(generics.GenericAPIView):
-#     serializer_class = ProductCreateSerializer
-#     authentication_classes = (authentication.TokenAuthentication, )
-#     permission_classes = (permissions.IsAdminUser, )
-#     def post(self, request):
-#         parent_id = request.data.get('parent_id')
-#         name = request.data.get('name')
-#         description = request.data.get('description')
-#         price = request.data.get('price')
-#         quantity = request.data.get('quantity')
-#         product_code = request.data.get('product_code')
-#         categories = request.data.get('categories')
-#         attributes = request.data.get('attributes')
-#         image = request.data.get('image')
-#         images = request.data.get('images')
-#         product = Product.objects.get(id=parent_id)
-#         if image:
-#             var_product = Product.objects.create(
-#                 name=name,
-#                 description=description,
-#                 brand=product.brand,
-#                 is_import=product.is_import,
-#                 price=price,
-#                 parent_id=product.id,
-#                 image=get_image_from_data_url(image)[0],
-#                 quantity=quantity,
-#                 product_code=product_code,
-#                 )
-#             save_attribute(attributes, var_product)
-#             save_category(categories, var_product)
-#         else:
-#             var_product = Product.objects.create(
-#                 name=name,
-#                 description=description,
-#                 brand=product.brand,
-#                 is_import=product.is_import,
-#                 price=price,
-#                 parent_id=product.id,
-#                 image=get_image_from_data_url(product.image)[0],
-#                 quantity=quantity,
-#                 product_code=product_code,
-#                 )
-#             save_attribute(attributes, var_product)
-#             save_category(categories, var_product)
-#         if images:
-#             save_image(images, var_product)
-#         else:
-#             images = ProductImage.objects.filter(product_id=parent_id):
-#             save_image(images, var_product)
+class ProductVariationCreateView(generics.GenericAPIView):
+    serializer_class = ProductCreateSerializer
+    authentication_classes = (authentication.TokenAuthentication, )
+    permission_classes = (permissions.IsAdminUser, )
+    def post(self, request):
+        parent_id = request.data.get('parent_id')
+        name = request.data.get('name')
+        description = request.data.get('description')
+        price = request.data.get('price')
+        quantity = request.data.get('quantity')
+        product_code = request.data.get('product_code')
+        categories = request.data.get('categories')
+        attributes = request.data.get('attributes')
+        image = request.data.get('image')
+        images = request.data.get('images')
+        product = Product.objects.get(id=parent_id)
+        if image:
+            var_product = Product.objects.create(
+                name=name,
+                description=description,
+                brand=product.brand,
+                is_import=product.is_import,
+                price=price,
+                parent_id=product.id,
+                image=get_image_from_data_url(image)[0],
+                quantity=quantity,
+                product_code=product_code,
+                )
+            save_attribute(attributes, var_product)
+            save_category(categories, var_product)
+        else:
+            var_product = Product.objects.create(
+                name=name,
+                description=description,
+                brand=product.brand,
+                is_import=product.is_import,
+                price=price,
+                parent_id=product.id,
+                image=get_image_from_data_url(product.image)[0],
+                quantity=quantity,
+                product_code=product_code,
+                )
+            save_attribute(attributes, var_product)
+            save_category(categories, var_product)
+        if images:
+            save_image(images, var_product)
+        else:
+            images = ProductImage.objects.filter(product_id=parent_id):
+            save_image(images, var_product)
 
 
 
