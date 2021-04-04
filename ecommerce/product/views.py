@@ -450,7 +450,7 @@ class ProductAttributesUpdateView(APIView):
             product = int(request.data.get('product'))
             if attributes:
                 for item in ProductAttributes.objects.filter(product_id=product):
-                        if item.id not in [atr.get('id') for atr in attributes]:
+                        if item.id not in [atr.id for atr in attributes]:
                             item.delete()
 
                 for attr in attributes:
