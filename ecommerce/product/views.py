@@ -1,5 +1,5 @@
 import datetime
-
+from datetime import datetime
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 import django_filters
@@ -57,7 +57,21 @@ class CategoryDetailView(generics.RetrieveAPIView):
 
 class CategoryUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = CategorySerializer
-    queryset = Category.objects.all()
+    def patch(self, request, pk):
+        category = Category.objects.get(id=pk)
+        category.name = request.data.get('name')
+        category.is_slider = request.data.get('is_slider').capitalize()
+        category.image = request.data.get('image')
+        category.order = request.data.get('order')
+        category.parent_id = request.data.get('parent_id')
+        category.updated_at = datetime.now()
+        category.save()
+        return Response("succes")
+
+
+class CategorySliderView(generics.ListAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.filter(is_slider=True).order_by('-updated_at')[:3]
 
 
 class BrandCreateView(generics.CreateAPIView):
@@ -478,17 +492,20 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        product = int(request.data.get('product'))
-        images = request.data.get('images')
+        product = request.data.get('product')
+        imagess = request.data.get('images')
+
         for image in ProductImage.objects.filter(product_id=product):
-            if image.images not in [img.split('media/')[-1] for img in images]:
+            print(image.images)
+            print("deleted")
+            if image.images not in [img.split('media/')[-1] for img in imagess]:
                 image.delete()
-        for image in images:
-            if not ProductImage.objects.filter(product_id=product, images=image).exists():
-                ProductImage.objects.create(
-                    product_id=product,
-                    images=get_image_from_data_url(image)[0],
-                )
+        for image in imagess:
+            product_id = Product.objects.get(id=product)
+            image = image.split('media/')[-1]
+            print(image)
+            print("create")
+            save_image(image, product_id)
         return Response(status=status.HTTP_200_OK)
 
 

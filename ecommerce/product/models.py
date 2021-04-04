@@ -15,6 +15,8 @@ class Category(models.Model):
     parent_id = models.PositiveIntegerField(default=0)
     image = models.ImageField()
     order = models.IntegerField(default=0)
+    is_slider = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(
         default='',
         editable=False,
