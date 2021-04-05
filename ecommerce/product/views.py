@@ -52,11 +52,14 @@ class CategoryDeleteView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def delete(self, request, id):
-        for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
-            category.delete()
-        for item in CategoryProduct.objects.filter(category_id=id):
-            item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        if (not Category.objects.get(id=id).is_slider == True) or Category.objects.filter(is_slider=True).count() > 3:
+            for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
+                category.delete()
+            for item in CategoryProduct.objects.filter(category_id=id):
+                item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response("O'chirib bo'lmaydi")
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
