@@ -1,3 +1,6 @@
+import os
+from django.conf import settings
+
 from django.db import models
 from django.utils.text import slugify
 from main.models import User
@@ -77,6 +80,7 @@ class ProductImage(models.Model):
     def delete(self, *args, **kwargs):
         self.images.delete()
         super().delete(*args, **kwargs)
+        os.remove(os.path.join(settings.MEDIA_ROOT, self.images.name))
 
 
 class Comment(models.Model):

@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
+from django.core.files.storage import default_storage
 
 from .models import *
 from .serializers import *
@@ -20,6 +21,8 @@ from .pagination import CustomPagination
 
 
 class CategoryCreateView(generics.CreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
 
@@ -45,10 +48,14 @@ class CategoryChildListView(APIView):
 
 
 class CategoryDeleteView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
 
     def delete(self, request, id):
         for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
             category.delete()
+        for item in CategoryProduct.objects.filter(category_id=id):
+            item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -58,17 +65,24 @@ class CategoryDetailView(generics.RetrieveAPIView):
 
 
 class CategoryUpdateView(generics.RetrieveUpdateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = CategorySerializer
+    queryset = CategorySerializer
+
     def patch(self, request, pk):
-        category = Category.objects.get(id=pk)
-        category.name = request.data.get('name')
-        category.is_slider = request.data.get('is_slider').capitalize()
-        category.image = request.data.get('image')
-        category.order = request.data.get('order')
-        category.parent_id = request.data.get('parent_id')
-        category.updated_at = datetime.datetime.now()
-        category.save()
-        return Response("succes")
+        try:
+            category = Category.objects.get(id=pk)
+            category.name = request.data.get('name')
+            category.is_slider = request.data.get('is_slider').capitalize()
+            category.image = request.data.get('image')
+            category.order = request.data.get('order')
+            category.parent_id = request.data.get('parent_id')
+            category.updated_at = datetime.datetime.now()
+            category.save()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategorySliderView(generics.ListAPIView):
@@ -77,6 +91,8 @@ class CategorySliderView(generics.ListAPIView):
 
 
 class BrandCreateView(generics.CreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
@@ -87,6 +103,8 @@ class BrandListView(generics.ListAPIView):
 
 
 class BrandDeleteView(generics.DestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
 
@@ -95,8 +113,8 @@ class ProductCreateView(generics.CreateAPIView):
     serializer_class = ProductCreateSerializer
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
+
     def post(self, request):
-        # try:
         serializer = ProductCreateSerializer(data=request.data)
         name = request.data.get('name')
         description = request.data.get('description')
@@ -110,10 +128,8 @@ class ProductCreateView(generics.CreateAPIView):
         categories = request.data.get('categories')
         attributes = request.data.get('attributes')
         images = request.data.get('images')
-        print('working 119', type(images))
         variations = request.data.get('variations')
         if serializer.is_valid():
-            print('working 122')
 
             product = Product.objects.create(
                 name=name,
@@ -135,40 +151,42 @@ class ProductCreateView(generics.CreateAPIView):
             if images:
                 save_image(images, product)
 
-            if variations:
-                print('working 134')
-                for variation in variations:
-                    if variation['image']:
-                        image = variation['image']
+            try:
+                if variations:
+                    for variation in variations:
+                        if variation['image']:
+                            image = variation['image']
 
-                    var_product = Product.objects.create(
-                        name=variation['name'],
-                        description=variation['description'],
-                        brand=product.brand,
-                        is_import=product.is_import,
-                        price=variation['price'],
-                        parent_id=product.id,
-                        image=get_image_from_data_url(image)[0],
-                        quantity=variation['quantity'],
-                        product_code=variation['product_code'],
-                    )
+                        var_product = Product.objects.create(
+                            name=variation['name'],
+                            description=variation['description'],
+                            brand=product.brand,
+                            is_import=product.is_import,
+                            price=variation['price'],
+                            parent_id=product.id,
+                            image=get_image_from_data_url(image)[0],
+                            quantity=variation['quantity'],
+                            product_code=variation['product_code'],
+                        )
 
 
-                    var_categories = variation['categories']
-                    if var_categories:
-                        save_category(categories, var_product)
-                    else:
-                        save_category(categories, var_product)
+                        var_categories = variation['categories']
+                        if var_categories:
+                            save_category(categories, var_product)
+                        else:
+                            save_category(categories, var_product)
 
-                    attributes = variation['attributes']
-                    if attributes:
-                        save_attribute(attributes, var_product)
+                        attributes = variation['attributes']
+                        if attributes:
+                            save_attribute(attributes, var_product)
 
-                    imagesa = variation['images']
-                    if imagesa:
-                        save_image(imagesa, var_product)
-                    else:
-                        save_image(images, var_product)
+                        imagesa = variation['images']
+                        if imagesa:
+                            save_image(imagesa, var_product)
+                        else:
+                            save_image(images, var_product)
+            except:
+                return Response("Produkt variatsiyalarda xatolik bor")
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -180,41 +198,45 @@ class ProductVariationCreateView(generics.GenericAPIView):
     serializer_class = ProductCreateSerializer
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAdminUser, )
-    def post(self, request):
-        parent_id = request.data.get('parent_id')
-        name = request.data.get('name')
-        description = request.data.get('description')
-        price = request.data.get('price')
-        quantity = request.data.get('quantity')
-        product_code = request.data.get('product_code')
-        categories = request.data.get('categories')
-        attributes = request.data.get('attributes')
-        image = request.data.get('image')
-        images = request.data.get('images')
-        product = Product.objects.get(id=parent_id)
-        
-        if not image:
-            image = product.image
 
-        var_product = Product.objects.create(
-            name=name,
-            description=description,
-            brand=product.brand,
-            is_import=product.is_import,
-            price=price,
-            parent_id=product.id,
-            image=get_image_from_data_url(image)[0],
-            quantity=quantity,
-            product_code=product_code,
-            )
-        save_attribute(attributes, var_product)
-        save_category(categories, var_product)
-        if images:
-            save_image(images, var_product)
-        else:
-            images = ProductImage.objects.filter(product_id=parent_id)
-            save_image(images, var_product)
-        return Response(status=status.HTTP_200_OK)
+    def post(self, request):
+        try:
+            parent_id = request.data.get('parent_id')
+            name = request.data.get('name')
+            description = request.data.get('description')
+            price = request.data.get('price')
+            quantity = request.data.get('quantity')
+            product_code = request.data.get('product_code')
+            categories = request.data.get('categories')
+            attributes = request.data.get('attributes')
+            image = request.data.get('image')
+            images = request.data.get('images')
+            product = Product.objects.get(id=parent_id)
+
+            if not image:
+                image = product.image
+
+            var_product = Product.objects.create(
+                name=name,
+                description=description,
+                brand=product.brand,
+                is_import=product.is_import,
+                price=price,
+                parent_id=product.id,
+                image=get_image_from_data_url(image)[0],
+                quantity=quantity,
+                product_code=product_code,
+                )
+            save_attribute(attributes, var_product)
+            save_category(categories, var_product)
+            if images:
+                save_image(images, var_product)
+            else:
+                images = ProductImage.objects.filter(product_id=parent_id)
+                save_image(images, var_product)
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):
@@ -246,6 +268,7 @@ class CodeSizeListView(APIView):
 class ProductsByCategoryView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
+
     def get_queryset(self):
         slug = self.kwargs['slug']
         category = Category.objects.get(slug=slug)
@@ -396,7 +419,7 @@ class ProductAttributesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        # try:
+        try:
             attributes = request.data.get('attributes')
             product = int(request.data.get('product'))
             if attributes:
@@ -419,8 +442,8 @@ class ProductAttributesUpdateView(APIView):
 
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_404_NOT_FOUND)
-        # except:
-        #     return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductImagesUpdateView(APIView):
@@ -428,26 +451,31 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        product = int(request.data.get('product'))
-        images = request.data.get('images')
-        deleted_images = request.data.get('deleted_images')
-        for image in deleted_images:
-            img = image.split('media/')[1]
-            print(img)
-            image = ProductImage.objects.filter(product_id=product, images=img)
-            image.delete()
-            try:
-                os.remove(img)
-                print("% s removed successfully" % img)
-            except:
-                print("File path can not be removed")
-            # os.remove('http://127.0.0.1:8000/media/' + img)
-        for image in images:
-                ProductImage.objects.create(
-                    product_id=product,
-                    images=get_image_from_data_url(image)[0],
-                )
-        return Response(status=status.HTTP_200_OK)
+        try:
+            product = int(request.data.get('product'))
+            images = request.data.get('images')
+            deleted_images = request.data.get('deleted_images')
+            if deleted_images:
+                for image in deleted_images:
+                    img = image.split('media/')[1]
+                    print(default_storage.delete(img))
+                    image = ProductImage.objects.filter(product_id=product, images=img)
+                    image.delete()
+                    try:
+                        os.remove(img)
+                        print("% s removed successfully" % img)
+                    except:
+                        print("File path can not be removed")
+                    # os.remove('http://127.0.0.1:8000/media/' + img)
+            if images:
+                for image in images:
+                        ProductImage.objects.create(
+                            product_id=product,
+                            images=get_image_from_data_url(image)[0],
+                        )
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCategoryUpdateView(APIView):
@@ -455,16 +483,125 @@ class ProductCategoryUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        product = request.data.get('product')
-        categories_list = request.data.get('categories')
-        for item in CategoryProduct.objects.filter(product_id=product):
-            if item.category_id not in categories_list:
-                item.delete()
-        for category in categories_list:
-            CategoryProduct.objects.get_or_create(category_id=category,
-                                                 product_id=product)
+        try:
+            product = request.data.get('product')
+            categories_list = request.data.get('categories')
+            for item in CategoryProduct.objects.filter(product_id=product):
+                if item.category_id not in categories_list:
+                    item.delete()
+            for category in categories_list:
+                CategoryProduct.objects.get_or_create(category_id=category,
+                                                     product_id=product)
 
-        return Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class StatisticsProductsView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = StatisticsSerializer
+
+    def post(self, request):
+        try:
+            days = int(request.data.get('date'))
+            date1 = datetime.datetime.now() - datetime.timedelta(days)
+            product_numbers = 0
+            for product in Product.objects.all():
+                date = datetime.datetime.strptime((str(product.created_at)[:10] + ' ' + str(product.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
+                if date > date1:
+                    product_numbers += 1
+            for product_variation in ProductAttributes.objects.all():
+                date = datetime.datetime.strptime((str(product_variation.created_at)[:10] + ' ' + str(product_variation.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
+                if date > date1:
+                    product_numbers +=1
+
+            return Response({'number': product_numbers})
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class StatisticsOrderNumberView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = StatisticsSerializer
+
+    def post(self, request):
+        try:
+            days = int(request.data.get('date'))
+            date1 = datetime.datetime.now() - datetime.timedelta(days)
+            order_numbers = 0
+            for order in OrderBeta.objects.all():
+                date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
+                                                  '%Y-%m-%d %H:%M:%S')
+                if order.status == 'Tugallangan':
+                    if date > date1:
+                        order_numbers += 1
+
+            return Response({'number': order_numbers})
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class StatisticsOrderMoneyView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = StatisticsSerializer
+
+    def post(self, request):
+        try:
+            days = int(request.data.get('date'))
+            date1 = datetime.datetime.now() - datetime.timedelta(days)
+            order_money = 0
+            for order in OrderBeta.objects.all():
+                date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
+                                                  '%Y-%m-%d %H:%M:%S')
+                if order.status == 'Tugallangan':
+                    if date > date1:
+                        orders = OrderBeta.objects.filter(created_at=order.created_at)
+                        for order in orders:
+                            order_money += order.finish_price
+
+            return Response({'number': order_money})
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class SliderCreateView(generics.CreateAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.all()
+
+
+class SliderDeleteView(generics.DestroyAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.all()
+
+
+class SliderDetailView(generics.RetrieveAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderGetSerializer
+    queryset = Slider.objects.all()
+
+
+class SliderListView(generics.ListAPIView):
+    serializer_class = SliderGetSerializer
+    queryset = Slider.objects.all().order_by('-id')[:5]
+
+
+class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = SliderSerializer
+    queryset = Slider.objects.all()
+
+    def patch(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
 class AddCommentView(generics.GenericAPIView):
@@ -521,99 +658,3 @@ class DeleteCommentView(generics.GenericAPIView):
         else:
             return Response('Not found')
 
-
-class StatisticsProductsView(APIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = StatisticsSerializer
-
-    def post(self, request):
-        days = int(request.data.get('date'))
-        date1 = datetime.datetime.now() - datetime.timedelta(days)
-        product_numbers = 0
-        for product in Product.objects.all():
-            date = datetime.datetime.strptime((str(product.created_at)[:10] + ' ' + str(product.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
-            if date > date1:
-                product_numbers += 1
-        for product_variation in ProductAttributes.objects.all():
-            date = datetime.datetime.strptime((str(product_variation.created_at)[:10] + ' ' + str(product_variation.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
-            if date > date1:
-                product_numbers +=1
-
-        return Response({'number': product_numbers})
-
-
-class StatisticsOrderNumberView(APIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = StatisticsSerializer
-
-    def post(self, request):
-        days = int(request.data.get('date'))
-        date1 = datetime.datetime.now() - datetime.timedelta(days)
-        order_numbers = 0
-        for order in OrderBeta.objects.all():
-            date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
-                                              '%Y-%m-%d %H:%M:%S')
-            if order.status == 'Tugallangan':
-                if date > date1:
-                    order_numbers += 1
-
-        return Response({'number': order_numbers})
-
-
-class StatisticsOrderMoneyView(APIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = StatisticsSerializer
-
-    def post(self, request):
-        days = int(request.data.get('date'))
-        date1 = datetime.datetime.now() - datetime.timedelta(days)
-        order_money = 0
-        for order in OrderBeta.objects.all():
-            date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
-                                              '%Y-%m-%d %H:%M:%S')
-            if order.status == 'Tugallangan':
-                if date > date1:
-                    orders = OrderBeta.objects.filter(created_at=order.created_at)
-                    for order in orders:
-                        order_money += order.finish_price
-
-        return Response({'number': order_money})
-
-
-class SliderCreateView(generics.CreateAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = SliderSerializer
-    queryset = Slider.objects.all()
-
-
-class SliderDeleteView(generics.DestroyAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = SliderSerializer
-    queryset = Slider.objects.all()
-
-
-class SliderDetailView(generics.RetrieveAPIView):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = SliderGetSerializer
-    queryset = Slider.objects.all()
-
-
-class SliderListView(generics.ListAPIView):
-    serializer_class = SliderGetSerializer
-    queryset = Slider.objects.all().order_by('-id')[:5]
-
-
-class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
-    authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAdminUser,)
-    serializer_class = SliderSerializer
-    queryset = Slider.objects.all()
-
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)

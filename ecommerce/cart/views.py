@@ -114,8 +114,9 @@ class CreateOrderBetaView(generics.GenericAPIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class OrderBetaListView(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderBetaSerializer
     queryset = OrderBeta.objects.all()
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
@@ -125,6 +126,8 @@ class OrderBetaListView(generics.ListAPIView):
 
 
 class OrderBetaDetailView(generics.RetrieveAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderBetaSerializer
     
     def get_queryset(self):
@@ -154,30 +157,34 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
     serializer_class = OrderProductBetaSerializer
 
     def post(self, request, pk):
-        order_product = OrderProductBeta.objects.get(id=pk)
-        count = int(request.data.get('count'))
-        product_id = request.data.get('product_id')
-        if product_id and count:
-            product = Product.objects.get(id=product_id)
-            price = product.price
-            single_overall_price = price * count
-            order_product.single_overall_price = single_overall_price
-            order_product.product_id = product.id
-            order_product.product_code = product.product_code
-            order_product.count = count
-            order_product.price = price
-            order_product.save()
-            order = OrderBeta.objects.get(id=order_product.order_id)
-            order_products = OrderProductBeta.objects.filter(order_id=order.id)
-            finish_price = 0
-            for order_product in order_products:
-                finish_price += order_product.single_overall_price
-                order.finish_price = finish_price
-                order.save()
-            print(single_overall_price)
-            return Response(order.finish_price, status=status.HTTP_200_OK)
-        else:
+        try:
+            order_product = OrderProductBeta.objects.get(id=pk)
+            count = int(request.data.get('count'))
+            product_id = request.data.get('product_id')
+            if product_id and count:
+                product = Product.objects.get(id=product_id)
+                price = product.price
+                single_overall_price = price * count
+                order_product.single_overall_price = single_overall_price
+                order_product.product_id = product.id
+                order_product.product_code = product.product_code
+                order_product.count = count
+                order_product.price = price
+                order_product.save()
+                order = OrderBeta.objects.get(id=order_product.order_id)
+                order_products = OrderProductBeta.objects.filter(order_id=order.id)
+                finish_price = 0
+                for order_product in order_products:
+                    finish_price += order_product.single_overall_price
+                    order.finish_price = finish_price
+                    order.save()
+                print(single_overall_price)
+                return Response(order.finish_price, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class OrderProductBetaCreateView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -185,25 +192,30 @@ class OrderProductBetaCreateView(generics.GenericAPIView):
     serializer_class = OrderProductBetaSerializer
 
     def post(self, request):
-        order_id = request.data.get('order_id')
-        product_id = request.data.get('product_id')
-        count = int(request.data.get('count'))
-        if product_id and count:
-            product = Product.objects.get(id=product_id)
-            price = product.price
-            single_overall_price = price * count
-            product_code = product.product_code
-            OrderProductBeta.objects.get_or_create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
-            order = OrderBeta.objects.get(id=order_id)
-            order.finish_price += single_overall_price
-            order.save()
-            
-            return Response(order.finish_price, status=status.HTTP_200_OK)        
-        else:
+        try:
+            order_id = request.data.get('order_id')
+            product_id = request.data.get('product_id')
+            count = int(request.data.get('count'))
+            if product_id and count:
+                product = Product.objects.get(id=product_id)
+                price = product.price
+                single_overall_price = price * count
+                product_code = product.product_code
+                OrderProductBeta.objects.get_or_create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
+                order = OrderBeta.objects.get(id=order_id)
+                order.finish_price += single_overall_price
+                order.save()
+
+                return Response(order.finish_price, status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderProductBetaListView(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderProductBetaListSerializer
     queryset = OrderProductBeta.objects.all()
 
@@ -216,6 +228,8 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
 
 
 class OrderProductBetaDetailView(generics.RetrieveAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderProductBetaListSerializer
     
     def get_queryset(self):
@@ -225,23 +239,27 @@ class OrderProductBetaDetailView(generics.RetrieveAPIView):
 class ChangeStatusView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
+
     def post(self, request, pk):
-        status = request.data.get('status')
-        order = OrderBeta.objects.get(id=pk)
-        order.status=status
-        order.save()
+        try:
+            status = request.data.get('status')
+            order = OrderBeta.objects.get(id=pk)
+            order.status=status
+            order.save()
 
-        if status == 'Tugallangan':
-            order_products = OrderProductBeta.objects.filter(order_id=pk)
-            ids = [order.product_id for order in order_products]
-            for id in ids:
-                product = Product.objects.get(id=id)
-                print(product.quantity)
-                product.quantity -= 1
-                product.save()
-                print(product.quantity)
+            if status == 'Tugallangan':
+                order_products = OrderProductBeta.objects.filter(order_id=pk)
+                ids = [order.product_id for order in order_products]
+                for id in ids:
+                    product = Product.objects.get(id=id)
+                    print(product.quantity)
+                    product.quantity -= 1
+                    product.save()
+                    print(product.quantity)
 
-        return Response('Okay')
+            return Response('Okay')
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
        
 class BuyProductViaClickView(generics.GenericAPIView):
