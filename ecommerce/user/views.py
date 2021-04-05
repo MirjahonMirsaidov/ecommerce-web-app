@@ -23,10 +23,8 @@ class UserApiView(generics.GenericAPIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            email = request.data.get('email')
-            id = User.objects.get(email=email).id
-            Cart.objects.get_or_create(user_id=id)
-            return Response( status=status.HTTP_200_OK)
+
+            return Response(status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -73,7 +71,7 @@ class ChangePasswordView(generics.UpdateAPIView):
                 'code': status.HTTP_200_OK,
                 'message': 'Password updated successfully',
                 'data': {
-                    'username': user.email,
+                    'username': user.name,
                 }
             }
 

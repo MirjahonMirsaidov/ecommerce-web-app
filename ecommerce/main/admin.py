@@ -7,17 +7,16 @@ from .models import *
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
-    list_display = ['email', 'name']
+    list_display = ['name']
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        (_('Personal Info'), {'fields': ('name',)}),
+        (None, {'fields': ('name', 'password')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser')}),
         (_('Important data'), {'fields': ('last_login',)}),
     )
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2')
+            'fields': ('name', 'password1', 'password2')
         }),
     )
 
