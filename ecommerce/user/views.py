@@ -12,11 +12,15 @@ User = get_user_model()
 
 
 class UserListView(generics.ListAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
 
 class UserApiView(generics.GenericAPIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = UserSerializer
 
     def post(self, request):
@@ -36,7 +40,7 @@ class CreateTokenView(ObtainAuthToken):
 class UserUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     authentication_classes = (authentication.TokenAuthentication,)
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAdminUser,)
 
     def get_object(self):
         return self.request.user
