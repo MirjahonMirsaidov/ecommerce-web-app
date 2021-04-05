@@ -25,7 +25,7 @@ class Cart(models.Model):
 class OrderBeta(models.Model):
 
     name = models.CharField(max_length=25)
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=17)
     finish_price = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=255, default='Tushgan', choices=(
