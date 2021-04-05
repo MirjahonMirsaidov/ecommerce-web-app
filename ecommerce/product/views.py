@@ -225,7 +225,7 @@ class ProductListView(generics.ListAPIView):
     search_fields = ['name', 'product_code', ]
     ordering_fields = ['created_at', 'price']
     pagination_class = CustomPagination
-    CustomPagination.page_size = 2
+    CustomPagination.page_size = 10
 
 
 class CodeSizeListView(APIView):
