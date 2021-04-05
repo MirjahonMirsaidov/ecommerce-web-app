@@ -23,12 +23,10 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(many=False, required=False)
-    address = AddressSerializer(many=True, required=False)
 
     class Meta:
         model = User
-        fields = ('name', 'password', 'profile', 'address')
+        fields = ('name', 'password',)
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 5}
         }
