@@ -6,6 +6,7 @@ import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, mixins
 from rest_framework import generics, permissions, authentication, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import UpdateModelMixin
@@ -15,6 +16,7 @@ from .models import *
 from .serializers import *
 from cart.models import OrderBeta
 from utils.product import *
+from .pagination import CustomPagination
 
 
 class CategoryCreateView(generics.CreateAPIView):
@@ -222,6 +224,8 @@ class ProductListView(generics.ListAPIView):
     filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', 'product_code', ]
     ordering_fields = ['created_at', 'price']
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 2
 
 
 class CodeSizeListView(APIView):
