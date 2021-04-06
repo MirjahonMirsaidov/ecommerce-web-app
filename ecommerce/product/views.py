@@ -134,7 +134,7 @@ class ProductCreateView(generics.CreateAPIView):
             images = request.data.get('images')
             variations = request.data.get('variations')
             if serializer.is_valid():
-                if check_product_exists(product_code, attributes):
+                if not check_product_exists(product_code, attributes):
                     if get_image_from_data_url(image):
 
                         product = Product.objects.create(
@@ -162,7 +162,7 @@ class ProductCreateView(generics.CreateAPIView):
                                 for variation in variations:
                                     if variation['image']:
                                         image = variation['image']
-                                    if check_product_exists(variation['product_code'], variation['attributes']):
+                                    if not check_product_exists(variation['product_code'], variation['attributes']):
                                         if get_image_from_data_url(image):
 
                                             var_product = Product.objects.create(
@@ -195,6 +195,7 @@ class ProductCreateView(generics.CreateAPIView):
                                                 save_image(images, var_product)
                                         else:
                                             return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
+
                         except:
                             return Response("Produkt variatsiyalarda xatolik bor")
 
@@ -228,26 +229,28 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
             if not image:
                 image = product.image
-
-            var_product = Product.objects.create(
-                name=name,
-                description=description,
-                brand=product.brand,
-                is_import=product.is_import,
-                price=price,
-                parent_id=product.id,
-                image=get_image_from_data_url(image)[0],
-                quantity=quantity,
-                product_code=product_code,
-                )
-            save_attribute(attributes, var_product)
-            save_category(categories, var_product)
-            if images:
-                save_image(images, var_product)
+            if not check_product_exists(product_code, attributes):
+                var_product = Product.objects.create(
+                    name=name,
+                    description=description,
+                    brand=product.brand,
+                    is_import=product.is_import,
+                    price=price,
+                    parent_id=product.id,
+                    image=get_image_from_data_url(image)[0],
+                    quantity=quantity,
+                    product_code=product_code,
+                    )
+                save_attribute(attributes, var_product)
+                save_category(categories, var_product)
+                if images:
+                    save_image(images, var_product)
+                else:
+                    images = ProductImage.objects.filter(product_id=parent_id)
+                    save_image(images, var_product)
+                return Response(status=status.HTTP_200_OK)
             else:
-                images = ProductImage.objects.filter(product_id=parent_id)
-                save_image(images, var_product)
-            return Response(status=status.HTTP_200_OK)
+                return Response("Bu maxsulot variatsiya allaqachon yaratilgan")
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

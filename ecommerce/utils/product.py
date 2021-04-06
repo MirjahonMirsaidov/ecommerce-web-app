@@ -119,12 +119,15 @@ def get_available_colors_and_sizes(id):
 
 def check_product_exists(product_code, attributes):
     if Product.objects.filter(product_code=product_code).exists():
-        product = Product.objects.filter(product_code=product_code)
+        products = Product.objects.filter(product_code=product_code)
         size = ''
         for attribute in attributes:
-            if attribute.key == 'size':
-                size = attribute.value
-        for attr in ProductAttributes.objects.all(product_id=product.id):
-            if attr.key == 'size' and attr.value == size:
-                return True
+            if attribute['key'] == 'size':
+                print('126')
+                size = attribute['value']
+        for product in products:
+            for attr in ProductAttributes.objects.filter(product_id=product.id):
+                if attr.key == 'size' and attr.value == size:
+                    print('131')
+                    return True
     return False
