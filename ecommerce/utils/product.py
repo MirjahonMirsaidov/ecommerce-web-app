@@ -28,27 +28,29 @@ def get_image_from_data_url( data_url, resize=True, base_width=600 ):
     file = ContentFile( base64.b64decode(_dataurl), name=f"{_filename}.{_extension}")
 
     # resizing the image, reducing quality and size
-    if resize:
+    if _extension == 'jpg' or _extension == 'jpeg' or _extension == 'png' or _extension == 'webp':
 
-        # opening the file with the pillow
-        image = Image.open(file)
-        # using BytesIO to rewrite the new content without using the filesystem
-        image_io = io.BytesIO()
+        if resize:
 
-        # resize
-        w_percent = (base_width/float(image.size[0]))
-        h_size = int((float(image.size[1])*float(w_percent)))
-        image = image.resize((base_width,h_size), Image.ANTIALIAS)
+            # opening the file with the pillow
+            image = Image.open(file)
+            # using BytesIO to rewrite the new content without using the filesystem
+            image_io = io.BytesIO()
 
-        # save resized image
-        image.save(image_io, format=_extension)
+            # resize
+            w_percent = (base_width/float(image.size[0]))
+            h_size = int((float(image.size[1])*float(w_percent)))
+            image = image.resize((base_width,h_size), Image.ANTIALIAS)
 
-        # generating the content of the new image
-        file = ContentFile( image_io.getvalue(), name=f"{_filename}.{_extension}" )
+            # save resized image
+            image.save(image_io, format=_extension)
 
-    # file and filename
-    return file, (_filename, _extension)
+            # generating the content of the new image
+            file = ContentFile( image_io.getvalue(), name=f"{_filename}.{_extension}" )
 
+        # file and filename
+        return file, (_filename, _extension)
+    return "Siz  kiritishingiz mumkin bo'lgan rasm formatlari .jpeg, .jpg, .png, .webp"
 
 def save_image(images, product):
 
