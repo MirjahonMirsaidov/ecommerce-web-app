@@ -134,75 +134,78 @@ class ProductCreateView(generics.CreateAPIView):
             images = request.data.get('images')
             variations = request.data.get('variations')
             if serializer.is_valid():
-                if not check_product_exists(product_code, attributes):
-                    if get_image_from_data_url(image):
+                if len(images) < 9:
+                    if not check_product_exists(product_code, attributes):
+                        if get_image_from_data_url(image):
 
-                        product = Product.objects.create(
-                            name=name,
-                            description=description,
-                            brand_id=brand,
-                            is_import=is_import,
-                            price=price,
-                            parent_id=0,
-                            quantity=quantity,
-                            image=get_image_from_data_url(image)[0],
-                            product_code=product_code,
-                        )
-                        if categories:
-                            save_category(categories, product)
+                            product = Product.objects.create(
+                                name=name,
+                                description=description,
+                                brand_id=brand,
+                                is_import=is_import,
+                                price=price,
+                                parent_id=0,
+                                quantity=quantity,
+                                image=get_image_from_data_url(image)[0],
+                                product_code=product_code,
+                            )
+                            if categories:
+                                save_category(categories, product)
 
-                        if attributes:
-                            save_attribute(attributes, product)
+                            if attributes:
+                                save_attribute(attributes, product)
 
-                        if images:
-                            save_image(images, product)
+                            if images:
+                                save_image(images, product)
 
-                        try:
-                            if variations:
-                                for variation in variations:
-                                    if variation['image']:
-                                        image = variation['image']
-                                    if not check_product_exists(variation['product_code'], variation['attributes']):
-                                        if get_image_from_data_url(image):
+                            try:
+                                if variations:
+                                    for variation in variations:
+                                        if variation['image']:
+                                            image = variation['image']
+                                        if not check_product_exists(variation['product_code'], variation['attributes']):
+                                            if get_image_from_data_url(image):
 
-                                            var_product = Product.objects.create(
-                                                name=variation['name'],
-                                                description=variation['description'],
-                                                brand=product.brand,
-                                                is_import=product.is_import,
-                                                price=variation['price'],
-                                                parent_id=product.id,
-                                                image=get_image_from_data_url(image)[0],
-                                                quantity=variation['quantity'],
-                                                product_code=variation['product_code'],
-                                            )
+                                                var_product = Product.objects.create(
+                                                    name=variation['name'],
+                                                    description=variation['description'],
+                                                    brand=product.brand,
+                                                    is_import=product.is_import,
+                                                    price=variation['price'],
+                                                    parent_id=product.id,
+                                                    image=get_image_from_data_url(image)[0],
+                                                    quantity=variation['quantity'],
+                                                    product_code=variation['product_code'],
+                                                )
 
 
-                                            var_categories = variation['categories']
-                                            if var_categories:
-                                                save_category(categories, var_product)
+                                                var_categories = variation['categories']
+                                                if var_categories:
+                                                    save_category(categories, var_product)
+                                                else:
+                                                    save_category(categories, var_product)
+
+                                                attributes = variation['attributes']
+                                                if attributes:
+                                                    save_attribute(attributes, var_product)
+
+                                                imagesa = variation['images']
+                                                if imagesa:
+                                                    save_image(imagesa, var_product)
+                                                else:
+                                                    save_image(images, var_product)
                                             else:
-                                                save_category(categories, var_product)
+                                                return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
 
-                                            attributes = variation['attributes']
-                                            if attributes:
-                                                save_attribute(attributes, var_product)
+                            except:
+                                return Response("Produkt variatsiyalarda xatolik bor")
 
-                                            imagesa = variation['images']
-                                            if imagesa:
-                                                save_image(imagesa, var_product)
-                                            else:
-                                                save_image(images, var_product)
-                                        else:
-                                            return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
-
-                        except:
-                            return Response("Produkt variatsiyalarda xatolik bor")
-
-                        return Response(serializer.data, status=status.HTTP_200_OK)
-                    return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
+                            return Response(serializer.data, status=status.HTTP_200_OK)
+                        return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
+                    else:
+                        return Response("Bu maxsulot allaqachon yaratilgan!")
                 else:
-                    return Response("Bu maxsulot allaqachon yaratilgan!")
+                    return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Error", status=status.HTTP_400_BAD_REQUEST)
@@ -229,28 +232,31 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
             if not image:
                 image = product.image
-            if not check_product_exists(product_code, attributes):
-                var_product = Product.objects.create(
-                    name=name,
-                    description=description,
-                    brand=product.brand,
-                    is_import=product.is_import,
-                    price=price,
-                    parent_id=product.id,
-                    image=get_image_from_data_url(image)[0],
-                    quantity=quantity,
-                    product_code=product_code,
-                    )
-                save_attribute(attributes, var_product)
-                save_category(categories, var_product)
-                if images:
-                    save_image(images, var_product)
+            if len(images) < 9:
+                if not check_product_exists(product_code, attributes):
+                    var_product = Product.objects.create(
+                        name=name,
+                        description=description,
+                        brand=product.brand,
+                        is_import=product.is_import,
+                        price=price,
+                        parent_id=product.id,
+                        image=get_image_from_data_url(image)[0],
+                        quantity=quantity,
+                        product_code=product_code,
+                        )
+                    save_attribute(attributes, var_product)
+                    save_category(categories, var_product)
+                    if images:
+                        save_image(images, var_product)
+                    else:
+                        images = ProductImage.objects.filter(product_id=parent_id)
+                        save_image(images, var_product)
+                    return Response(status=status.HTTP_200_OK)
                 else:
-                    images = ProductImage.objects.filter(product_id=parent_id)
-                    save_image(images, var_product)
-                return Response(status=status.HTTP_200_OK)
+                    return Response("Bu maxsulot variatsiya allaqachon yaratilgan")
             else:
-                return Response("Bu maxsulot variatsiya allaqachon yaratilgan")
+                return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas")
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
