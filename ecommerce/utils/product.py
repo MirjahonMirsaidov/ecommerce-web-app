@@ -29,7 +29,6 @@ def get_image_from_data_url( data_url, resize=True, base_width=600 ):
 
     # resizing the image, reducing quality and size
     if _extension == 'jpg' or _extension == 'jpeg' or _extension == 'png' or _extension == 'webp':
-
         if resize:
 
             # opening the file with the pillow
@@ -50,13 +49,15 @@ def get_image_from_data_url( data_url, resize=True, base_width=600 ):
 
         # file and filename
         return file, (_filename, _extension)
-    return "Siz  kiritishingiz mumkin bo'lgan rasm formatlari .jpeg, .jpg, .png, .webp"
+    return False
 
 def save_image(images, product):
 
     for image in images:
-        ProductImage.objects.create(images=get_image_from_data_url(image)[0], product_id=product.id)
-
+        if get_image_from_data_url(image):
+            ProductImage.objects.create(images=get_image_from_data_url(image)[0], product_id=product.id)
+        else:
+            return False
 
 def save_category(categories, product):
 
