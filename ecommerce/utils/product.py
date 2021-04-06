@@ -115,3 +115,16 @@ def get_available_colors_and_sizes(id):
                     "image": "http://127.0.0.1:8000" + product.image.url,
                 })
     return available_colors, available_sizes
+
+
+def check_product_exists(product_code, attributes):
+    if Product.objects.filter(product_code=product_code).exists():
+        product = Product.objects.filter(product_code=product_code)
+        size = ''
+        for attribute in attributes:
+            if attribute.key == 'size':
+                size = attribute.value
+        for attr in ProductAttributes.objects.all(product_id=product.id):
+            if attr.key == 'size' and attr.value == size:
+                return True
+    return False
