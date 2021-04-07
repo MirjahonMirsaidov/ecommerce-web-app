@@ -197,7 +197,7 @@ class OrderProductBetaCreateView(generics.GenericAPIView):
             product_id = request.data.get('product_id')
             count = int(request.data.get('count'))
             if product_id and count:
-                if OrderProductBeta.objects.filter(order_id=order_id, product_id=product_id).exists():
+                if not OrderProductBeta.objects.filter(order_id=order_id, product_id=product_id).exists():
                     product = Product.objects.get(id=product_id)
                     price = product.price
                     single_overall_price = price * count
