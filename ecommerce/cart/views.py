@@ -197,16 +197,19 @@ class OrderProductBetaCreateView(generics.GenericAPIView):
             product_id = request.data.get('product_id')
             count = int(request.data.get('count'))
             if product_id and count:
-                product = Product.objects.get(id=product_id)
-                price = product.price
-                single_overall_price = price * count
-                product_code = product.product_code
-                OrderProductBeta.objects.get_or_create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
-                order = OrderBeta.objects.get(id=order_id)
-                order.finish_price += single_overall_price
-                order.save()
+                if OrderProductBeta.objects.filter(order_id=order_id, product_id=product_id).exists():
+                    product = Product.objects.get(id=product_id)
+                    price = product.price
+                    single_overall_price = price * count
+                    product_code = product.product_code
+                    OrderProductBeta.objects.get_or_create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
+                    order = OrderBeta.objects.get(id=order_id)
+                    order.finish_price += single_overall_price
+                    order.save()
 
-                return Response(order.finish_price, status=status.HTTP_200_OK)
+                    return Response(order.finish_price, status=status.HTTP_200_OK)
+                else:
+                    return Response("Savatchada mavjud", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except:
