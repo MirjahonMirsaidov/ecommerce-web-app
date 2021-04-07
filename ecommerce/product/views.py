@@ -368,7 +368,7 @@ class ProductDetailView(generics.GenericAPIView):
             "is_import": variation.is_import,
             "brand": {
                 "id": variation.brand_id,
-                "name": variation.brand_name,
+                "name": variation.brand.name,
             },
             "categories": get_categories(variation),
             "attributes": get_attributes(variation.id),
