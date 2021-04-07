@@ -534,13 +534,13 @@ class StatisticsProductsView(APIView):
             date1 = datetime.datetime.now() - datetime.timedelta(days)
             product_numbers = 0
             for product in Product.objects.all():
-                date = datetime.datetime.strptime((str(product.created_at)[:10] + ' ' + str(product.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
+                date = datetime.datetime.strptime((str(product.created_at)[:10] + ' ' + str(product.created_at)[11:19]),'%Y-%m-%d %H:%M:%S')
                 if date > date1:
                     product_numbers += 1
-            for product_variation in ProductAttributes.objects.all():
-                date = datetime.datetime.strptime((str(product_variation.created_at)[:10] + ' ' + str(product_variation.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
-                if date > date1:
-                    product_numbers +=1
+            # for product_variation in ProductAttributes.objects.all():
+            #     date = datetime.datetime.strptime((str(product_variation.created_at)[:10] + ' ' + str(product_variation.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
+            #     if date > date1:
+            #         product_numbers +=1
 
             return Response({'number': product_numbers})
         except:
