@@ -203,7 +203,7 @@ class ProductCreateView(generics.CreateAPIView):
                             return Response(serializer.data, status=status.HTTP_200_OK)
                         return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
                     else:
-                        return Response("Bu maxsulot allaqachon yaratilgan!")
+                        return Response("Bu maxsulot allaqachon yaratilgan!", status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -263,13 +263,16 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
-    queryset = Product.objects.all()
+    # queryset = Product.objects.all()
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', 'product_code', ]
     ordering_fields = ['created_at', 'price']
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
+
+    def get_queryset(self):
+        return Product.objects.select_related('brand', )
 
 
 class CodeSizeListView(APIView):
@@ -347,11 +350,11 @@ class ProductDetailView(generics.GenericAPIView):
     def get(self, request, id):
         variations_list = []
         product = Product.objects.get(id=id)
-        child = Product.objects.get(id=id)
+        child = product
         if product.parent_id:
             id = product.parent_id
             product = Product.objects.get(id=id)
-        product_variations = Product.objects.filter(parent_id=id)
+        product_variations = Product.objects.filter(parent_id=id).select_related('brand')
 
         # getting product childs
         for variation in product_variations:
@@ -364,8 +367,8 @@ class ProductDetailView(generics.GenericAPIView):
             "product_code": variation.product_code,
             "is_import": variation.is_import,
             "brand": {
-                "id": variation.brand.id,
-                "name": variation.brand.name,
+                "id": variation.brand_id,
+                "name": variation.brand_name,
             },
             "categories": get_categories(variation),
             "attributes": get_attributes(variation.id),
