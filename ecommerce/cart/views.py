@@ -260,7 +260,7 @@ class ChangeStatusView(APIView):
                     product.save()
                     print(product.quantity)
 
-            return Response('Okay')
+            return Response("O'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
