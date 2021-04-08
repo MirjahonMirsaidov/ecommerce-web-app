@@ -118,7 +118,7 @@ class OrderBetaListView(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderBetaSerializer
-    queryset = OrderBeta.objects.all()
+    queryset = OrderBeta.objects.all().order_by('-id')
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filter_fields = ['status', ]
     ordering_fields = ['created_at', ]
