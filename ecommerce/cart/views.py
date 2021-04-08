@@ -54,7 +54,7 @@ class DeleteFromCartView(generics.GenericAPIView):
     def delete(self, request, id):
         product = CartProduct.objects.get(id=id)
         product.delete()
-        return Response("Successfully deleted")
+        return Response("Successfully deleted", status=status.HTTP_200_OK)
 
 
 def toggle_is_selected_status(request, id):
@@ -310,4 +310,4 @@ class AddWishListView(generics.GenericAPIView):
                 WishList.objects.create(user_id=user_id, product_id=id)
                 return Response("Product successfully added to WishList")
         else:
-            return Response('Sahifa topilmadi')
+            return Response('Sahifa topilmadi', status=status.HTTP_404_NOT_FOUND)
