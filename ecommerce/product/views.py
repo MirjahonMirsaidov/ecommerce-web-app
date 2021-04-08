@@ -411,11 +411,8 @@ class ProductSpecificDetailView(generics.GenericAPIView):
 
         return Response({
             "id": product.id,
-            "parent_id": product.parent_id,
             "name": product.name,
-            "description": product.description,
             "product_code": product.product_code,
-            "is_import": product.is_import,
             "brand": {
                 "id": product.brand.id,
                 "name": product.brand.name,
@@ -423,6 +420,7 @@ class ProductSpecificDetailView(generics.GenericAPIView):
             "categories": get_categories(product),
             "attributes": get_attributes(id),
             "price": product.price,
+            "quantity": product.quantity,
             "image": "http://127.0.0.1:8000" + product.image.url,
         })
 
