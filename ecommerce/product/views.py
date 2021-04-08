@@ -305,7 +305,7 @@ class ProductsByCategoryView(generics.ListAPIView):
                 product = Product.objects.get(id=category.product_id)
                 products.append(product)
         elif category.parent_id == 0:
-            categories = Category.objects.filter(parent_id=category.id)
+            categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id))
             for item in categories:
                 singl = CategoryProduct.objects.filter(category_id=item.id)
                 for iterr in singl:
