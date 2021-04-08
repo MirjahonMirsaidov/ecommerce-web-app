@@ -32,11 +32,30 @@ class CategoryAllListView(generics.ListAPIView):
     queryset = Category.objects.all()
 
 
-class CategoryListView(generics.ListAPIView):
+class CategoryListView(generics.GenericAPIView):
     serializer_class = CategorySerializer
+    queryset = Category.objects.all()
 
-    def get_queryset(self):
-        return Category.objects.filter(parent_id=0)
+    def get(self, request):
+        parents = []
+        parent_categories = Category.objects.filter(parent_id=0)
+        for pc in parent_categories:
+            childs = []
+            for child in Category.objects.filter(parent_id=pc.id):
+                childs.append({
+                    "id": child.id,
+                    "name": child.name,
+                    "is_slider": child.is_slider,
+                    "slug": child.slug,
+                })
+            parents.append({
+                "id": pc.id,
+                "name": pc.name,
+                "is_slider": pc.is_slider,
+                "slug": pc.slug,
+                "childs": childs,
+            })
+        return Response(parents)
 
 
 class CategoryChildListView(APIView):
@@ -299,26 +318,27 @@ class ProductsByCategoryView(generics.ListAPIView):
         category = Category.objects.get(slug=slug)
         products = []
         if category.parent_id:
-            categories = CategoryProduct.objects.filter(category_id=category.id)
+            categories = CategoryProduct.objects.filter(category_id=category.id).values('product_id')
 
             for category in categories:
-                product = Product.objects.get(id=category.product_id)
+                product = Product.objects.get(id=category.get('product_id')).id
                 products.append(product)
-        elif category.parent_id == 0:
-            categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id))
+        else:
+            categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id)).values('id')
             for item in categories:
-                singl = CategoryProduct.objects.filter(category_id=item.id)
+                singl = CategoryProduct.objects.filter(category_id=item.get('id'))
                 for iterr in singl:
-                    product = Product.objects.get(id=iterr.product_id)
+                    product = Product.objects.get(id=iterr.product_id).id
                     products.append(product)
-        products = [product.id for product in products]
 
-        return Product.objects.filter(id__in=products)
+        return Product.objects.filter(id__in=products).select_related('brand')
 
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', ]
     ordering_fields = ['created_at', 'price']
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
