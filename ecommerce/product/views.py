@@ -162,7 +162,7 @@ class ProductCreateView(generics.CreateAPIView):
             images = request.data.get('images')
             variations = request.data.get('variations')
             if serializer.is_valid():
-                if len(images) < 9:
+                if len(images) < 6:
                     if not check_product_exists(product_code, attributes):
                         if get_image_from_data_url(image):
 
@@ -233,7 +233,7 @@ class ProductCreateView(generics.CreateAPIView):
                     else:
                         return Response("Bu maxsulot allaqachon yaratilgan!", status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas")
+                    return Response("Rasmlar soni 5 dan ko'p bolishi mumkin emas")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Error", status=status.HTTP_400_BAD_REQUEST)
