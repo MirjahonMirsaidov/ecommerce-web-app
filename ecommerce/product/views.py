@@ -87,7 +87,7 @@ class CategoryDetailView(generics.RetrieveAPIView):
     queryset = Category.objects.all()
 
 
-class CategoryUpdateView(generics.RetrieveUpdateAPIView):
+class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = CategorySerializer
@@ -105,7 +105,8 @@ class CategoryUpdateView(generics.RetrieveUpdateAPIView):
                 msg = "Muvaffaqiyatli o'zgartirildi"  
             category.name = request.data.get('name')
             category.is_slider = is_slider
-            category.image = request.data.get('image')
+            if request.data.get('image'):
+                category.image = request.data.get('image')
             category.order = request.data.get('order')
             category.parent_id = request.data.get('parent_id')
             category.updated_at = datetime.datetime.now()
