@@ -93,6 +93,7 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
     serializer_class = CategorySerializer
     queryset = CategorySerializer
 
+<<<<<<< HEAD
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
         # try:
@@ -108,6 +109,28 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
         # except:
         #     return Response(status=status.HTTP_400_BAD_REQUEST)
 
+=======
+    def patch(self, request, pk):
+        try:
+            sliders = Category.objects.filter(is_slider=True).count()
+            is_slider = request.data.get('is_slider').capitalize()
+            category = Category.objects.get(id=pk)
+            if sliders <= 3 and is_slider=='False':
+                is_slider = True
+                msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
+            else:
+                msg = "Muvaffaqiyatli o'zgartirildi"  
+            category.name = request.data.get('name')
+            category.is_slider = is_slider
+            category.image = request.data.get('image')
+            category.order = request.data.get('order')
+            category.parent_id = request.data.get('parent_id')
+            category.updated_at = datetime.datetime.now()
+            category.save()
+            return Response(msg, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> d1336e149c100269f3a2e873960804cba20c042d
 
 
 class CategorySliderView(generics.ListAPIView):
