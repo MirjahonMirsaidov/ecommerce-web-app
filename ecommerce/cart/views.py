@@ -229,6 +229,17 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
     serializer_class = OrderProductBetaSerializer
     queryset = OrderProductBeta.objects.all()
 
+    def delete(self, request, id):
+        try:
+            orderproduct = OrderProductBeta.objects.get(id=id)
+            orderproduct.delete()
+            order = OrderBeta(id=orderproduct.order_id)
+            order.finish_price -= orderproduct.single_overall_price
+            order.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
 
 class OrderProductBetaDetailView(generics.RetrieveAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
