@@ -538,15 +538,18 @@ class ProductCategoryUpdateView(APIView):
         try:
             product = request.data.get('product')
             categories_list = request.data.get('categories')
-            category_products = CategoryProduct.objects.filter(product_id=product)
-            for item in category_products:
-                if item.category_id not in categories_list and (category_products.count() > 1):
-                    item.delete()
-            for category in categories_list:
-                CategoryProduct.objects.get_or_create(category_id=category,
-                                                     product_id=product)
+            if not categories_list:
+                category_products = CategoryProduct.objects.filter(product_id=product)
+                for item in category_products:
+                    if item.category_id not in categories_list:
+                        item.delete()
+                for category in categories_list:
+                    CategoryProduct.objects.get_or_create(category_id=category,
+                                                         product_id=product)
 
-            return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response("Mahsulotda kamida 1ta kategoriya bolishi kerak")
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
