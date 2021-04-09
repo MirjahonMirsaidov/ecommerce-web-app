@@ -16,7 +16,7 @@ urlpatterns = [
 
     path('orderbeta-create/', CreateOrderBetaView.as_view(), name='orderbeta-create'),
     path('orderbeta-list/', OrderBetaListView.as_view(), name='orderbeta-list'),
-    path('orderbeta-detail/<int:id>', OrderBetaDetailView.as_view(), name='orderbeta-detail'),
+    path('orderbeta-detail/<int:pk>', OrderBetaDetailView.as_view(), name='orderbeta-detail'),
     path('orderbeta-update/<int:pk>', OrderBetaUpdateView.as_view(), name='orderbeta-update'),
     path('orderbeta-delete/<int:pk>', OrderBetaDeleteView.as_view(), name='orderbeta-delete'),
     path('change-status/<int:pk>', ChangeStatusView.as_view(), name='change-status'),
@@ -25,6 +25,6 @@ urlpatterns = [
     path('orderproductbeta-create/', OrderProductBetaCreateView.as_view(), name='orderbeta-create'),
     path('orderproductbeta-update/<int:pk>', OrderProductBetaUpdateView.as_view(), name='orderproductbeta-update'),
     path('orderproductbeta-detail/<int:pk>', OrderProductBetaDetailView.as_view(), name='orderproductbeta-detail'),
-    path('orderproductbeta-delete/<int:pk>', OrderProductBetaDeleteView.as_view(), name='orderproductbeta-delete'),
+    path('orderproductbeta-delete/<int:id>', OrderProductBetaDeleteView.as_view(), name='orderproductbeta-delete'),
 
 ]

@@ -77,7 +77,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
         products = request.data.get('products')
-        order = OrderBeta.objects.get_or_create(phone_number=phone_number, name=name)[0]
+        order = OrderBeta.objects.create(phone_number=phone_number, name=name)
         order.save()
 
         finish_price = 0
@@ -233,7 +233,7 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
         try:
             orderproduct = OrderProductBeta.objects.get(id=id)
             orderproduct.delete()
-            order = OrderBeta(id=orderproduct.order_id)
+            order = OrderBeta.objects.get(id=orderproduct.order_id)
             order.finish_price -= orderproduct.single_overall_price
             order.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
