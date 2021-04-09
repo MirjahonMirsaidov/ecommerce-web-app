@@ -96,14 +96,13 @@ class CategoryUpdateView(generics.RetrieveUpdateAPIView):
     def patch(self, request, pk):
         try:
             sliders = Category.objects.filter(is_slider=True).count()
-            print(sliders)
-            if sliders > 3:
-                is_slider = request.data.get('is_slider').capitalize()
-                msg = "Muvaffaqiyatli o'zgartirildi"
-            else:
+            is_slider = request.data.get('is_slider').capitalize()
+            category = Category.objects.get(id=pk)
+            if sliders <= 3 and is_slider=='False':
                 is_slider = True
                 msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
-            category = Category.objects.get(id=pk)
+            else:
+                msg = "Muvaffaqiyatli o'zgartirildi"  
             category.name = request.data.get('name')
             category.is_slider = is_slider
             category.image = request.data.get('image')
@@ -113,7 +112,7 @@ class CategoryUpdateView(generics.RetrieveUpdateAPIView):
             category.save()
             return Response(msg, status=status.HTTP_200_OK)
         except:
-            return Response(msg, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategorySliderView(generics.ListAPIView):
