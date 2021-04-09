@@ -540,9 +540,8 @@ class ProductCategoryUpdateView(APIView):
             categories_list = request.data.get('categories')
             category_products = CategoryProduct.objects.filter(product_id=product)
             for item in category_products:
-                if category_products.count() > 1:
-                    if item.category_id not in categories_list:
-                        item.delete()
+                if item.category_id not in categories_list and (category_products.count() > 1):
+                    item.delete()
             for category in categories_list:
                 CategoryProduct.objects.get_or_create(category_id=category,
                                                      product_id=product)
