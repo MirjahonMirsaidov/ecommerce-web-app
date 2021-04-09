@@ -44,6 +44,7 @@ class CategoryListView(generics.GenericAPIView):
             for child in Category.objects.filter(parent_id=pc.id):
                 childs.append({
                     "id": child.id,
+                    "parent_id": child.parent_id,
                     "name": child.name,
                     "is_slider": child.is_slider,
                     "slug": child.slug,
