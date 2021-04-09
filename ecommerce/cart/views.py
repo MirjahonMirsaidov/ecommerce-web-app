@@ -235,7 +235,10 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
             orderproduct.delete()
             order = OrderBeta.objects.get(id=orderproduct.order_id)
             order.finish_price -= orderproduct.single_overall_price
+            if not OrderProductBeta.objects.filter(order=order.id).exists():
+                order.delete()
             order.save()
+
             return Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
