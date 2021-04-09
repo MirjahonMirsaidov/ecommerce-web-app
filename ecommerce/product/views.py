@@ -538,7 +538,7 @@ class ProductCategoryUpdateView(APIView):
         try:
             product = request.data.get('product')
             categories_list = request.data.get('categories')
-            if not categories_list:
+            if categories_list:
                 category_products = CategoryProduct.objects.filter(product_id=product)
                 for item in category_products:
                     if item.category_id not in categories_list:
