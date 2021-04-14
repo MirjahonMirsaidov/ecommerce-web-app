@@ -650,6 +650,11 @@ class SliderListView(generics.ListAPIView):
     queryset = Slider.objects.all().order_by('-id')[:5]
 
 
+class SliderAllListView(generics.ListAPIView):
+    serializer_class = SliderGetSerializer
+    queryset = Slider.objects.all()
+
+
 class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
