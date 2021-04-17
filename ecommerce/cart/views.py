@@ -8,6 +8,7 @@ from random import randint
 from .models import *
 from .serializers import *
 from product.models import Product, ProductAttributes
+import datetime
 
 from clickuz import ClickUz
 from clickuz.views import ClickUzMerchantAPIView
@@ -263,6 +264,7 @@ class ChangeStatusView(APIView):
             status = request.data.get('status')
             order = OrderBeta.objects.get(id=pk)
             order.status=status
+            order.created_at = datetime.datetime.now()
             order.save()
 
             if status == 'Tugallangan':
