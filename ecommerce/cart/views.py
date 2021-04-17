@@ -78,41 +78,44 @@ class CreateOrderBetaView(generics.GenericAPIView):
         name = request.data.get('name')
         phone_number = request.data.get('phone_number')
         products = request.data.get('products')
-        order = OrderBeta.objects.create(phone_number=phone_number, name=name)
-        order.save()
+        
+        if name and phone_number:
+            order = OrderBeta.objects.create(phone_number=phone_number, name=name)
+            order.save()
 
-        finish_price = 0
-        try:
-            for prod in products:
-                print(prod)
-                product_id = prod['product_id']
-                count = int(prod['count'])
-                product = Product.objects.get(id=product_id)
-                if product.quantity > 0:
-                    price = product.price
-                    product_code = product.product_code
-                    single_overall_price = price * count
-                    finish_price += single_overall_price
-                    if serializer.is_valid():
-                        print('valid')
+            finish_price = 0
+            try:
+                for prod in products:
+                    print(prod)
+                    product_id = prod['product_id']
+                    count = int(prod['count'])
+                    product = Product.objects.get(id=product_id)
+                    if product.quantity > 0:
+                        price = product.price
+                        product_code = product.product_code
+                        single_overall_price = price * count
+                        finish_price += single_overall_price
+                        if serializer.is_valid():
+                            print('valid')
 
-                        OrderProductBeta.objects.create(
-                            order_id=order.id,
-                            product_id=product.id,
-                            count=count,
-                            single_overall_price=single_overall_price,
-                            price=price,
-                            product_code=product_code,
+                            OrderProductBeta.objects.create(
+                                order_id=order.id,
+                                product_id=product.id,
+                                count=count,
+                                single_overall_price=single_overall_price,
+                                price=price,
+                                product_code=product_code,
 
-                        )
-                        order.finish_price = finish_price
-                        order.save()
+                            )
+                            order.finish_price = finish_price
+                            order.save()
 
-                # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
-                #     order.delete()
-            return Response(status=status.HTTP_201_CREATED)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+                    # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
+                    #     order.delete()
+                return Response(status=status.HTTP_201_CREATED)
+            except:
+                return Response(msg, status=status.HTTP_400_BAD_REQUEST)
+        return Response("Telefon raqam va ism to'ldirilishi shart!", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderBetaListView(generics.ListAPIView):
