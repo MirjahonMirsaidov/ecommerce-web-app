@@ -255,7 +255,7 @@ class OrderProductBetaDetailView(generics.RetrieveAPIView):
         return OrderProductBeta.objects.all()
         
       
-class ChangeStatusView(APIView):
+class ChangeStatusView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
 
@@ -264,10 +264,11 @@ class ChangeStatusView(APIView):
             status = request.data.get('status')
             order = OrderBeta.objects.get(id=pk)
             order.status=status
-            order.created_at = datetime.datetime.now()
             order.save()
 
             if status == 'Tugallangan':
+                order.created_at = datetime.datetime.now()
+                order.save()
                 order_products = OrderProductBeta.objects.filter(order_id=pk)
                 ids = [order.product_id for order in order_products]
                 for id in ids:
@@ -279,7 +280,7 @@ class ChangeStatusView(APIView):
 
             return Response("O'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("Xatolik", status=status.HTTP_400_BAD_REQUEST)
 
        
 class BuyProductViaClickView(generics.GenericAPIView):
