@@ -258,7 +258,7 @@ class OrderProductBetaDetailView(generics.RetrieveAPIView):
 class ChangeStatusView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-
+    serializer_class = OrderBetaSerializer
     def post(self, request, pk):
         try:
             status = request.data.get('status')
@@ -280,7 +280,7 @@ class ChangeStatusView(generics.GenericAPIView):
 
             return Response("O'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
-            return Response("Xatolik", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Xatolik bor", status=status.HTTP_400_BAD_REQUEST)
 
        
 class BuyProductViaClickView(generics.GenericAPIView):
