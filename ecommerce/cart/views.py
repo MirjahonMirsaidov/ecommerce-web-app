@@ -163,10 +163,9 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
         try:
             order_product = OrderProductBeta.objects.get(id=pk)
             count = int(request.data.get('count'))
-            # product_id = request.data.get('product_id')
             if count:
                 product_id = order_product.product_id
-                product = OrdeProduct.objects.get(id=product_id)
+                product = Product.objects.get(id=product_id)
                 price = product.price
                 single_overall_price = price * count
                 order_product.single_overall_price = single_overall_price
