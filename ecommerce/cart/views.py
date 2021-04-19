@@ -86,7 +86,6 @@ class CreateOrderBetaView(generics.GenericAPIView):
             finish_price = 0
             try:
                 for prod in products:
-                    print(prod)
                     product_id = prod['product_id']
                     count = int(prod['count'])
                     product = Product.objects.get(id=product_id)
@@ -96,7 +95,6 @@ class CreateOrderBetaView(generics.GenericAPIView):
                         single_overall_price = price * count
                         finish_price += single_overall_price
                         if serializer.is_valid():
-                            print('valid')
 
                             OrderProductBeta.objects.create(
                                 order_id=order.id,
@@ -115,7 +113,8 @@ class CreateOrderBetaView(generics.GenericAPIView):
                 return Response(status=status.HTTP_201_CREATED)
             except:
                 return Response(msg, status=status.HTTP_400_BAD_REQUEST)
-        return Response("Telefon raqam va ism to'ldirilishi shart!", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Telefon raqam va ism to'ldirilishi shart!", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderBetaListView(generics.ListAPIView):
@@ -182,7 +181,6 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
                     finish_price += order_product.single_overall_price
                     order.finish_price = finish_price
                     order.save()
-                print(single_overall_price)
                 return Response(order.finish_price, status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -276,10 +274,8 @@ class ChangeStatusView(generics.GenericAPIView):
                 ids = [order.product_id for order in order_products]
                 for id in ids:
                     product = Product.objects.get(id=id)
-                    print(product.quantity)
                     product.quantity -= 1
                     product.save()
-                    print(product.quantity)
 
             return Response("O'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
@@ -293,7 +289,6 @@ class BuyProductViaClickView(generics.GenericAPIView):
 
     def get(self, url):
         url = ClickUz.generate_url(order_id='172', amount='150000', return_url='http://127.0.0.1:8000/api/cart/list/')
-        print(url)
         return Response({'url': url})
 
 
