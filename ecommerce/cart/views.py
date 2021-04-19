@@ -159,7 +159,7 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderProductBetaSerializer
 
-    def post(self, request, pk):
+    def patch(self, request, pk):
         try:
             order_product = OrderProductBeta.objects.get(id=pk)
             count = int(request.data.get('count'))
