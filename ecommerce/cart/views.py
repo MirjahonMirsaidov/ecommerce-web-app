@@ -114,7 +114,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
             except:
                 return Response(msg, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response("Telefon raqam va ism to'ldirilishi shart!", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Telefon raqam, ism va maxsulotlar bo'lishi shart!", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderBetaListView(generics.ListAPIView):
