@@ -291,7 +291,6 @@ class ProductVariationCreateView(generics.GenericAPIView):
 
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
-    # queryset = Product.objects.all()
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', 'product_code', ]
@@ -300,7 +299,7 @@ class ProductListView(generics.ListAPIView):
     CustomPagination.page_size = 10
 
     def get_queryset(self):
-        return Product.objects.select_related('brand', )
+        return Product.objects.select_related('brand', ).order_by('-id')
 
 
 class CodeSizeListView(APIView):
@@ -513,7 +512,6 @@ class ProductImagesUpdateView(APIView):
             if deleted_images:
                 for image in deleted_images:
                     img = image.split('media/')[1]
-                    print(default_storage.delete(img))
                     image = ProductImage.objects.filter(product_id=product, images=img)
                     image.delete()
                     try:
@@ -521,7 +519,6 @@ class ProductImagesUpdateView(APIView):
                         print("% s removed successfully" % img)
                     except:
                         print("File path can not be removed")
-                    # os.remove('http://127.0.0.1:8000/media/' + img)
             if images:
                 for image in images:
                         ProductImage.objects.create(
@@ -552,7 +549,7 @@ class ProductCategoryUpdateView(APIView):
 
                 return Response(status=status.HTTP_200_OK)
             else:
-                return Response("Mahsulotda kamida 1ta kategoriya bolishi kerak")
+                return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak")
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -630,8 +627,18 @@ class StatisticsOrderMoneyView(APIView):
 class SliderCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
-    serializer_class = SliderSerializer
-    queryset = Slider.objects.all()
+    def post(self, request):
+        serializer = SliderSerializer(data=request.data)
+        image = request.data.get('image')
+        text = request.data.get('text')
+        category = request.data.get('category')
+        if serializer.is_valid():
+            check = Slider.objects.filter(text=text, category=category).exists()
+            if not check:
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response("Mavjud slayder qo'shdingiz", status=status.HTTP_400_BAD_REQUEST)
+        return Response("Kiritilgan ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
 
 class SliderDeleteView(generics.DestroyAPIView):
@@ -679,7 +686,6 @@ class AddCommentView(generics.GenericAPIView):
         product_id = request.data.get('product_id')
         message = request.data.get('message')
         point = request.data.get('point')
-        print(product_id)
         if serializer.is_valid():
             comment_check = Comment.objects.filter(product_id=product_id, user_id=user.pk)
             if comment_check.exists():
