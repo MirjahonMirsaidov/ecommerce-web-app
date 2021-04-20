@@ -79,7 +79,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
         phone_number = request.data.get('phone_number')
         products = request.data.get('products')
         
-        if name and phone_number:
+        if name and phone_number and products:
             order = OrderBeta.objects.create(phone_number=phone_number, name=name)
             order.save()
 
