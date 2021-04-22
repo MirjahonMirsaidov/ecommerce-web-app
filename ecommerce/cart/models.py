@@ -30,7 +30,7 @@ class OrderBeta(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=255, default='Kutilmoqda', choices=(
         ("Kutilmoqda", "Kutilmoqda"),
-        ("Amalga oshirilmoqda", "Amalga oshirilmoqda"),
+        ("Jo'natilgan", "Jo'natilgan"),
         ("Bekor qilingan", "Bekor qilingan"),
         ("Tugallangan", "Tugallangan"), ))
 
