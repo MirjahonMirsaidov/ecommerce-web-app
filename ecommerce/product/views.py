@@ -637,7 +637,7 @@ class SliderCreateView(generics.CreateAPIView):
             if not check:
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response("Mavjud slayder qo'shdingiz", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Bazada bor slayder qo'shdingiz", status=status.HTTP_400_BAD_REQUEST)
         return Response("Kiritilgan ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
 
