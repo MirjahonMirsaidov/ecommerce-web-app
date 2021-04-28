@@ -591,9 +591,8 @@ class StatisticsOrderNumberView(APIView):
             for order in OrderBeta.objects.all():
                 date = datetime.datetime.strptime((str(order.created_at)[:10] + ' ' + str(order.created_at)[11:19]),
                                                   '%Y-%m-%d %H:%M:%S')
-                if order.status == 'Tugallangan':
-                    if date > date1:
-                        order_numbers += 1
+                if date > date1:
+                    order_numbers += 1
 
             return Response({'number': order_numbers})
         except:
