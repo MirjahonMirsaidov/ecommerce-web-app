@@ -3,6 +3,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import *
 from main.models import *
@@ -35,6 +36,15 @@ class UserApiView(generics.GenericAPIView):
 class CreateTokenView(ObtainAuthToken):
     serializer_class = AuthTokenSerializer
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class LogoutView(APIView):
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdminUser,)
+
+    def delete(self, request, format=None):
+        request.user.auth_token.delete()
+        return Response("Logout Success")
 
 
 class UserUpdateView(generics.RetrieveUpdateAPIView):
