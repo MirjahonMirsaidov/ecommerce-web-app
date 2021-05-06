@@ -11,7 +11,7 @@ def save_attribute(attributes, product):
 
     for attr in attributes:
         is_main = str(attr['is_main']).capitalize()
-        key = attr['key']
+        key = attr['key'].lower()
         label = attr['label']
         value = attr['value']
         ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
