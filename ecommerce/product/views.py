@@ -453,6 +453,7 @@ class ProductSpecificDetailView(generics.GenericAPIView):
             "price": product.price,
             "quantity": product.quantity,
             "image": "http://127.0.0.1:8000" + product.image.url,
+            "images": get_images(product),
         })
 
 
