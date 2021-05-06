@@ -353,22 +353,23 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+    serializer_class = ProductUpdateSerializer
 
-    def post(self, request, pk):
+    def patch(self, request, pk):
         serializer = ProductUpdateSerializer(data=request.data)
         product = Product.objects.get(id=pk)
-        name = request.data.get('name')
-        description = request.data.get('description')
-        product_code = request.data.get('product_code')
-        price = request.data.get('price')
-        quantity = request.data.get('quantity')
+        product.name = request.data.get('name')
+        product.description = request.data.get('description')
+        product.product_code = request.data.get('product_code')
+        product.price = request.data.get('price')
+        product.quantity = request.data.get('quantity')
         image = request.data.get('image')
-
+        brand = product.brand
         if not image:
             image = product.image
         if serializer.is_valid():
-            serializer.save(name=name, description=description, product_code=product_code, price=price, quantity=quantity, image=image)
+            product.image = image
+            product.save()
             return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
         return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
@@ -531,9 +532,8 @@ class ProductImagesUpdateView(APIView):
                     image = ProductImage.objects.filter(product_id=product, images=img)
                     image.delete()
                     try:
-                        if os.path.isfile(img):
-                            os.remove(img)
-                            print("% s removed successfully" % img)
+                        os.remove(img)
+                        print("% s removed successfully" % img)
                     except:
                         print("File path can not be removed")
             if images:
