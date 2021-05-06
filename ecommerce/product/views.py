@@ -510,7 +510,7 @@ class ProductAttributesUpdateView(APIView):
 
 
 
-            return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", serializer.data, status=status.HTTP_200_OK)
+            return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
         return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
         # except:
         #     return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
@@ -521,29 +521,30 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        # try:
-        product = int(request.data.get('product'))
-        images = request.data.get('images')
-        deleted_images = request.data.get('deleted_images')
-        if deleted_images:
-            for image in deleted_images:
-                img = image.split('media/')[1]
-                image = ProductImage.objects.filter(product_id=product, images=img)
-                image.delete()
-                try:
-                    os.remove(img)
-                    print("% s removed successfully" % img)
-                except:
-                    print("File path can not be removed")
-        if images:
-            for image in images:
-                    ProductImage.objects.create(
-                        product_id=product,
-                        images=get_image_from_data_url(image)[0],
-                    )
-        return Response("Maxsulot ramslari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
-        # except:
-        #     return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            product = int(request.data.get('product'))
+            images = request.data.get('images')
+            deleted_images = request.data.get('deleted_images')
+            if deleted_images:
+                for image in deleted_images:
+                    img = image.split('media/')[1]
+                    image = ProductImage.objects.filter(product_id=product, images=img)
+                    image.delete()
+                    try:
+                        if os.path.isfile(img):
+                            os.remove(img)
+                            print("% s removed successfully" % img)
+                    except:
+                        print("File path can not be removed")
+            if images:
+                for image in images:
+                        ProductImage.objects.create(
+                            product_id=product,
+                            images=get_image_from_data_url(image)[0],
+                        )
+            return Response("Maxsulot rasmlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+        except:
+            return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCategoryUpdateView(APIView):
@@ -565,7 +566,7 @@ class ProductCategoryUpdateView(APIView):
 
                 return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
             else:
-                return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak")
+                return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
