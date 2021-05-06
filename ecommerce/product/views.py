@@ -365,7 +365,7 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
         product.quantity = request.data.get('quantity')
         image = request.data.get('image')
         brand = product.brand
-        if not image:
+        if not image or image=='undefined':
             image = product.image
         if serializer.is_valid():
             product.image = image
