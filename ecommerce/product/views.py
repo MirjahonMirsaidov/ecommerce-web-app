@@ -450,6 +450,7 @@ class ProductSpecificDetailView(generics.GenericAPIView):
             },
             "categories": get_categories(product),
             "attributes": get_attributes(id),
+            "description": product.description,
             "price": product.price,
             "quantity": product.quantity,
             "image": "http://127.0.0.1:8000" + product.image.url,
