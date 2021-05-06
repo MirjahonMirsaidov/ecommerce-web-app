@@ -58,6 +58,13 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProductUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('name', 'description', 'product_code', 'price', 'quantity')
+
+
 class ProductVariationSerializer(serializers.ModelSerializer):
     image = serializers.CharField(max_length=100000000000, allow_blank=True)
     attributes = serializers.ListField()

@@ -356,6 +356,7 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
     serializer_class = ProductSerializer
 
     def post(self, request, pk):
+        serializer = ProductUpdateSerializer(data=request.data)
         product = Product.objects.get(id=pk)
         name = request.data.get('name')
         description = request.data.get('description')
@@ -366,9 +367,12 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
 
         if not image:
             image = product.image
-        product.save(name=name, description=description, product_code=product_code, price=price, quantity=quantity, image=image)
-        return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
+        if serializer.is_valid():
+            product.save(name=name, description=description, product_code=product_code, price=price, quantity=quantity, image=image)
+            return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
+        return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
+        
 class ProductDeleteView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
@@ -488,7 +492,7 @@ class ProductAttributesUpdateView(APIView):
         try:
             attributes = request.data.get('attributes')
             product = int(request.data.get('product'))
-            if attributes:
+            if len(attributes)>1:
                 for item in ProductAttributes.objects.filter(product_id=product):
                         if item.id not in [atr.get('id') for atr in attributes]:
                             item.delete()
@@ -506,10 +510,10 @@ class ProductAttributesUpdateView(APIView):
 
 
 
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", serializer.data, status=status.HTTP_200_OK)
+            return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductImagesUpdateView(APIView):
@@ -537,9 +541,9 @@ class ProductImagesUpdateView(APIView):
                             product_id=product,
                             images=get_image_from_data_url(image)[0],
                         )
-            return Response(status=status.HTTP_200_OK)
+            return Response("Maxsulot ramslari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCategoryUpdateView(APIView):
@@ -559,7 +563,7 @@ class ProductCategoryUpdateView(APIView):
                     CategoryProduct.objects.get_or_create(category_id=category,
                                                          product_id=product)
 
-                return Response(status=status.HTTP_200_OK)
+                return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
             else:
                 return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak")
         except:
@@ -580,10 +584,6 @@ class StatisticsProductsView(APIView):
                 date = datetime.datetime.strptime((str(product.created_at)[:10] + ' ' + str(product.created_at)[11:19]),'%Y-%m-%d %H:%M:%S')
                 if date > date1:
                     product_numbers += 1
-            # for product_variation in ProductAttributes.objects.all():
-            #     date = datetime.datetime.strptime((str(product_variation.created_at)[:10] + ' ' + str(product_variation.created_at)[11:19]), '%Y-%m-%d %H:%M:%S')
-            #     if date > date1:
-            #         product_numbers +=1
 
             return Response({'number': product_numbers})
         except:
