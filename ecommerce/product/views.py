@@ -355,9 +355,19 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
+    def post(self, request, pk):
+        product = Product.objects.get(id=pk)
+        name = request.data.get('name')
+        description = request.data.get('description')
+        product_code = request.data.get('product_code')
+        price = request.data.get('price')
+        quantity = request.data.get('quantity')
+        image = request.data.get('image')
 
+        if not image:
+            image = product.image
+        product.save(name=name, description=description, product_code=product_code, price=price, quantity=quantity, image=image)
+        return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
 
 class ProductDeleteView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
