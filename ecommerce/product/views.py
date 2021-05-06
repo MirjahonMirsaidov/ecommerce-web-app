@@ -368,11 +368,11 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
         if not image:
             image = product.image
         if serializer.is_valid():
-            product.save(name=name, description=description, product_code=product_code, price=price, quantity=quantity, image=image)
+            serializer.save(name=name, description=description, product_code=product_code, price=price, quantity=quantity, image=image)
             return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
         return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
-        
+
 class ProductDeleteView(APIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
@@ -489,31 +489,31 @@ class ProductAttributesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        try:
-            attributes = request.data.get('attributes')
-            product = int(request.data.get('product'))
-            if len(attributes)>1:
-                for item in ProductAttributes.objects.filter(product_id=product):
-                        if item.id not in [atr.get('id') for atr in attributes]:
-                            item.delete()
+        # try:
+        attributes = request.data.get('attributes')
+        product = int(request.data.get('product'))
+        if len(attributes)>1:
+            for item in ProductAttributes.objects.filter(product_id=product):
+                    if item.id not in [atr.get('id') for atr in attributes]:
+                        item.delete()
 
-                for attr in attributes:
-                    attr['product'] = product
-                    if attr.get('id'):
-                        attribut = ProductAttributes.objects.get(id=attr.get('id'))
-                        serializer = ProductAttributesSerializer(attribut, data=attr)
-                    else:
-                        serializer = ProductAttributesSerializer(data=attr)
+            for attr in attributes:
+                attr['product'] = product
+                if attr.get('id'):
+                    attribut = ProductAttributes.objects.get(id=attr.get('id'))
+                    serializer = ProductAttributesSerializer(attribut, data=attr)
+                else:
+                    serializer = ProductAttributesSerializer(data=attr)
 
-                    if serializer.is_valid():
-                        serializer.save()
+                if serializer.is_valid():
+                    serializer.save()
 
 
 
-                return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", serializer.data, status=status.HTTP_200_OK)
-            return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
-        except:
-            return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", serializer.data, status=status.HTTP_200_OK)
+        return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
+        # except:
+        #     return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductImagesUpdateView(APIView):
@@ -521,29 +521,29 @@ class ProductImagesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        try:
-            product = int(request.data.get('product'))
-            images = request.data.get('images')
-            deleted_images = request.data.get('deleted_images')
-            if deleted_images:
-                for image in deleted_images:
-                    img = image.split('media/')[1]
-                    image = ProductImage.objects.filter(product_id=product, images=img)
-                    image.delete()
-                    try:
-                        os.remove(img)
-                        print("% s removed successfully" % img)
-                    except:
-                        print("File path can not be removed")
-            if images:
-                for image in images:
-                        ProductImage.objects.create(
-                            product_id=product,
-                            images=get_image_from_data_url(image)[0],
-                        )
-            return Response("Maxsulot ramslari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
-        except:
-            return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        product = int(request.data.get('product'))
+        images = request.data.get('images')
+        deleted_images = request.data.get('deleted_images')
+        if deleted_images:
+            for image in deleted_images:
+                img = image.split('media/')[1]
+                image = ProductImage.objects.filter(product_id=product, images=img)
+                image.delete()
+                try:
+                    os.remove(img)
+                    print("% s removed successfully" % img)
+                except:
+                    print("File path can not be removed")
+        if images:
+            for image in images:
+                    ProductImage.objects.create(
+                        product_id=product,
+                        images=get_image_from_data_url(image)[0],
+                    )
+        return Response("Maxsulot ramslari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+        # except:
+        #     return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCategoryUpdateView(APIView):
