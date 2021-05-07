@@ -95,23 +95,25 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
 
     def patch(self, request, pk):
         try:
-            sliders = Category.objects.filter(is_slider=True).count()
-            is_slider = request.data.get('is_slider').capitalize()
-            category = Category.objects.get(id=pk)
-            if sliders <= 3 and is_slider=='False':
-                is_slider = True
-                msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
-            else:
-                msg = "Muvaffaqiyatli o'zgartirildi"  
-            category.name = request.data.get('name')
-            category.is_slider = is_slider
-            if request.data.get('image'):
-                category.image = request.data.get('image')
-            category.order = request.data.get('order')
-            category.parent_id = request.data.get('parent_id')
-            category.updated_at = datetime.datetime.now()
-            category.save()
-            return Response(msg, status=status.HTTP_200_OK)
+            if int(pk):
+                sliders = Category.objects.filter(is_slider=True).count()
+                is_slider = request.data.get('is_slider').capitalize()
+                category = Category.objects.get(id=pk)
+                if sliders <= 3 and is_slider=='False':
+                    is_slider = True
+                    msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
+                else:
+                    msg = "Muvaffaqiyatli o'zgartirildi"  
+                category.name = request.data.get('name')
+                category.is_slider = is_slider
+                if request.data.get('image'):
+                    category.image = request.data.get('image')
+                category.order = request.data.get('order')
+                category.parent_id = request.data.get('parent_id')
+                category.updated_at = datetime.datetime.now()
+                category.save()
+                return Response(msg, status=status.HTTP_200_OK)
+            return Response("Xato so'rov jo'natdingiz", status = status.HTTP_404_NOT_FOUND)
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
