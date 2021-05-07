@@ -342,7 +342,10 @@ class CodeSizeListView(APIView):
                     if attr.key == 'size':
                         li.append({
                             "id": product.id,
-                            "codesize": f'kod: {product.product_code}    o`lcham: {attr.value}'
+                            "codesize": f'kod: {product.product_code}    o`lcham: {attr.value}',
+                            "product_code": product.product_code,
+                            "size": attr.value,
+
                         })
         return Response(li)
 
