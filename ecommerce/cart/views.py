@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from random import randint
 from .models import *
 from .serializers import *
+from .pagination import CustomPagination
 from product.models import Product, ProductAttributes
 import datetime
 
@@ -110,7 +111,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
 
                     # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
                     #     order.delete()
-                return Response(status=status.HTTP_201_CREATED)
+                return Response("Buyurtma muvaffaqiyatli yakunlandi", status=status.HTTP_201_CREATED)
             except:
                 return Response(msg, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -121,6 +122,8 @@ class OrderBetaListView(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderBetaSerializer
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
     queryset = OrderBeta.objects.all().order_by('-id')
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filter_fields = ['status', ]
@@ -153,6 +156,14 @@ class OrderBetaDeleteView(generics.DestroyAPIView):
     queryset = OrderBeta.objects.all()
     serializer_class = OrderBetaSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance:
+            self.perform_destroy(instance)
+            return Response("Buyurtma muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class OrderProductBetaUpdateView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -179,11 +190,11 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
                     finish_price += order_product.single_overall_price
                     order.finish_price = finish_price
                     order.save()
-                return Response(order.finish_price, status=status.HTTP_200_OK)
+                return Response("Muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response("Maxsulot sonini kiritmadingiz", status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderProductBetaCreateView(generics.GenericAPIView):
@@ -207,13 +218,13 @@ class OrderProductBetaCreateView(generics.GenericAPIView):
                     order.finish_price += single_overall_price
                     order.save()
 
-                    return Response(order.finish_price, status=status.HTTP_200_OK)
+                    return Response("Buyurtmaga maxsulot muvaffaqiyatli qo'shildi", status=status.HTTP_200_OK)
                 else:
                     return Response("Bu maxsulot buyurtmada mavjud!", status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                return Response("Maxsulot tanlanmagan yoki sonini kiritmadingiz", status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderProductBetaListView(generics.ListAPIView):
@@ -240,9 +251,9 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
                 order.finish_price -= orderproduct.single_overall_price
                 order.save()
 
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response("Muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderProductBetaDetailView(generics.RetrieveAPIView):
@@ -275,9 +286,9 @@ class ChangeStatusView(generics.GenericAPIView):
                     product.quantity -= 1
                     product.save()
 
-            return Response("O'zgartirildi", status=status.HTTP_202_ACCEPTED)
+            return Response("Muvaffaqiyatli o'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
-            return Response("Xatolik bor", status=status.HTTP_400_BAD_REQUEST)
+            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
        
 class BuyProductViaClickView(generics.GenericAPIView):

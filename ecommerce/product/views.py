@@ -25,17 +25,26 @@ class CategoryCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+    def create(self, request, *args, **kwargs):
+        serializer = CategorySerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=False):
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED, headers=headers)
 
 
 class CategoryAllListView(generics.ListAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
 
 
 class CategoryListView(generics.GenericAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-
     def get(self, request):
         parents = []
         parent_categories = Category.objects.filter(parent_id=0)
@@ -73,11 +82,11 @@ class CategoryDeleteView(APIView):
 
     def delete(self, request, id):
         if (not Category.objects.get(id=id).is_slider == True) or Category.objects.filter(is_slider=True).count() > 3:
-            for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
-                category.delete()
-            for item in CategoryProduct.objects.filter(category_id=id):
-                item.delete()
-            return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            if not CategoryProduct.objects.filter(category_id=id):
+                for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
+                    category.delete()
+                return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            return Response("Maxsulotlar bilan bog'lanish mavjud kategoriyani o'chirish mumkin emas", status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Slayder uchun kamida 3 ta kategoriya qolishi kerak", status=status.HTTP_400_BAD_REQUEST)
 
@@ -121,6 +130,8 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
 class CategorySliderView(generics.ListAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.filter(is_slider=True).order_by('-updated_at')[:3]
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
 
 
 class BrandCreateView(generics.CreateAPIView):
@@ -128,11 +139,21 @@ class BrandCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
+    def create(self, request, *args, **kwargs):
+        serializer = BrandSerializer(data=request.data)
+        if not serializer.is_valid(raise_exception=False):
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response("Brend muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED, headers=headers)
 
 
 class BrandListView(generics.ListAPIView):
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
 
 
 class BrandDeleteView(generics.DestroyAPIView):
@@ -140,6 +161,13 @@ class BrandDeleteView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = BrandSerializer
     queryset = Brand.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance:
+            self.perform_destroy(instance)
+            return Response("Brend muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCreateView(generics.CreateAPIView):
@@ -233,7 +261,7 @@ class ProductCreateView(generics.CreateAPIView):
                             return Response(serializer.data, status=status.HTTP_200_OK)
                         return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
                     else:
-                        return Response("Bu maxsulot allaqachon yaratilgan!", status=status.HTTP_400_BAD_REQUEST)
+                        return Response("Bu maxsulot allaqachon qo'shilgan!", status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response("Rasmlar soni 5 dan ko'p bolishi mumkin emas")
             return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
@@ -282,9 +310,9 @@ class ProductVariationCreateView(generics.GenericAPIView):
                     else:
                         images = ProductImage.objects.filter(product_id=parent_id)
                         save_image(images, var_product)
-                    return Response(status=status.HTTP_200_OK)
+                    return Response("Muvaffaqiyatli qo'shildi", status=status.HTTP_200_OK)
                 else:
-                    return Response("Bu maxsulot variatsiya oldin yaratilgan", status=status.HTTP_400_BAD_REQUEST)
+                    return Response("Bu maxsulot variatsiya oldin qo'shilgan", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas", status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -373,7 +401,7 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
             if serializer.is_valid():
                 product.image = image
                 product.save()
-                return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
+                return Response("Maxsulot muvaffaqiyatli o'zgartirildi.", status=status.HTTP_200_OK)
             return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
@@ -488,6 +516,14 @@ class ProductAttributesDeleteView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = ProductAttributesSerializer
     queryset = ProductAttributes.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance:
+            self.perform_destroy(instance)
+            return Response("Attribut muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class ProductAttributesUpdateView(APIView):
@@ -653,8 +689,8 @@ class SliderCreateView(generics.CreateAPIView):
             check = Slider.objects.filter(text=text, category=category).exists()
             if not check:
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response("Slayder oldin yaratilgan", status=status.HTTP_400_BAD_REQUEST)
+                return Response("Slayder muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+            return Response("Slayder oldin qo'shilgan", status=status.HTTP_400_BAD_REQUEST)
         return Response("Kiritilgan ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -663,6 +699,14 @@ class SliderDeleteView(generics.DestroyAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = SliderSerializer
     queryset = Slider.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance:
+            self.perform_destroy(instance)
+            return Response("Slayder muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class SliderDetailView(generics.RetrieveAPIView):
@@ -677,9 +721,12 @@ class SliderListView(generics.ListAPIView):
     queryset = Slider.objects.all().order_by('-id')[:5]
 
 
+
 class SliderAllListView(generics.ListAPIView):
     serializer_class = SliderGetSerializer
     queryset = Slider.objects.all()
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
 
 
 class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
