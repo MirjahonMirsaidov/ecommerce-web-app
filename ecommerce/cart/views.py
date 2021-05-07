@@ -111,7 +111,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
 
                     # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
                     #     order.delete()
-                return Response("Buyurtma muvaffaqiyatli yakunlandi", status=status.HTTP_201_CREATED)
+                return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
             except:
                 return Response(msg, status=status.HTTP_400_BAD_REQUEST)
         else:
