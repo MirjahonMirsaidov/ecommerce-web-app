@@ -243,15 +243,17 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
     def delete(self, request, id):
         try:
             orderproduct = OrderProductBeta.objects.get(id=id)
-            orderproduct.delete()
             order = OrderBeta.objects.get(id=orderproduct.order_id)
+            orderproduct.delete()
+            msg = "Buyurtmadagi maxsulot o'chirildi"
             if not OrderProductBeta.objects.filter(order=order.id).exists():
                 order.delete()
+                msg = "Buyurtmada maxsulot qolmadi. Buyurtma ham o'chiriladi"
             else:
                 order.finish_price -= orderproduct.single_overall_price
                 order.save()
 
-            return Response("Muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            return Response(msg, status=status.HTTP_204_NO_CONTENT)
         except:
             return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
