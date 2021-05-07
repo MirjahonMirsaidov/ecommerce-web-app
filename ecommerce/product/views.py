@@ -136,15 +136,17 @@ class BrandCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = BrandSerializer
-    queryset = Brand.objects.all()
-    def create(self, request, *args, **kwargs):
+    def post(self, request):
         serializer = BrandSerializer(data=request.data)
-        if not serializer.is_valid(raise_exception=False):
-            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response("Brend muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED, headers=headers)
+        brand = request.data.get('name').lower()
+        if serializer.is_valid():
+            brands = Brand.objects.all()
+            for bd in brands:
+                if bd.name.lower() == brand:
+                    return Response("Mavjud brend qo'shildi", status=status.HTTP_400_BAD_REQUEST)
+            Brand.objects.create(name=brand)
+            return Response("Brend muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+        return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class BrandListView(generics.ListAPIView):
