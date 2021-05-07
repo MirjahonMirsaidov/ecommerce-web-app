@@ -594,26 +594,24 @@ class ProductCategoryUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        try:
-            product = request.data.get('product')
-            categories_list = request.data.get('categories')
-            if categories_list:
-                if type(categories_list) == int:
-                    print(type(categories_list))
-                    category_products = CategoryProduct.objects.filter(product_id=product)
-                    for item in category_products:
-                        if item.category_id not in categories_list:
-                            item.delete()
-                    for category in categories_list:
-                        CategoryProduct.objects.get_or_create(category_id=category,
-                                                         product_id=product)
-                    return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
-                print(type(categories_list))
-                return Response("Kategoriyalar ro'yxati noto'g'ri kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response("Ma'lumotlar xato kiritilgan",status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        product = request.data.get('product')
+        categories_list = request.data.get('categories')
+        if categories_list:
+            if all(isinstance(category, int) for category in categories_list):
+                category_products = CategoryProduct.objects.filter(product_id=product)
+                for item in category_products:
+                    if item.category_id not in categories_list:
+                        item.delete()
+                for category in categories_list:
+                    CategoryProduct.objects.get_or_create(category_id=category,
+                                                            product_id=product)
+                return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+            return Response("Kategoriyalar ro'yxati noto'g'ri kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
+        # except:
+        #     return Response("Ma'lumotlar xato kiritilgan",status=status.HTTP_400_BAD_REQUEST)
 
 
 class StatisticsProductsView(APIView):
