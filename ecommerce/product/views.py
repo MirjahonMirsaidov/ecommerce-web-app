@@ -104,25 +104,23 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
 
     def patch(self, request, pk):
         try:
-            if int(pk):
-                sliders = Category.objects.filter(is_slider=True).count()
-                is_slider = request.data.get('is_slider').capitalize()
-                category = Category.objects.get(id=pk)
-                if sliders <= 3 and is_slider=='False':
-                    is_slider = True
-                    msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
-                else:
-                    msg = "Muvaffaqiyatli o'zgartirildi"  
-                category.name = request.data.get('name')
-                category.is_slider = is_slider
-                if request.data.get('image'):
-                    category.image = request.data.get('image')
-                category.order = request.data.get('order')
-                category.parent_id = request.data.get('parent_id')
-                category.updated_at = datetime.datetime.now()
-                category.save()
-                return Response(msg, status=status.HTTP_200_OK)
-            return Response("Xato so'rov jo'natdingiz", status = status.HTTP_404_NOT_FOUND)
+            sliders = Category.objects.filter(is_slider=True).count()
+            is_slider = request.data.get('is_slider').capitalize()
+            category = Category.objects.get(id=pk)
+            if sliders <= 3 and is_slider=='False':
+                is_slider = True
+                msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
+            else:
+                msg = "Muvaffaqiyatli o'zgartirildi"  
+            category.name = request.data.get('name')
+            category.is_slider = is_slider
+            if request.data.get('image'):
+                category.image = request.data.get('image')
+            category.order = request.data.get('order')
+            category.parent_id = request.data.get('parent_id')
+            category.updated_at = datetime.datetime.now()
+            category.save()
+            return Response(msg, status=status.HTTP_200_OK)
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
@@ -600,15 +598,16 @@ class ProductCategoryUpdateView(APIView):
             product = request.data.get('product')
             categories_list = request.data.get('categories')
             if categories_list:
-                category_products = CategoryProduct.objects.filter(product_id=product)
-                for item in category_products:
-                    if item.category_id not in categories_list:
-                        item.delete()
-                for category in categories_list:
-                    CategoryProduct.objects.get_or_create(category_id=category,
+                if type(categories_list) == int:
+                    category_products = CategoryProduct.objects.filter(product_id=product)
+                    for item in category_products:
+                        if item.category_id not in categories_list:
+                            item.delete()
+                    for category in categories_list:
+                        CategoryProduct.objects.get_or_create(category_id=category,
                                                          product_id=product)
-
-                return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+                    return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+                return Response("Kategoriyalar ro'yxati noto'g'ri kiritilgan", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -741,7 +740,7 @@ class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
     def patch(self, request, *args, **kwargs):
         self.partial_update(request, *args, **kwargs)
         return Response("Slayder muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
-        
+
 
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
