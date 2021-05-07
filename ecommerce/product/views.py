@@ -599,6 +599,7 @@ class ProductCategoryUpdateView(APIView):
             categories_list = request.data.get('categories')
             if categories_list:
                 if type(categories_list) == int:
+                    print(type(categories_list))
                     category_products = CategoryProduct.objects.filter(product_id=product)
                     for item in category_products:
                         if item.category_id not in categories_list:
@@ -607,6 +608,7 @@ class ProductCategoryUpdateView(APIView):
                         CategoryProduct.objects.get_or_create(category_id=category,
                                                          product_id=product)
                     return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+                print(type(categories_list))
                 return Response("Kategoriyalar ro'yxati noto'g'ri kiritilgan", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
