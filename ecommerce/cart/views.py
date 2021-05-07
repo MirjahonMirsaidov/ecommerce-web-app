@@ -161,7 +161,7 @@ class OrderBetaDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         if instance:
             self.perform_destroy(instance)
-            return Response("Buyurtma muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            return Response("Buyurtma muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
         return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 

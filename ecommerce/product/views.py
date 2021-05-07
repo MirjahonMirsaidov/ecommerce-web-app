@@ -85,7 +85,7 @@ class CategoryDeleteView(APIView):
             if not CategoryProduct.objects.filter(category_id=id):
                 for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
                     category.delete()
-                return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+                return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
             return Response("Maxsulotlar bilan bog'lanish mavjud kategoriyani o'chirish mumkin emas", status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response("Slayder uchun kamida 3 ta kategoriya qolishi kerak", status=status.HTTP_400_BAD_REQUEST)
@@ -164,7 +164,7 @@ class BrandDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         if instance:
             self.perform_destroy(instance)
-            return Response("Brend muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            return Response("Brend muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
         return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -417,7 +417,7 @@ class ProductDeleteView(APIView):
         product.delete()
         for item in CategoryProduct.objects.filter(product_id=pk):
             item.delete()
-        return Response("Maxsulot o'chirildi", status=status.HTTP_204_NO_CONTENT)
+        return Response("Maxsulot o'chirildi", status=status.HTTP_200_OK)
 
 
 class ProductDetailView(generics.GenericAPIView):
@@ -522,7 +522,7 @@ class ProductAttributesDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         if instance:
             self.perform_destroy(instance)
-            return Response("Attribut muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            return Response("Attribut muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
         return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -706,7 +706,7 @@ class SliderDeleteView(generics.DestroyAPIView):
         instance = self.get_object()
         if instance:
             self.perform_destroy(instance)
-            return Response("Slayder muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
+            return Response("Slayder muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
         return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
 
