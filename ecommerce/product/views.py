@@ -77,9 +77,9 @@ class CategoryDeleteView(APIView):
                 category.delete()
             for item in CategoryProduct.objects.filter(category_id=id):
                 item.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response("O'chirib bo'lmaydi")
+            return Response("Slayder uchun kamida 3 ta kategoriya qolishi kerak", status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
@@ -113,7 +113,7 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
             category.save()
             return Response(msg, status=status.HTTP_200_OK)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategorySliderView(generics.ListAPIView):
@@ -234,9 +234,9 @@ class ProductCreateView(generics.CreateAPIView):
                         return Response("Bu maxsulot allaqachon yaratilgan!", status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response("Rasmlar soni 5 dan ko'p bolishi mumkin emas")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response("Error", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductVariationCreateView(generics.GenericAPIView):
@@ -282,11 +282,11 @@ class ProductVariationCreateView(generics.GenericAPIView):
                         save_image(images, var_product)
                     return Response(status=status.HTTP_200_OK)
                 else:
-                    return Response("Bu maxsulot variatsiya allaqachon yaratilgan")
+                    return Response("Bu maxsulot variatsiya oldin yaratilgan", status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas")
+                return Response("Rasmlar soni 8tadan ko'p bolishi mumkin emas", status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductListView(generics.ListAPIView):
@@ -356,22 +356,25 @@ class ProductUpdateView(GenericAPIView, UpdateModelMixin):
     serializer_class = ProductUpdateSerializer
 
     def patch(self, request, pk):
-        serializer = ProductUpdateSerializer(data=request.data)
-        product = Product.objects.get(id=pk)
-        product.name = request.data.get('name')
-        product.description = request.data.get('description')
-        product.product_code = request.data.get('product_code')
-        product.price = request.data.get('price')
-        product.quantity = request.data.get('quantity')
-        image = request.data.get('image')
-        brand = product.brand
-        if image == 'null' or image=='undefined':
-            image = product.image
-        if serializer.is_valid():
-            product.image = image
-            product.save()
-            return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
-        return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            serializer = ProductUpdateSerializer(data=request.data)
+            product = Product.objects.get(id=pk)
+            product.name = request.data.get('name')
+            product.description = request.data.get('description')
+            product.product_code = request.data.get('product_code')
+            product.price = request.data.get('price')
+            product.quantity = request.data.get('quantity')
+            image = request.data.get('image')
+            brand = product.brand
+            if image == 'null' or image=='undefined':
+                image = product.image
+            if serializer.is_valid():
+                product.image = image
+                product.save()
+                return Response("Maxsulot o'zgartirildi.", status=status.HTTP_200_OK)
+            return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductDeleteView(APIView):
@@ -383,7 +386,7 @@ class ProductDeleteView(APIView):
         product.delete()
         for item in CategoryProduct.objects.filter(product_id=pk):
             item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response("Maxsulot o'chirildi", status=status.HTTP_204_NO_CONTENT)
 
 
 class ProductDetailView(generics.GenericAPIView):
@@ -445,7 +448,7 @@ class ProductDetailView(generics.GenericAPIView):
                 "variations": variations_list,
             })
         except:
-            return Response("Xatolik yuz berdi", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumot topilmadi", status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductSpecificDetailView(generics.GenericAPIView):
@@ -490,31 +493,31 @@ class ProductAttributesUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        # try:
-        attributes = request.data.get('attributes')
-        product = int(request.data.get('product'))
-        if len(attributes)>1:
-            for item in ProductAttributes.objects.filter(product_id=product):
-                    if item.id not in [atr.get('id') for atr in attributes]:
-                        item.delete()
+        try:
+            attributes = request.data.get('attributes')
+            product = int(request.data.get('product'))
+            if len(attributes)>1:
+                for item in ProductAttributes.objects.filter(product_id=product):
+                        if item.id not in [atr.get('id') for atr in attributes]:
+                            item.delete()
 
-            for attr in attributes:
-                attr['product'] = product
-                if attr.get('id'):
-                    attribut = ProductAttributes.objects.get(id=attr.get('id'))
-                    serializer = ProductAttributesSerializer(attribut, data=attr)
-                else:
-                    serializer = ProductAttributesSerializer(data=attr)
+                for attr in attributes:
+                    attr['product'] = product
+                    if attr.get('id'):
+                        attribut = ProductAttributes.objects.get(id=attr.get('id'))
+                        serializer = ProductAttributesSerializer(attribut, data=attr)
+                    else:
+                        serializer = ProductAttributesSerializer(data=attr)
 
-                if serializer.is_valid():
-                    serializer.save()
+                    if serializer.is_valid():
+                        serializer.save()
 
 
 
-            return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
-        return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
-        # except:
-        #     return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+                return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+            return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductImagesUpdateView(APIView):
@@ -542,9 +545,9 @@ class ProductImagesUpdateView(APIView):
                             product_id=product,
                             images=get_image_from_data_url(image)[0],
                         )
-            return Response("Maxsulot rasmlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+            return Response("Maxsulot rasmlari muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
         except:
-            return Response("O'zgartirishda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProductCategoryUpdateView(APIView):
@@ -568,7 +571,7 @@ class ProductCategoryUpdateView(APIView):
             else:
                 return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
         except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan",status=status.HTTP_400_BAD_REQUEST)
 
 
 class StatisticsProductsView(APIView):
@@ -649,7 +652,7 @@ class SliderCreateView(generics.CreateAPIView):
             if not check:
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response("Bazada bor slayder qo'shdingiz", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Slayder oldin yaratilgan", status=status.HTTP_400_BAD_REQUEST)
         return Response("Kiritilgan ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
 
 
