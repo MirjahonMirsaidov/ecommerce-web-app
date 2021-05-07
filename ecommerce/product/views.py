@@ -254,14 +254,14 @@ class ProductCreateView(generics.CreateAPIView):
                                                 return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
 
                             except:
-                                return Response("Produkt variatsiyalarda xatolik bor")
+                                return Response("Produkt variatsiyalarda xatolik bor", status=status.HTTP_400_BAD_REQUEST)
 
                             return Response(serializer.data, status=status.HTTP_200_OK)
                         return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
                     else:
                         return Response("Bu maxsulot allaqachon qo'shilgan!", status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    return Response("Rasmlar soni 5 dan ko'p bolishi mumkin emas")
+                    return Response("Rasmlar soni 5 dan ko'p bolishi mumkin emas", status=status.HTTP_400_BAD_REQUEST)
             return Response("Ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
