@@ -288,7 +288,7 @@ class ChangeStatusView(generics.GenericAPIView):
                     product.quantity -= 1
                     product.save()
 
-            return Response("Muvaffaqiyatli o'zgartirildi", status=status.HTTP_202_ACCEPTED)
+            return Response("Status muvaffaqiyatli o'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
             return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
