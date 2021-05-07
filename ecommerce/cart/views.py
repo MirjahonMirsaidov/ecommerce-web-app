@@ -254,7 +254,7 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
                 order.finish_price -= orderproduct.single_overall_price
                 order.save()
 
-            return Response(msg, status=status.HTTP_204_NO_CONTENT)
+            return Response(msg, status=status.HTTP_200_OK)
         except:
             return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
 
