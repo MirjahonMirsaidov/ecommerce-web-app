@@ -739,8 +739,9 @@ class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
     queryset = Slider.objects.all()
 
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-
+        self.partial_update(request, *args, **kwargs)
+        return Response("Slayder muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+        
 
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer

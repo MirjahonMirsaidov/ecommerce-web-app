@@ -147,8 +147,9 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     serializer_class = OrderBetaSerializer
 
     def patch(self, request, *args, **kwargs):
-        return self.partial_update(request, *args, **kwargs)
-
+        self.partial_update(request, *args, **kwargs)
+        return Response("Buyurtma muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+        
 
 class OrderBetaDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
