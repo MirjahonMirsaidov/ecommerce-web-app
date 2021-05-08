@@ -25,14 +25,25 @@ class CategoryCreateView(generics.CreateAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
-    def create(self, request, *args, **kwargs):
-        serializer = CategorySerializer(data=request.data)
-        if not serializer.is_valid(raise_exception=False):
+    def post(self, request):
+        try:
+            name = request.data.get('name').lower()
+            parent_id = request.data.get('parent_id')
+            image = request.data.get('image')
+            order = request.data.get('order')
+            is_slider = request.data.get('is_slider')
+            if not parent_id:
+                parent_id = 0
+            if not order:
+                order = 0
+            if name and image:
+                if not Category.objects.filter(name=name, parent_id=parent_id, order=order, is_slider=is_slider):
+                    Category.objects.get_or_create(name=name, parent_id=parent_id, image=image, order=order, is_slider=is_slider)
+                    return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+                return Response("Mavjud kategoriyani qo'shdingiz!", status=status.HTTP_400_BAD_REQUEST)
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED, headers=headers)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryAllListView(generics.ListAPIView):
