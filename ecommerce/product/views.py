@@ -32,9 +32,9 @@ class CategoryCreateView(generics.CreateAPIView):
             image = request.data.get('image')
             order = request.data.get('order')
             is_slider = request.data.get('is_slider')
-            if not parent_id:
+            if parent_id == 'null':
                 parent_id = 0
-            if not order:
+            if order == 'null':
                 order = 0
             if name and image:
                 if not Category.objects.filter(name=name, parent_id=parent_id, order=order, is_slider=is_slider):
