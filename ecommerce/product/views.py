@@ -140,14 +140,17 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
                 msg = "Muvaffaqiyatli o'zgartirildi"
             order = request.data.get('order')
             parent_id = request.data.get('parent_id')
-            category.name = request.data.get('name')
+            image = request.data.get('image')
+            name = request.data.get('name')
             if order == 'null':
                 order = 0
             if parent_id == 'null':
                 parent_id = 0
+            if image == 'null':
+                image = category.image
+            category.image = image
             category.is_slider = is_slider
-            if request.data.get('image'):
-                category.image = request.data.get('image')
+            category.name = name
             category.order = order
             category.parent_id = parent_id
             category.updated_at = datetime.datetime.now()
