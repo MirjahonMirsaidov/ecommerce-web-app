@@ -761,6 +761,7 @@ class SliderCreateView(generics.CreateAPIView):
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
+
 class SliderDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
@@ -821,6 +822,7 @@ class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
             return Response("Slayder muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
