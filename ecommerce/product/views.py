@@ -31,7 +31,7 @@ class CategoryCreateView(generics.CreateAPIView):
         parent_id = request.data.get('parent_id')
         image = request.data.get('image')
         order = request.data.get('order')
-        is_slider = request.data.get('is_slider')
+        is_slider = request.data.get('is_slider').capitalize()
         if parent_id == 'null':
             parent_id = 0
         if order == 'null':
