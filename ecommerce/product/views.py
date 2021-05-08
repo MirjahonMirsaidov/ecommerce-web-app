@@ -130,10 +130,10 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
 
     def patch(self, request, pk):
         try:
+            category = Category.objects.get(id=pk)
             sliders = Category.objects.filter(is_slider=True).count()
             is_slider = request.data.get('is_slider').capitalize()
-            category = Category.objects.get(id=pk)
-            if sliders <= 3 and is_slider=='False':
+            if sliders == 3 and is_slider=='False' and category.is_slider == True:
                 is_slider = True
                 msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
             else:
@@ -146,14 +146,13 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
                 order = 0
             if parent_id == 'null':
                 parent_id = 0
-            if image == 'null':
+            if image == 'null' or not image:
                 image = category.image
             category.image = image
             category.is_slider = is_slider
             category.name = name
             category.order = order
             category.parent_id = parent_id
-            category.updated_at = datetime.datetime.now()
             category.save()
             return Response(msg, status=status.HTTP_200_OK)
         except:

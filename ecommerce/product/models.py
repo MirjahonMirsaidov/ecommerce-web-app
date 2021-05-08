@@ -19,7 +19,7 @@ class Category(models.Model):
     image = models.ImageField()
     order = models.IntegerField(default=0)
     is_slider = models.BooleanField(default=False)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(
         default='',
         editable=False,
