@@ -48,43 +48,52 @@ class CategoryCreateView(generics.CreateAPIView):
 
 class CategoryAllListView(generics.ListAPIView):
     serializer_class = CategorySerializer
-    queryset = Category.objects.all()
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
+    def get_queryset(self):
+        try:
+            return Category.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CategoryListView(generics.GenericAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     def get(self, request):
-        parents = []
-        parent_categories = Category.objects.filter(parent_id=0)
-        for pc in parent_categories:
-            childs = []
-            for child in Category.objects.filter(parent_id=pc.id):
-                childs.append({
-                    "id": child.id,
-                    "parent_id": child.parent_id,
-                    "name": child.name,
-                    "is_slider": child.is_slider,
-                    "slug": child.slug,
+        try:
+            parents = []
+            parent_categories = Category.objects.filter(parent_id=0)
+            for pc in parent_categories:
+                childs = []
+                for child in Category.objects.filter(parent_id=pc.id):
+                    childs.append({
+                        "id": child.id,
+                        "parent_id": child.parent_id,
+                        "name": child.name,
+                        "is_slider": child.is_slider,
+                        "slug": child.slug,
+                    })
+                parents.append({
+                    "id": pc.id,
+                    "name": pc.name,
+                    "is_slider": pc.is_slider,
+                    "slug": pc.slug,
+                    "childs": childs,
                 })
-            parents.append({
-                "id": pc.id,
-                "name": pc.name,
-                "is_slider": pc.is_slider,
-                "slug": pc.slug,
-                "childs": childs,
-            })
-        return Response(parents)
-
+            return Response(parents)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class CategoryChildListView(APIView):
 
     def get(self, request, id):
-        categories = Category.objects.filter(parent_id=id)
-        categories = CategorySerializer(categories, many=True)
-        return Response(categories.data)
+        try:
+            categories = Category.objects.filter(parent_id=id)
+            categories = CategorySerializer(categories, many=True)
+            return Response(categories.data)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CategoryDeleteView(APIView):
@@ -92,20 +101,26 @@ class CategoryDeleteView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def delete(self, request, id):
-        if (not Category.objects.get(id=id).is_slider == True) or Category.objects.filter(is_slider=True).count() > 3:
-            if not CategoryProduct.objects.filter(category_id=id):
-                for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
-                    category.delete()
-                return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
-            return Response("Maxsulotlar bilan bog'lanish mavjud kategoriyani o'chirish mumkin emas", status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response("Slayder uchun kamida 3 ta kategoriya qolishi kerak", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if (not Category.objects.get(id=id).is_slider == True) or Category.objects.filter(is_slider=True).count() > 3:
+                if not CategoryProduct.objects.filter(category_id=id):
+                    for category in Category.objects.filter(Q(id=id) | Q(parent_id=id)):
+                        category.delete()
+                    return Response("Kategoriya muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
+                return Response("Maxsulotlar bilan bog'lanish mavjud kategoriyani o'chirish mumkin emas", status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("Slayder uchun kamida 3 ta kategoriya qolishi kerak", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CategoryDetailView(generics.RetrieveAPIView):
     serializer_class = CategorySerializer
-    queryset = Category.objects.all()
-
+    def get_queryset(self):
+        try:
+            return Category.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -138,34 +153,42 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
 
 class CategorySliderView(generics.ListAPIView):
     serializer_class = CategorySerializer
-    queryset = Category.objects.filter(is_slider=True).order_by('-updated_at')[:3]
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
-
+    def get_queryset(self):
+        try:
+            return Category.objects.filter(is_slider=True).order_by('-updated_at')[:3]
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class BrandCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = BrandSerializer
     def post(self, request):
-        serializer = BrandSerializer(data=request.data)
-        brand = request.data.get('name').lower()
-        if serializer.is_valid():
-            brands = Brand.objects.all()
-            for bd in brands:
-                if bd.name.lower() == brand:
-                    return Response("Mavjud brend qo'shildi", status=status.HTTP_400_BAD_REQUEST)
-            Brand.objects.create(name=brand)
-            return Response("Brend muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
-        return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = BrandSerializer(data=request.data)
+            brand = request.data.get('name').lower()
+            if serializer.is_valid():
+                brands = Brand.objects.all()
+                for bd in brands:
+                    if bd.name.lower() == brand:
+                        return Response("Mavjud brend qo'shildi", status=status.HTTP_400_BAD_REQUEST)
+                Brand.objects.create(name=brand)
+                return Response("Brend muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 class BrandListView(generics.ListAPIView):
     serializer_class = BrandSerializer
-    queryset = Brand.objects.all()
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
-
+    def get_queryset(self):
+        try:
+            queryset = Brand.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class BrandDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -174,11 +197,14 @@ class BrandDeleteView(generics.DestroyAPIView):
     queryset = Brand.objects.all()
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance:
-            self.perform_destroy(instance)
-            return Response("Brend muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
-        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            instance = self.get_object()
+            if instance:
+                self.perform_destroy(instance)
+                return Response("Brend muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
+            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductCreateView(generics.CreateAPIView):
@@ -340,25 +366,31 @@ class ProductListView(generics.ListAPIView):
     CustomPagination.page_size = 10
 
     def get_queryset(self):
-        return Product.objects.select_related('brand', ).order_by('-id')
+        try:
+            return Product.objects.select_related('brand', ).order_by('-id')
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CodeSizeListView(APIView):
 
     def get(self, request):
-        li = []
-        for product in Product.objects.all():
-            if ProductAttributes.objects.filter(product=product).exists():
-                for attr in ProductAttributes.objects.filter(product=product):
-                    if attr.key == 'size':
-                        li.append({
-                            "id": product.id,
-                            "codesize": f'kod: {product.product_code}    o`lcham: {attr.value}',
-                            "product_code": product.product_code,
-                            "size": attr.value,
+        try:
+            li = []
+            for product in Product.objects.all():
+                if ProductAttributes.objects.filter(product=product).exists():
+                    for attr in ProductAttributes.objects.filter(product=product):
+                        if attr.key == 'size':
+                            li.append({
+                                "id": product.id,
+                                "codesize": f'kod: {product.product_code}    o`lcham: {attr.value}',
+                                "product_code": product.product_code,
+                                "size": attr.value,
 
-                        })
-        return Response(li)
+                            })
+            return Response(li)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductsByCategoryView(generics.ListAPIView):
@@ -366,25 +398,27 @@ class ProductsByCategoryView(generics.ListAPIView):
     queryset = Product.objects.all()
 
     def get_queryset(self):
-        slug = self.kwargs['slug']
-        category = Category.objects.get(slug=slug)
-        products = []
-        if category.parent_id:
-            categories = CategoryProduct.objects.filter(category_id=category.id).values('product_id')
+        try:
+            slug = self.kwargs['slug']
+            category = Category.objects.get(slug=slug)
+            products = []
+            if category.parent_id:
+                categories = CategoryProduct.objects.filter(category_id=category.id).values('product_id')
 
-            for category in categories:
-                product = Product.objects.get(id=category.get('product_id')).id
-                products.append(product)
-        else:
-            categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id)).values('id')
-            for item in categories:
-                singl = CategoryProduct.objects.filter(category_id=item.get('id'))
-                for iterr in singl:
-                    product = Product.objects.get(id=iterr.product_id).id
+                for category in categories:
+                    product = Product.objects.get(id=category.get('product_id')).id
                     products.append(product)
+            else:
+                categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id)).values('id')
+                for item in categories:
+                    singl = CategoryProduct.objects.filter(category_id=item.get('id'))
+                    for iterr in singl:
+                        product = Product.objects.get(id=iterr.product_id).id
+                        products.append(product)
 
-        return Product.objects.filter(id__in=products).select_related('brand')
-
+            return Product.objects.filter(id__in=products).select_related('brand')
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', ]
@@ -426,11 +460,14 @@ class ProductDeleteView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def delete(self, request, pk):
-        product = Product.objects.get(pk=pk)
-        product.delete()
-        for item in CategoryProduct.objects.filter(product_id=pk):
-            item.delete()
-        return Response("Maxsulot o'chirildi", status=status.HTTP_200_OK)
+        try:
+            product = Product.objects.get(pk=pk)
+            product.delete()
+            for item in CategoryProduct.objects.filter(product_id=pk):
+                item.delete()
+            return Response("Maxsulot o'chirildi", status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductDetailView(generics.GenericAPIView):
@@ -492,7 +529,7 @@ class ProductDetailView(generics.GenericAPIView):
                 "variations": variations_list,
             })
         except:
-            return Response("Ma'lumot topilmadi", status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductSpecificDetailView(generics.GenericAPIView):
@@ -500,30 +537,35 @@ class ProductSpecificDetailView(generics.GenericAPIView):
     queryset = Product.objects.all()
 
     def get(self, request, id):
-        product = Product.objects.get(id=id)
+        try:
+            product = Product.objects.get(id=id)
 
-        return Response({
-            "id": product.id,
-            "name": product.name,
-            "product_code": product.product_code,
-            "brand": {
-                "id": product.brand.id,
-                "name": product.brand.name,
-            },
-            "categories": get_categories(product),
-            "attributes": get_attributes(id),
-            "description": product.description,
-            "price": product.price,
-            "quantity": product.quantity,
-            "image": "http://127.0.0.1:8000" + product.image.url,
-            "images": get_images(product),
-        })
-
+            return Response({
+                "id": product.id,
+                "name": product.name,
+                "product_code": product.product_code,
+                "brand": {
+                    "id": product.brand.id,
+                    "name": product.brand.name,
+                },
+                "categories": get_categories(product),
+                "attributes": get_attributes(id),
+                "description": product.description,
+                "price": product.price,
+                "quantity": product.quantity,
+                "image": "http://127.0.0.1:8000" + product.image.url,
+                "images": get_images(product),
+            })
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class ProductAttributesListView(generics.ListAPIView):
     serializer_class = ProductAttributesSerializer
-    queryset = ProductAttributes.objects.all()
-
+    def get_queryset(self):
+        try:
+            return ProductAttributes.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class ProductAttributesDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -532,12 +574,14 @@ class ProductAttributesDeleteView(generics.DestroyAPIView):
     queryset = ProductAttributes.objects.all()
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance:
-            self.perform_destroy(instance)
-            return Response("Attribut muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
-        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            instance = self.get_object()
+            if instance:
+                self.perform_destroy(instance)
+                return Response("Attribut muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
+            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductAttributesUpdateView(APIView):
@@ -567,7 +611,7 @@ class ProductAttributesUpdateView(APIView):
 
 
                 return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
-            return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_404_NOT_FOUND)
+            return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
@@ -607,24 +651,24 @@ class ProductCategoryUpdateView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def post(self, request):
-        # try:
-        product = request.data.get('product')
-        categories_list = request.data.get('categories')
-        if categories_list:
-            if all(isinstance(category, int) for category in categories_list):
-                category_products = CategoryProduct.objects.filter(product_id=product)
-                for item in category_products:
-                    if item.category_id not in categories_list:
-                        item.delete()
-                for category in categories_list:
-                    CategoryProduct.objects.get_or_create(category_id=category,
-                                                            product_id=product)
-                return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
-            return Response("Kategoriyalar ro'yxati noto'g'ri kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
-        # except:
-        #     return Response("Ma'lumotlar xato kiritilgan",status=status.HTTP_400_BAD_REQUEST)
+        try:
+            product = request.data.get('product')
+            categories_list = request.data.get('categories')
+            if categories_list:
+                if all(isinstance(category, int) for category in categories_list):
+                    category_products = CategoryProduct.objects.filter(product_id=product)
+                    for item in category_products:
+                        if item.category_id not in categories_list:
+                            item.delete()
+                    for category in categories_list:
+                        CategoryProduct.objects.get_or_create(category_id=category,
+                                                                product_id=product)
+                    return Response("Maxsulot kategoriyalari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
+                return Response("Kategoriyalar ro'yxati noto'g'ri kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("Mahsulotda kamida 1ta kategoriya bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan",status=status.HTTP_400_BAD_REQUEST)
 
 
 class StatisticsProductsView(APIView):
@@ -696,18 +740,20 @@ class SliderCreateView(generics.CreateAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     def post(self, request):
-        serializer = SliderSerializer(data=request.data)
-        image = request.data.get('image')
-        text = request.data.get('text')
-        category = request.data.get('category')
-        if serializer.is_valid():
-            check = Slider.objects.filter(text=text, category=category).exists()
-            if not check:
-                serializer.save()
-                return Response("Slayder muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
-            return Response("Slayder oldin qo'shilgan", status=status.HTTP_400_BAD_REQUEST)
-        return Response("Kiritilgan ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            serializer = SliderSerializer(data=request.data)
+            image = request.data.get('image')
+            text = request.data.get('text')
+            category = request.data.get('category')
+            if serializer.is_valid():
+                check = Slider.objects.filter(text=text, category=category).exists()
+                if not check:
+                    serializer.save()
+                    return Response("Slayder muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+                return Response("Slayder oldin qo'shilgan", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Kiritilgan ma'lumotlar to'liq emas", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 class SliderDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -716,32 +762,45 @@ class SliderDeleteView(generics.DestroyAPIView):
     queryset = Slider.objects.all()
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance:
-            self.perform_destroy(instance)
-            return Response("Slayder muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
-        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            instance = self.get_object()
+            if instance:
+                self.perform_destroy(instance)
+                return Response("Slayder muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
+            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SliderDetailView(generics.RetrieveAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = SliderGetSerializer
-    queryset = Slider.objects.all()
+    def get_queryset(self):
+        try:
+            return Slider.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SliderListView(generics.ListAPIView):
     serializer_class = SliderGetSerializer
-    queryset = Slider.objects.all().order_by('-id')[:5]
-
+    def get_queryset(self):
+        try:
+            return Slider.objects.all().order_by('-id')[:5]
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SliderAllListView(generics.ListAPIView):
     serializer_class = SliderGetSerializer
-    queryset = Slider.objects.all()
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
+    def get_queryset(self):
+        try:
+            return Slider.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
@@ -751,9 +810,11 @@ class SliderUpdateView(generics.GenericAPIView, UpdateModelMixin):
     queryset = Slider.objects.all()
 
     def patch(self, request, *args, **kwargs):
-        self.partial_update(request, *args, **kwargs)
-        return Response("Slayder muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
-
+        try:
+            self.partial_update(request, *args, **kwargs)
+            return Response("Slayder muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class AddCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
@@ -761,19 +822,22 @@ class AddCommentView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        serializer = CommentSerializer(data=request.data)
-        user = request.user
-        product_id = request.data.get('product_id')
-        message = request.data.get('message')
-        point = request.data.get('point')
-        if serializer.is_valid():
-            comment_check = Comment.objects.filter(product_id=product_id, user_id=user.pk)
-            if comment_check.exists():
-                return Response('Yes')
-            else:
-                Comment.objects.create(product_id=product_id, user_id=user.pk, message=message, point=point)
-            return Response('Okay')
-        return Response('Serializer not valid')
+        try:
+            serializer = CommentSerializer(data=request.data)
+            user = request.user
+            product_id = request.data.get('product_id')
+            message = request.data.get('message')
+            point = request.data.get('point')
+            if serializer.is_valid():
+                comment_check = Comment.objects.filter(product_id=product_id, user_id=user.pk)
+                if comment_check.exists():
+                    return Response('Yes')
+                else:
+                    Comment.objects.create(product_id=product_id, user_id=user.pk, message=message, point=point)
+                return Response('Okay')
+            return Response('Serializer not valid')
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class UpdateCommentView(generics.GenericAPIView):
@@ -782,13 +846,14 @@ class UpdateCommentView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def patch(self, request, pk):
-        serializer = CommentSerializer(data=request.data)
-        comment = Comment.objects.get(id=pk)
-        serializer = CommentSerializer(comment, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
+        try:
+            comment = Comment.objects.get(id=pk)
+            serializer = CommentSerializer(comment, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 class DeleteCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
@@ -796,15 +861,17 @@ class DeleteCommentView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def delete(self, request, id):
-        user_id = request.user.pk
+        try:
+            user_id = request.user.pk
 
-        if id:
-            comment = Comment.objects.get(id=id)
-            if user_id == comment.user_id:
-                comment.delete()
-                return Response('Comment successfully deleted')
+            if id:
+                comment = Comment.objects.get(id=id)
+                if user_id == comment.user_id:
+                    comment.delete()
+                    return Response('Comment successfully deleted')
+                else:
+                    return Response('You can only delete a comment you have written')
             else:
-                return Response('You can only delete a comment you have written')
-        else:
-            return Response('Not found')
-
+                return Response('Not found')
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)

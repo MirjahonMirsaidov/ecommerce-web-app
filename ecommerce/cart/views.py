@@ -17,9 +17,13 @@ from clickuz.views import ClickUzMerchantAPIView
 
 class CartCreateView(generics.CreateAPIView):
     serializer_class = CartSerializer
-    queryset = Cart.objects.all()
     authentication_classes = (authentication.TokenAuthentication, )
     permission_classes = (permissions.IsAuthenticated, )
+    def get_queryset(self):
+        try:
+            return Cart.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class CartDetailView(generics.ListAPIView):
@@ -28,8 +32,11 @@ class CartDetailView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
-        user = self.request.user
-        return CartProduct.objects.filter(user=user)
+        try:
+            user = self.request.user
+            return CartProduct.objects.filter(user=user)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class AddToCartProductView(generics.GenericAPIView):
@@ -38,14 +45,17 @@ class AddToCartProductView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, id):
-        serializer = CartProductSerializer(data=request.data)
+        try:
+            serializer = CartProductSerializer(data=request.data)
 
-        if serializer.is_valid():
-            count = serializer.data.get('count')
-            CartProduct.objects.get_or_create(user=request.user, product_id=id, count=count)
-            return Response(status=status.HTTP_200_OK)
+            if serializer.is_valid():
+                count = serializer.data.get('count')
+                CartProduct.objects.get_or_create(user=request.user, product_id=id, count=count)
+                return Response(status=status.HTTP_200_OK)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class DeleteFromCartView(generics.GenericAPIView):
@@ -54,9 +64,12 @@ class DeleteFromCartView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def delete(self, request, id):
-        product = CartProduct.objects.get(id=id)
-        product.delete()
-        return Response("Successfully deleted", status=status.HTTP_200_OK)
+        try:
+            product = CartProduct.objects.get(id=id)
+            product.delete()
+            return Response("Successfully deleted", status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 def toggle_is_selected_status(request, id):
@@ -75,47 +88,50 @@ class CreateOrderBetaView(generics.GenericAPIView):
     serializer_class = OrderProductBetaSerializer
 
     def post(self, request):
-        serializer = OrderProductBetaSerializer(data=request.data)
-        name = request.data.get('name')
-        phone_number = request.data.get('phone_number')
-        products = request.data.get('products')
-        
-        if name and phone_number and products:
-            order = OrderBeta.objects.create(phone_number=phone_number, name=name)
-            order.save()
+        try:
+            serializer = OrderProductBetaSerializer(data=request.data)
+            name = request.data.get('name')
+            phone_number = request.data.get('phone_number')
+            products = request.data.get('products')
 
-            finish_price = 0
-            try:
-                for prod in products:
-                    product_id = prod['product_id']
-                    count = int(prod['count'])
-                    product = Product.objects.get(id=product_id)
-                    if product.quantity > 0:
-                        price = product.price
-                        product_code = product.product_code
-                        single_overall_price = price * count
-                        finish_price += single_overall_price
-                        if serializer.is_valid():
+            if name and phone_number and products:
+                order = OrderBeta.objects.create(phone_number=phone_number, name=name)
+                order.save()
 
-                            OrderProductBeta.objects.create(
-                                order_id=order.id,
-                                product_id=product.id,
-                                count=count,
-                                single_overall_price=single_overall_price,
-                                price=price,
-                                product_code=product_code,
+                finish_price = 0
+                try:
+                    for prod in products:
+                        product_id = prod['product_id']
+                        count = int(prod['count'])
+                        product = Product.objects.get(id=product_id)
+                        if product.quantity > 0:
+                            price = product.price
+                            product_code = product.product_code
+                            single_overall_price = price * count
+                            finish_price += single_overall_price
+                            if serializer.is_valid():
 
-                            )
-                            order.finish_price = finish_price
-                            order.save()
+                                OrderProductBeta.objects.create(
+                                    order_id=order.id,
+                                    product_id=product.id,
+                                    count=count,
+                                    single_overall_price=single_overall_price,
+                                    price=price,
+                                    product_code=product_code,
 
-                    # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
-                    #     order.delete()
-                return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
-            except:
-                return Response(msg, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            return Response("Telefon raqam, ism va maxsulotlar bo'lishi shart!", status=status.HTTP_400_BAD_REQUEST)
+                                )
+                                order.finish_price = finish_price
+                                order.save()
+
+                        # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
+                        #     order.delete()
+                    return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+                except:
+                    return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response("Telefon raqam, ism va maxsulotlar bo'lishi shart!", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderBetaListView(generics.ListAPIView):
@@ -124,11 +140,15 @@ class OrderBetaListView(generics.ListAPIView):
     serializer_class = OrderBetaSerializer
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
-    queryset = OrderBeta.objects.all().order_by('-id')
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filter_fields = ['status', ]
     ordering_fields = ['created_at', ]
     search_fields = ['name', 'phone_number', ]
+    def get_queryset(self):
+        try:
+            return OrderBeta.objects.all().order_by('-id')
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderBetaDetailView(generics.RetrieveAPIView):
@@ -137,7 +157,10 @@ class OrderBetaDetailView(generics.RetrieveAPIView):
     serializer_class = OrderBetaSerializer
     
     def get_queryset(self):
-        return OrderBeta.objects.all()
+        try:
+            return OrderBeta.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
@@ -147,9 +170,12 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
     serializer_class = OrderBetaSerializer
 
     def patch(self, request, *args, **kwargs):
-        self.partial_update(request, *args, **kwargs)
-        return Response("Buyurtma muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
-        
+        try:
+            self.partial_update(request, *args, **kwargs)
+            return Response("Buyurtma muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+
 
 class OrderBetaDeleteView(generics.DestroyAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
@@ -158,12 +184,13 @@ class OrderBetaDeleteView(generics.DestroyAPIView):
     serializer_class = OrderBetaSerializer
 
     def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance:
-            self.perform_destroy(instance)
-            return Response("Buyurtma muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
-        return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
-
+        try:
+            instance = self.get_object()
+            if instance:
+                self.perform_destroy(instance)
+                return Response("Buyurtma muvaffaqiyatli o'chirildi", status=status.HTTP_200_OK)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderProductBetaUpdateView(generics.GenericAPIView):
@@ -232,7 +259,11 @@ class OrderProductBetaListView(generics.ListAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderProductBetaListSerializer
-    queryset = OrderProductBeta.objects.all()
+    def get_queryset(self):
+        try:
+            return OrderProductBeta.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderProductBetaDeleteView(generics.DestroyAPIView):
@@ -255,7 +286,7 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
 
             return Response("Buyurtmadagi maxsulot o'chirildi", status=status.HTTP_200_OK)
         except:
-            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderProductBetaDetailView(generics.RetrieveAPIView):
@@ -264,9 +295,12 @@ class OrderProductBetaDetailView(generics.RetrieveAPIView):
     serializer_class = OrderProductBetaListSerializer
     
     def get_queryset(self):
-        return OrderProductBeta.objects.all()
-        
-      
+        try:
+            return OrderProductBeta.objects.all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 class ChangeStatusView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
@@ -290,7 +324,7 @@ class ChangeStatusView(generics.GenericAPIView):
 
             return Response("Status muvaffaqiyatli o'zgartirildi", status=status.HTTP_202_ACCEPTED)
         except:
-            return Response("So'rovda xatolik mavjud", status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
        
 class BuyProductViaClickView(generics.GenericAPIView):
@@ -299,9 +333,11 @@ class BuyProductViaClickView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, url):
-        url = ClickUz.generate_url(order_id='172', amount='150000', return_url='http://127.0.0.1:8000/api/cart/list/')
-        return Response({'url': url})
-
+        try:
+            url = ClickUz.generate_url(order_id='172', amount='150000', return_url='http://127.0.0.1:8000/api/cart/list/')
+            return Response({'url': url})
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 # class OrderCheckAndPayment(ClickUz):
 #     def check_order(self, order_id: str, amount: str):
@@ -327,7 +363,7 @@ class AddWishListView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request, id):
-        if id:   
+        try:
             user_id = request.user.pk
             wished = WishList.objects.filter(user_id=user_id, product_id=id)
             if wished:
@@ -336,5 +372,5 @@ class AddWishListView(generics.GenericAPIView):
             else:
                 WishList.objects.create(user_id=user_id, product_id=id)
                 return Response("Product successfully added to WishList")
-        else:
-            return Response('Sahifa topilmadi', status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)

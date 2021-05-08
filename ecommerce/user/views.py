@@ -43,8 +43,11 @@ class LogoutView(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def delete(self, request, format=None):
-        request.user.auth_token.delete()
-        return Response("Logout Success")
+        try:
+            request.user.auth_token.delete()
+            return Response("Logout Success")
+        except:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class UserUpdateView(generics.RetrieveUpdateAPIView):
