@@ -26,24 +26,24 @@ class CategoryCreateView(generics.CreateAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     def post(self, request):
-        try:
-            name = request.data.get('name').lower()
-            parent_id = request.data.get('parent_id')
-            image = request.data.get('image')
-            order = request.data.get('order')
-            is_slider = request.data.get('is_slider')
-            if parent_id == 'null':
-                parent_id = 0
-            if order == 'null':
-                order = 0
-            if name and image:
-                if not Category.objects.filter(name=name, parent_id=parent_id, order=order, is_slider=is_slider):
-                    Category.objects.get_or_create(name=name, parent_id=parent_id, image=image, order=order, is_slider=is_slider)
-                    return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
-                return Response("Mavjud kategoriyani qo'shdingiz!", status=status.HTTP_400_BAD_REQUEST)
-            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-        except:
-            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        name = request.data.get('name').lower()
+        parent_id = request.data.get('parent_id')
+        image = request.data.get('image')
+        order = request.data.get('order')
+        is_slider = request.data.get('is_slider')
+        if parent_id == 'null':
+            parent_id = 0
+        if order == 'null':
+            order = 0
+        if name and image:
+            if not Category.objects.filter(name=name, parent_id=parent_id, order=order, is_slider=is_slider):
+                Category.objects.get_or_create(name=name, parent_id=parent_id, image=image, order=order, is_slider=is_slider)
+                return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+            return Response("Mavjud kategoriyani qo'shdingiz!", status=status.HTTP_400_BAD_REQUEST)
+        return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        # except:
+        #     return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryAllListView(generics.ListAPIView):
