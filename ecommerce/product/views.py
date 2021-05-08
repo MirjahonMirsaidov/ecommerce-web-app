@@ -26,24 +26,24 @@ class CategoryCreateView(generics.CreateAPIView):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     def post(self, request):
-        # try:
-        name = request.data.get('name').lower()
-        parent_id = request.data.get('parent_id')
-        image = request.data.get('image')
-        order = request.data.get('order')
-        is_slider = request.data.get('is_slider').capitalize()
-        if parent_id == 'null':
-            parent_id = 0
-        if order == 'null':
-            order = 0
-        if name and image:
-            if not Category.objects.filter(name=name, parent_id=parent_id, order=order, is_slider=is_slider):
-                Category.objects.get_or_create(name=name, parent_id=parent_id, image=image, order=order, is_slider=is_slider)
-                return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
-            return Response("Mavjud kategoriyani qo'shdingiz!", status=status.HTTP_400_BAD_REQUEST)
-        return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
-        # except:
-        #     return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        try:
+            name = request.data.get('name').lower()
+            parent_id = request.data.get('parent_id')
+            image = request.data.get('image')
+            order = request.data.get('order')
+            is_slider = request.data.get('is_slider').capitalize()
+            if parent_id == 'null':
+                parent_id = 0
+            if order == 'null':
+                order = 0
+            if name and image:
+                if not Category.objects.filter(name=name, parent_id=parent_id, order=order, is_slider=is_slider):
+                    Category.objects.get_or_create(name=name, parent_id=parent_id, image=image, order=order, is_slider=is_slider)
+                    return Response("Kategoriya muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+                return Response("Mavjud kategoriyani qo'shdingiz!", status=status.HTTP_400_BAD_REQUEST)
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
 
 class CategoryAllListView(generics.ListAPIView):
@@ -137,13 +137,19 @@ class CategoryUpdateView(generics.GenericAPIView, UpdateModelMixin):
                 is_slider = True
                 msg = "Slayderga eng kamida 3 ta kategoriya chiqishi kerak"
             else:
-                msg = "Muvaffaqiyatli o'zgartirildi"  
+                msg = "Muvaffaqiyatli o'zgartirildi"
+            order = request.data.get('order')
+            parent_id = request.data.get('parent_id')
             category.name = request.data.get('name')
+            if order == 'null':
+                order = 0
+            if parent_id == 'null':
+                parent_id = 0
             category.is_slider = is_slider
             if request.data.get('image'):
                 category.image = request.data.get('image')
-            category.order = request.data.get('order')
-            category.parent_id = request.data.get('parent_id')
+            category.order = order
+            category.parent_id = parent_id
             category.updated_at = datetime.datetime.now()
             category.save()
             return Response(msg, status=status.HTTP_200_OK)
@@ -218,7 +224,7 @@ class ProductCreateView(generics.CreateAPIView):
             name = request.data.get('name')
             description = request.data.get('description')
             brand = request.data.get('brand')
-            is_import = request.data.get('is_import')
+            is_import = request.data.get('is_import').capitalize()
             price = request.data.get('price')
             parent_id = request.data.get('parent_id')
             quantity = request.data.get('quantity')
