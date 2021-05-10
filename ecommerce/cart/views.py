@@ -95,9 +95,11 @@ class CreateOrderBetaView(generics.GenericAPIView):
             products = request.data.get('products')
 
             if name and phone_number and products:
+                order_check = OrderBeta.objects.filter(phone_number=phone_number, name=name).first()
+                if order_check and int(datetime.datetime.timestamp(datetime.datetime.now()) - datetime.datetime.timestamp(order_check.created_at)) < 50:
+                    return Response("Buyurtma qo'shib bo'lingan", status=status.HTTP_208_ALREADY_REPORTED)
                 order = OrderBeta.objects.create(phone_number=phone_number, name=name)
                 order.save()
-
                 finish_price = 0
                 try:
                     for prod in products:
