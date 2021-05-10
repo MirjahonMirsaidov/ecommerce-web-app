@@ -194,7 +194,7 @@ class BrandListView(generics.ListAPIView):
     CustomPagination.page_size = 10
     def get_queryset(self):
         try:
-            queryset = Brand.objects.all()
+            return Brand.objects.all()
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
