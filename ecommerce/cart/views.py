@@ -126,11 +126,12 @@ class CreateOrderBetaView(generics.GenericAPIView):
                                     order.finish_price = finish_price
                                     order.save()
                             else:
+                                order.delete()
                                 msg = f"Bizda {product.name} dan {product.quantity} dona qolgan"
                         else:
+                            order.delete()
                             msg = "Bu maxsulot tugagan"
-                        # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
-                        #     order.delete()
+
                     return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
                 except:
                     return Response(msg, status=status.HTTP_400_BAD_REQUEST)
