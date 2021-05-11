@@ -182,9 +182,9 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
             prod_status = request.data.get('status')
             if name and phone_number and status:
                 order = OrderBeta.objects.get(id=self.kwargs['pk'])
-                order.name = name
-                order.phone_number = phone_number
                 if not order.status == 'Tugallangan':
+                    order.name = name
+                    order.phone_number = phone_number
                     if prod_status == 'Tugallangan':
                         order.save()
                         order_products = OrderProductBeta.objects.filter(order_id=self.kwargs['pk'])
@@ -335,7 +335,6 @@ class ChangeStatusView(generics.GenericAPIView):
         try:
             prod_status = request.data.get('status')
             order = OrderBeta.objects.get(id=pk)
-            order.save()
 
             if not order.status == 'Tugallangan':
                 if prod_status == 'Tugallangan':
@@ -348,6 +347,7 @@ class ChangeStatusView(generics.GenericAPIView):
                         product.quantity = product.quantity - orproduct.count
                         product.save()
                 order.status=prod_status
+                order.save()
                 return Response("Status muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
             else:
                 return Response("Ushbu buyurtma oldin tugatilgan", status=status.HTTP_400_BAD_REQUEST)
