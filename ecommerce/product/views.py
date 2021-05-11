@@ -519,26 +519,26 @@ class ProductDetailView(generics.GenericAPIView):
                 parent = Product.objects.get(id=product.id)
                 product_variations = Product.objects.filter(parent_id=id).select_related('brand')
 
-                if parent.status==True:
-                    variations_list.append({
-                        "id": parent.id,
-                        "parent_id": parent.parent_id,
-                        "name": parent.name,
-                        "description": parent.description,
-                        "product_code": parent.product_code,
-                        "is_import": parent.is_import,
-                        "brand": {
-                            "id": parent.brand_id,
-                            "name": parent.brand.name,
-                        },
-                        "categories": get_categories(parent),
-                        "attributes": get_attributes(parent.id),
-                        "price": parent.price,
-                        "image": "http://127.0.0.1:8000" + parent.image.url,
-                        "quantity": parent.quantity,
-                        "images": get_images(parent),
-                        "created_at": parent.created_at,
-                    })
+            if parent.status==True:
+                variations_list.append({
+                    "id": parent.id,
+                    "parent_id": parent.parent_id,
+                    "name": parent.name,
+                    "description": parent.description,
+                    "product_code": parent.product_code,
+                    "is_import": parent.is_import,
+                    "brand": {
+                        "id": parent.brand_id,
+                        "name": parent.brand.name,
+                    },
+                    "categories": get_categories(parent),
+                    "attributes": get_attributes(parent.id),
+                    "price": parent.price,
+                    "image": "http://127.0.0.1:8000" + parent.image.url,
+                    "quantity": parent.quantity,
+                    "images": get_images(parent),
+                    "created_at": parent.created_at,
+                })
 
             # getting product childs
             for variation in product_variations:
@@ -894,6 +894,7 @@ class UpdateCommentView(generics.GenericAPIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
 
 class DeleteCommentView(generics.GenericAPIView):
     serializer_class = CommentSerializer
