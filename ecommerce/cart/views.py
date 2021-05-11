@@ -177,8 +177,26 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
 
     def patch(self, request, *args, **kwargs):
         try:
-            self.partial_update(request, *args, **kwargs)
-            return Response("Buyurtma muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+            name = request.data.get('name')
+            phone_number = request.data.get('phone_number')
+            prod_status = request.data.get('status')
+            if name and phone_number and status:
+                order = OrderBeta.objects.get(id=self.kwargs['pk'])
+                order.name = name
+                order.phone_number = phone_number
+                if prod_status == 'Tugallangan' and not order.status == 'Tugallangan':
+                    order.save()
+                    order_products = OrderProductBeta.objects.filter(order_id=self.kwargs['pk'])
+                    ids = [orderproduct.product_id for orderproduct in order_products]
+                    for id in ids:
+                        orproduct = OrderProductBeta.objects.get(product_id=id)
+                        product = Product.objects.get(id=id)
+                        product.quantity = product.quantity - orproduct.count
+                        product.save()
+                order.status = prod_status
+                order.save()
+
+                return Response("Buyurtma muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
         except:
             return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
 
@@ -313,22 +331,22 @@ class ChangeStatusView(generics.GenericAPIView):
     serializer_class = OrderBetaSerializer
     def post(self, request, pk):
         try:
-            status = request.data.get('status')
+            prod_status = request.data.get('status')
             order = OrderBeta.objects.get(id=pk)
-            order.status=status
             order.save()
 
-            if status == 'Tugallangan':
-                order.created_at = datetime.datetime.now()
-                order.save()
-                order_products = OrderProductBeta.objects.filter(order_id=pk)
-                ids = [order.product_id for order in order_products]
-                for id in ids:
-                    product = Product.objects.get(id=id)
-                    product.quantity -= 1
-                    product.save()
+            if prod_status == 'Tugallangan' and not order.status == 'Tugallangan':
 
-            return Response("Status muvaffaqiyatli o'zgartirildi", status=status.HTTP_202_ACCEPTED)
+                order_products = OrderProductBeta.objects.filter(order_id=pk)
+                ids = [orderproduct.product_id for orderproduct in order_products]
+                for id in ids:
+                    orproduct = OrderProductBeta.objects.get(product_id=id)
+                    product = Product.objects.get(id=id)
+                    product.quantity = product.quantity - orproduct.count
+                    product.save()
+            order.status=prod_status
+
+            return Response("Status muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

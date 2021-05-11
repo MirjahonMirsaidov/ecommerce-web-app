@@ -27,7 +27,7 @@ class OrderBeta(models.Model):
     name = models.CharField(max_length=25)
     phone_number = models.CharField(max_length=255)
     finish_price = models.PositiveIntegerField(default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=255, default='Kutilmoqda', choices=(
         ("Kutilmoqda", "Kutilmoqda"),
         ("Jo'natilgan", "Jo'natilgan"),
