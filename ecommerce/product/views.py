@@ -508,86 +508,66 @@ class ProductDetailView(generics.GenericAPIView):
     queryset = Product.objects.all()
 
     def get(self, request, id):
-        # try:
-        variations_list = []
-        product = Product.objects.get(id=id)
-        child = product
-        if product.parent_id:
-            parent = Product.objects.get(id=product.parent_id)
-            product_variations = Product.objects.filter(parent_id=parent.id).select_related('brand')
-        else:
-            parent = Product.objects.get(id=product.id)
-            product_variations = Product.objects.filter(parent_id=id).select_related('brand')
+        try:
+            variations_list = []
+            product = Product.objects.get(id=id)
+            child = product
+            if product.parent_id:
+                parent = Product.objects.get(id=product.parent_id)
+                product_variations = Product.objects.filter(parent_id=parent.id).select_related('brand')
+            else:
+                parent = Product.objects.get(id=product.id)
+                product_variations = Product.objects.filter(parent_id=id).select_related('brand')
 
-            if parent.status==True:
+                if parent.status==True:
+                    variations_list.append({
+                        "id": parent.id,
+                        "parent_id": parent.parent_id,
+                        "name": parent.name,
+                        "description": parent.description,
+                        "product_code": parent.product_code,
+                        "is_import": parent.is_import,
+                        "brand": {
+                            "id": parent.brand_id,
+                            "name": parent.brand.name,
+                        },
+                        "categories": get_categories(parent),
+                        "attributes": get_attributes(parent.id),
+                        "price": parent.price,
+                        "image": "http://127.0.0.1:8000" + parent.image.url,
+                        "quantity": parent.quantity,
+                        "images": get_images(parent),
+                        "created_at": parent.created_at,
+                    })
+
+            # getting product childs
+            for variation in product_variations:
+
                 variations_list.append({
-                    "id": parent.id,
-                    "parent_id": parent.parent_id,
-                    "name": parent.name,
-                    "description": parent.description,
-                    "product_code": parent.product_code,
-                    "is_import": parent.is_import,
-                    "brand": {
-                        "id": parent.brand_id,
-                        "name": parent.brand.name,
-                    },
-                    "categories": get_categories(parent),
-                    "attributes": get_attributes(parent.id),
-                    "price": parent.price,
-                    "image": "http://127.0.0.1:8000" + parent.image.url,
-                    "quantity": parent.quantity,
-                    "images": get_images(parent),
-                    "created_at": parent.created_at,
+                "id": variation.id,
+                "parent_id": variation.parent_id,
+                "name": variation.name,
+                "description": variation.description,
+                "product_code": variation.product_code,
+                "is_import": variation.is_import,
+                "brand": {
+                    "id": variation.brand_id,
+                    "name": variation.brand.name,
+                },
+                "categories": get_categories(variation),
+                "attributes": get_attributes(variation.id),
+                "price": variation.price,
+                "image": "http://127.0.0.1:8000" + variation.image.url,
+                "quantity": variation.quantity,
+                "images": get_images(variation),
+                "created_at": variation.created_at,
+
                 })
-
-        # getting product childs
-        for variation in product_variations:
-
-            variations_list.append({
-            "id": variation.id,
-            "parent_id": variation.parent_id,
-            "name": variation.name,
-            "description": variation.description,
-            "product_code": variation.product_code,
-            "is_import": variation.is_import,
-            "brand": {
-                "id": variation.brand_id,
-                "name": variation.brand.name,
-            },
-            "categories": get_categories(variation),
-            "attributes": get_attributes(variation.id),
-            "price": variation.price,
-            "image": "http://127.0.0.1:8000" + variation.image.url,
-            "quantity": variation.quantity,
-            "images": get_images(variation),
-            "created_at": variation.created_at,
-
-            })
-        return Response({
-            "data": variations_list,
-            # "id": product.id,
-            # "parent_id": product.parent_id,
-            # "name": product.name,
-            # "description": product.description,
-            # "product_code": product.product_code,
-            # "is_import": product.is_import,
-            # "brand": {
-            #     "id": product.brand.id,
-            #     "name": product.brand.name,
-            # },
-            # "categories": get_categories(product),
-            # "attributes": get_attributes(id),
-            # "price": product.price,
-            # "image": "http://127.0.0.1:8000" + product.image.url,
-            # "quantity": product.quantity,
-            # "images": get_images(product),
-            # "slider_images": get_images(child),
-            # "created_at": product.created_at,
-            # "variations": variations_list,
-            }
-        )
-        # except:
-        #     return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                variations_list
+            )
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductSpecificDetailView(generics.GenericAPIView):
