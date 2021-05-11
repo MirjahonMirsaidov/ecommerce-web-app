@@ -231,23 +231,26 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
         try:
             order_product = OrderProductBeta.objects.get(id=pk)
             count = int(request.data.get('count'))
+            product_id = order_product.product_id
+            product = Product.objects.get(id=product_id)
             if count:
-                product_id = order_product.product_id
-                product = Product.objects.get(id=product_id)
-                price = product.price
-                single_overall_price = price * count
-                order_product.single_overall_price = single_overall_price
-                order_product.count = count
-                order_product.price = price
-                order_product.save()
-                order = OrderBeta.objects.get(id=order_product.order_id)
-                order_products = OrderProductBeta.objects.filter(order_id=order.id)
-                finish_price = 0
-                for order_product in order_products:
-                    finish_price += order_product.single_overall_price
-                    order.finish_price = finish_price
-                    order.save()
-                return Response("Muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+                if count < product.quantity:
+                    price = product.price
+                    single_overall_price = price * count
+                    order_product.single_overall_price = single_overall_price
+                    order_product.count = count
+                    order_product.price = price
+                    order_product.save()
+                    order = OrderBeta.objects.get(id=order_product.order_id)
+                    order_products = OrderProductBeta.objects.filter(order_id=order.id)
+                    finish_price = 0
+                    for order_product in order_products:
+                        finish_price += order_product.single_overall_price
+                        order.finish_price = finish_price
+                        order.save()
+                    return Response("Muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
+                else:
+                    return Response(f"{product} dan {product.quantity} dona qolgan")
             else:
                 return Response("Maxsulot sonini kiritmadingiz", status=status.HTTP_400_BAD_REQUEST)
         except:
