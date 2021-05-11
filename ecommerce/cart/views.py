@@ -197,8 +197,8 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
                             product = Product.objects.get(id=id)
                             product.quantity = product.quantity - orproduct.count
                             product.save()
-                    order.status = prod_status
-                    order.save()
+                        order.status = prod_status
+                        order.save()
                     return Response("Buyurtma muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
                 else:
                     return Response("Ushbu buyurtma oldin tugatilgan", status=status.HTTP_400_BAD_REQUEST)
@@ -348,7 +348,7 @@ class ChangeStatusView(generics.GenericAPIView):
                     order_products = OrderProductBeta.objects.filter(order_id=pk)
                     ids = [orderproduct.product_id for orderproduct in order_products]
                     for id in ids:
-                        orproduct = OrderProductBeta.objects.get(product_id=id)
+                        orproduct = OrderProductBeta.objects.get(product_id=id, order_id=pk)
                         product = Product.objects.get(id=id)
                         product.quantity = product.quantity - orproduct.count
                         product.save()
