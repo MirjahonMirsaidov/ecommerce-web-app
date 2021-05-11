@@ -136,7 +136,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
                     else:
                         return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
                 except:
-                    return Response("Xatolik bor", status=status.HTTP_400_BAD_REQUEST)
+                    return Response("Buyurtma maxulotlarida xatolik bor", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Telefon raqam, ism va maxsulotlar bo'lishi shart!", status=status.HTTP_400_BAD_REQUEST)
         except:
