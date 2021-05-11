@@ -250,7 +250,7 @@ class OrderProductBetaUpdateView(generics.GenericAPIView):
                         order.save()
                     return Response("Muvaffaqiyatli o'zgartirildi", status=status.HTTP_200_OK)
                 else:
-                    return Response(f"{product} dan {product.quantity} dona qolgan")
+                    return Response(f"{product} dan {product.quantity} dona qolgan", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Maxsulot sonini kiritmadingiz", status=status.HTTP_400_BAD_REQUEST)
         except:
