@@ -44,6 +44,7 @@ class Product(models.Model):
     image = models.ImageField(null=True, blank=True)
     price = models.PositiveIntegerField()
     quantity = models.PositiveIntegerField()
+    status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -395,7 +395,7 @@ class ProductListView(generics.ListAPIView):
 
     def get_queryset(self):
         try:
-            return Product.objects.select_related('brand', ).order_by('-id')
+            return Product.objects.select_related('brand', ).filter(status=True).order_by('-id')
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -490,10 +490,15 @@ class ProductDeleteView(APIView):
     def delete(self, request, pk):
         try:
             product = Product.objects.get(pk=pk)
-            product.delete()
-            for item in CategoryProduct.objects.filter(product_id=pk):
-                item.delete()
-            return Response("Maxsulot o'chirildi", status=status.HTTP_200_OK)
+            if product.parent_id == 0:
+                product.status=False
+                product.save()
+                return Response("")
+            else:
+                product.delete()
+                for item in CategoryProduct.objects.filter(product_id=pk):
+                    item.delete()
+                return Response("Maxsulot o'chirildi", status=status.HTTP_200_OK)
         except:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -503,61 +508,86 @@ class ProductDetailView(generics.GenericAPIView):
     queryset = Product.objects.all()
 
     def get(self, request, id):
-        try:
-            variations_list = []
-            product = Product.objects.get(id=id)
-            child = product
-            if product.parent_id:
-                id = product.parent_id
-                product = Product.objects.get(id=id)
+        # try:
+        variations_list = []
+        product = Product.objects.get(id=id)
+        child = product
+        if product.parent_id:
+            parent = Product.objects.get(id=product.parent_id)
+            product_variations = Product.objects.filter(parent_id=parent.id).select_related('brand')
+        else:
+            parent = Product.objects.get(id=product.id)
             product_variations = Product.objects.filter(parent_id=id).select_related('brand')
 
-            # getting product childs
-            for variation in product_variations:
-
+            if parent.status==True:
                 variations_list.append({
-                "id": variation.id,
-                "parent_id": variation.parent_id,
-                "name": variation.name,
-                "description": variation.description,
-                "product_code": variation.product_code,
-                "is_import": variation.is_import,
-                "brand": {
-                    "id": variation.brand_id,
-                    "name": variation.brand.name,
-                },
-                "categories": get_categories(variation),
-                "attributes": get_attributes(variation.id),
-                "price": variation.price,
-                "image": "http://127.0.0.1:8000" + variation.image.url,
-                "quantity": variation.quantity,
-                "images": get_images(variation),
-                "created_at": variation.created_at,
-
+                    "id": parent.id,
+                    "parent_id": parent.parent_id,
+                    "name": parent.name,
+                    "description": parent.description,
+                    "product_code": parent.product_code,
+                    "is_import": parent.is_import,
+                    "brand": {
+                        "id": parent.brand_id,
+                        "name": parent.brand.name,
+                    },
+                    "categories": get_categories(parent),
+                    "attributes": get_attributes(parent.id),
+                    "price": parent.price,
+                    "image": "http://127.0.0.1:8000" + parent.image.url,
+                    "quantity": parent.quantity,
+                    "images": get_images(parent),
+                    "created_at": parent.created_at,
                 })
-            return Response({
-                "id": product.id,
-                "parent_id": product.parent_id,
-                "name": product.name,
-                "description": product.description,
-                "product_code": product.product_code,
-                "is_import": product.is_import,
-                "brand": {
-                    "id": product.brand.id,
-                    "name": product.brand.name,
-                },
-                "categories": get_categories(product),
-                "attributes": get_attributes(id),
-                "price": product.price,
-                "image": "http://127.0.0.1:8000" + product.image.url,
-                "quantity": product.quantity,
-                "images": get_images(product),
-                "slider_images": get_images(child),
-                "created_at": product.created_at,
-                "variations": variations_list,
+
+        # getting product childs
+        for variation in product_variations:
+
+            variations_list.append({
+            "id": variation.id,
+            "parent_id": variation.parent_id,
+            "name": variation.name,
+            "description": variation.description,
+            "product_code": variation.product_code,
+            "is_import": variation.is_import,
+            "brand": {
+                "id": variation.brand_id,
+                "name": variation.brand.name,
+            },
+            "categories": get_categories(variation),
+            "attributes": get_attributes(variation.id),
+            "price": variation.price,
+            "image": "http://127.0.0.1:8000" + variation.image.url,
+            "quantity": variation.quantity,
+            "images": get_images(variation),
+            "created_at": variation.created_at,
+
             })
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({
+            "data": variations_list,
+            # "id": product.id,
+            # "parent_id": product.parent_id,
+            # "name": product.name,
+            # "description": product.description,
+            # "product_code": product.product_code,
+            # "is_import": product.is_import,
+            # "brand": {
+            #     "id": product.brand.id,
+            #     "name": product.brand.name,
+            # },
+            # "categories": get_categories(product),
+            # "attributes": get_attributes(id),
+            # "price": product.price,
+            # "image": "http://127.0.0.1:8000" + product.image.url,
+            # "quantity": product.quantity,
+            # "images": get_images(product),
+            # "slider_images": get_images(child),
+            # "created_at": product.created_at,
+            # "variations": variations_list,
+            }
+        )
+        # except:
+        #     return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class ProductSpecificDetailView(generics.GenericAPIView):
