@@ -107,29 +107,33 @@ class CreateOrderBetaView(generics.GenericAPIView):
                         count = int(prod['count'])
                         product = Product.objects.get(id=product_id)
                         if product.quantity > 0:
-                            price = product.price
-                            product_code = product.product_code
-                            single_overall_price = price * count
-                            finish_price += single_overall_price
-                            if serializer.is_valid():
+                            if product.quantity > count:
+                                price = product.price
+                                product_code = product.product_code
+                                single_overall_price = price * count
+                                finish_price += single_overall_price
+                                if serializer.is_valid():
 
-                                OrderProductBeta.objects.create(
-                                    order_id=order.id,
-                                    product_id=product.id,
-                                    count=count,
-                                    single_overall_price=single_overall_price,
-                                    price=price,
-                                    product_code=product_code,
+                                    OrderProductBeta.objects.create(
+                                        order_id=order.id,
+                                        product_id=product.id,
+                                        count=count,
+                                        single_overall_price=single_overall_price,
+                                        price=price,
+                                        product_code=product_code,
 
-                                )
-                                order.finish_price = finish_price
-                                order.save()
-
+                                    )
+                                    order.finish_price = finish_price
+                                    order.save()
+                            else:
+                                msg = f"Bizda {product.name} dan {product.quantity} dona qolgan"
+                        else:
+                            msg = "Bu maxsulot tugagan"
                         # if not OrderProductBeta.objects.filter(order_id=order.id).exists():
                         #     order.delete()
                     return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
                 except:
-                    return Response("Ma'lumotlar xato kiritilgan", status=status.HTTP_400_BAD_REQUEST)
+                    return Response(msg, status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Telefon raqam, ism va maxsulotlar bo'lishi shart!", status=status.HTTP_400_BAD_REQUEST)
         except:
