@@ -6,7 +6,9 @@ from .models import *
 admin.site.register(Brand)
 admin.site.register(Category)
 admin.site.register(CategoryProduct)
-admin.site.register(Product)
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "price", "product_code", "brand", "is_import")
 admin.site.register(ProductAttributes)
 admin.site.register(ProductImage)
 admin.site.register(Slider)
