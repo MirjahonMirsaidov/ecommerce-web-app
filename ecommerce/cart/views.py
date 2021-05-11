@@ -337,7 +337,7 @@ class ChangeStatusView(generics.GenericAPIView):
     authentication_classes = (authentication.TokenAuthentication,)
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = OrderBetaSerializer
-    def post(self, request, pk):
+    def patch(self, request, pk):
         try:
             prod_status = request.data.get('status')
             order = OrderBeta.objects.get(id=pk)
