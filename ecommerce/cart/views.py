@@ -189,7 +189,7 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
                 if not order.status == 'Tugallangan':
                     order.name = name
                     order.phone_number = phone_number
-                    if prod_status == 'Tugallangan':
+                    if prod_status == "Jo'natilgan":
                         order.save()
                         order_products = OrderProductBeta.objects.filter(order_id=self.kwargs['pk'])
                         ids = [orderproduct.product_id for orderproduct in order_products]
@@ -269,19 +269,22 @@ class OrderProductBetaCreateView(generics.GenericAPIView):
             product_id = request.data.get('product_id')
             count = int(request.data.get('count'))
             if product_id and count:
-                if not OrderProductBeta.objects.filter(order_id=order_id, product_id=product_id).exists():
-                    product = Product.objects.get(id=product_id)
-                    price = product.price
-                    single_overall_price = price * count
-                    product_code = product.product_code
-                    OrderProductBeta.objects.get_or_create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
-                    order = OrderBeta.objects.get(id=order_id)
-                    order.finish_price += single_overall_price
-                    order.save()
+                product = Product.objects.get(id=product_id)
+                if product.quantity >= count:
+                    if not OrderProductBeta.objects.filter(order_id=order_id, product_id=product_id).exists():
+                        price = product.price
+                        single_overall_price = price * count
+                        product_code = product.product_code
+                        OrderProductBeta.objects.create(order_id=order_id, product_id=product_id, count=count, product_code=product_code, price=price, single_overall_price=single_overall_price)
+                        order = OrderBeta.objects.get(id=order_id)
+                        order.finish_price += single_overall_price
+                        order.save()
 
-                    return Response("Buyurtmaga maxsulot muvaffaqiyatli qo'shildi", status=status.HTTP_200_OK)
+                        return Response("Buyurtmaga maxsulot muvaffaqiyatli qo'shildi", status=status.HTTP_200_OK)
+                    else:
+                        return Response("Bu maxsulot buyurtmada mavjud!", status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    return Response("Bu maxsulot buyurtmada mavjud!", status=status.HTTP_400_BAD_REQUEST)
+                    return Response(f"{product} dan {product.quantity} dona qolgan", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Maxsulot tanlanmagan yoki sonini kiritmadingiz", status=status.HTTP_400_BAD_REQUEST)
         except:
@@ -344,7 +347,7 @@ class ChangeStatusView(generics.GenericAPIView):
             order = OrderBeta.objects.get(id=pk)
 
             if not order.status == 'Tugallangan':
-                if prod_status == 'Tugallangan':
+                if prod_status == "Jo'natilgan":
 
                     order_products = OrderProductBeta.objects.filter(order_id=pk)
                     ids = [orderproduct.product_id for orderproduct in order_products]

@@ -29,7 +29,7 @@ class OrderBeta(models.Model):
     finish_price = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=255, default='Kutilmoqda', choices=(
-        ("Kutilmoqda", "Kutilmoqda"),
+        ("Tushgan", "Tushgan"),
         ("Jo'natilgan", "Jo'natilgan"),
         ("Bekor qilingan", "Bekor qilingan"),
         ("Tugallangan", "Tugallangan"), ))
