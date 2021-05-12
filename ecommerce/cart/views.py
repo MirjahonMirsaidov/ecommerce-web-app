@@ -101,6 +101,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
                 order = OrderBeta.objects.create(phone_number=phone_number, name=name)
                 order.save()
                 finish_price = 0
+                msg = ''
                 try:
                     for prod in products:
                         product_id = prod['product_id']
