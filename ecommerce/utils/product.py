@@ -11,9 +11,10 @@ def save_attribute(attributes, product):
 
     for attr in attributes:
         is_main = str(attr['is_main']).capitalize()
-        key = attr['key'].lower()
+        key = attr['key'].replace(" ", "").lower()
         label = attr['label']
         value = attr['value']
+        print(key)
         ProductAttributes.objects.create(is_main=is_main, key=key, label=label, value=value, product_id=product.id)
 
 
@@ -123,11 +124,11 @@ def check_product_exists(product_code, attributes):
         size = ''
         for attribute in attributes:
             if attribute['key'] == 'size':
-                print('126')
+                print('size1')
                 size = attribute['value']
         for product in products:
             for attr in ProductAttributes.objects.filter(product_id=product.id):
                 if attr.key == 'size' and attr.value == size:
-                    print('131')
+                    print('size2')
                     return True
     return False
