@@ -189,7 +189,7 @@ class OrderBetaUpdateView(generics.GenericAPIView, UpdateModelMixin):
                 if not order.status == 'Tugallangan':
                     order.name = name
                     order.phone_number = phone_number
-                    if prod_status == "Jo'natilgan":
+                    if prod_status == "Kutilmoqda":
                         order.save()
                         order_products = OrderProductBeta.objects.filter(order_id=self.kwargs['pk'])
                         ids = [orderproduct.product_id for orderproduct in order_products]
@@ -347,7 +347,7 @@ class ChangeStatusView(generics.GenericAPIView):
             order = OrderBeta.objects.get(id=pk)
 
             if not order.status == 'Tugallangan':
-                if prod_status == "Jo'natilgan":
+                if prod_status == "Kutilmoqda":
 
                     order_products = OrderProductBeta.objects.filter(order_id=pk)
                     ids = [orderproduct.product_id for orderproduct in order_products]
