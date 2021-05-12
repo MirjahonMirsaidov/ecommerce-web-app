@@ -107,7 +107,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
                         count = int(prod['count'])
                         product = Product.objects.get(id=product_id)
                         if product.quantity > 0:
-                            if product.quantity > count:
+                            if product.quantity >= count:
                                 price = product.price
                                 product_code = product.product_code
                                 single_overall_price = price * count
