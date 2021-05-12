@@ -304,26 +304,27 @@ class ProductCreateView(generics.CreateAPIView):
                                     else:
                                         return Response("Bir xil variatsiyali maxsulot qo'shdingiz!", status=status.HTTP_208_ALREADY_REPORTED)
                                 return Response(serializer.data, status=status.HTTP_200_OK)
-                            Product.objects.create(
-                                name=name,
-                                description=description,
-                                brand_id=brand,
-                                is_import=is_import,
-                                price=price,
-                                parent_id=parent_id,
-                                quantity=quantity,
-                                image=get_image_from_data_url(image)[0],
-                                product_code=product_code,
-                            )
-                            if categories:
-                                save_category(categories, product)
+                            else:
+                                Product.objects.create(
+                                    name=name,
+                                    description=description,
+                                    brand_id=brand,
+                                    is_import=is_import,
+                                    price=price,
+                                    parent_id=parent_id,
+                                    quantity=quantity,
+                                    image=get_image_from_data_url(image)[0],
+                                    product_code=product_code,
+                                )
+                                if categories:
+                                    save_category(categories, product)
 
-                            if attributes:
-                                save_attribute(attributes, product)
+                                if attributes:
+                                    save_attribute(attributes, product)
 
-                            if images:
-                                save_image(images, product)
-                            return Response(serializer.data, status=status.HTTP_200_OK)
+                                if images:
+                                    save_image(images, product)
+                                return Response(serializer.data, status=status.HTTP_200_OK)
                         return Response("png, jpg, jpeg, webp, Rasm kiriting", status=status.HTTP_400_BAD_REQUEST)
                     else:
                         return Response("Bu maxsulot allaqachon qo'shilgan!", status=status.HTTP_400_BAD_REQUEST)
