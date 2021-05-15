@@ -313,7 +313,7 @@ class ProductCreateView(generics.CreateAPIView):
                                     price=price,
                                     parent_id=parent_id,
                                     quantity=quantity,
-                                    image=get_image_from_data_url(image)[0],
+                                    image=get_image_from_data_url(prod_image)[0],
                                     product_code=product_code,
                                 )
                                 if categories:
