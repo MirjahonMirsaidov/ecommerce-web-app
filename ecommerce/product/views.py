@@ -305,7 +305,7 @@ class ProductCreateView(generics.CreateAPIView):
                                         return Response("Bir xil variatsiyali maxsulot qo'shdingiz!", status=status.HTTP_208_ALREADY_REPORTED)
                                 return Response(serializer.data, status=status.HTTP_200_OK)
                             else:
-                                Product.objects.create(
+                                product = Product.objects.create(
                                     name=name,
                                     description=description,
                                     brand_id=brand,
