@@ -265,6 +265,8 @@ class ProductCreateView(generics.CreateAPIView):
                                     print(variation['name'])
                                     if variation['image']:
                                         image = variation['image']
+                                    else:
+                                        image = product.image
                                     if not check_product_exists(variation['product_code'], variation['attributes']):
                                         if get_image_from_data_url(image):
 
@@ -285,13 +287,15 @@ class ProductCreateView(generics.CreateAPIView):
 
                                             var_categories = variation['categories']
                                             if var_categories:
-                                                save_category(categories, var_product)
+                                                save_category(var_categories, var_product)
                                             else:
                                                 save_category(categories, var_product)
 
-                                            attributes = variation['attributes']
-                                            if attributes:
-                                                save_attribute(attributes, var_product)
+                                            var_attributes = variation['attributes']
+                                            if var_attributes:
+                                                save_attribute(var_attributes, var_product)
+                                            else:
+                                                save_attributes(attributes, var_product)
 
                                             imagesa = variation['images']
                                             if imagesa:
