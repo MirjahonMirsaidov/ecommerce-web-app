@@ -315,7 +315,7 @@ class OrderProductBetaDeleteView(generics.DestroyAPIView):
             orderproduct.delete()
             if not OrderProductBeta.objects.filter(order=order.id).exists():
                 order.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response("Buyurtmada maxsulot qolmagani uchun o'chirildi", status=status.HTTP_200_OK)
             else:
                 order.finish_price -= orderproduct.single_overall_price
                 order.save()

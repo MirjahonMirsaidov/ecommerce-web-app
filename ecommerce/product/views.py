@@ -651,8 +651,6 @@ class ProductAttributesUpdateView(APIView):
                     if serializer.is_valid():
                         serializer.save()
 
-
-
                 return Response("Maxsulot attributlari muvaffaqiyatli yangilandi", status=status.HTTP_200_OK)
             return Response("Kamida 2 ta attribut (Rang va o'lcham) bo'lishi kerak", status=status.HTTP_400_BAD_REQUEST)
         except:
