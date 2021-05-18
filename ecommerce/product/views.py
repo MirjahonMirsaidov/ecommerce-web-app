@@ -392,8 +392,8 @@ class ProductVariationCreateView(generics.GenericAPIView):
 class ProductListView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filter_fields = ['brand', 'parent_id', 'is_import']
     search_fields = ['name', 'product_code', ]
+    filter_fields = ['brand', 'parent_id', 'is_import']
     ordering_fields = ['created_at', 'price']
     pagination_class = CustomPagination
     CustomPagination.page_size = 10
@@ -407,7 +407,7 @@ class ProductListView(generics.ListAPIView):
             if not max or max == '':
                 max = Product.objects.all().order_by('-price').first().price
             categories = self.request.query_params.getlist('category')
-            if not categories[0] == '':
+            if categories and not categories[0] == '':
                 products = Product.objects.filter(id=-1)
                 for category in categories:
                     category_products = CategoryProduct.objects.filter(category_id=category)
