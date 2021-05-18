@@ -49,6 +49,9 @@ class CategoryCreateView(generics.CreateAPIView):
 class CategoryAllListView(generics.ListAPIView):
     serializer_class = CategorySerializer
     pagination_class = CustomPagination
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name']
+    filter_fields = ['parent_id']
     CustomPagination.page_size = 10
     def get_queryset(self):
         try:
