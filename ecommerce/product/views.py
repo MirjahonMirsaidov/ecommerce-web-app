@@ -406,7 +406,7 @@ class ProductListView(generics.ListAPIView):
                 min = 0
             if not max or max == '':
                 max = Product.objects.all().order_by('-price').first().price
-            categories = self.request.query_params.getlist('category')
+            categories = self.request.query_params.getlist('category[]')
             if categories and not categories[0] == '':
                 products = Product.objects.filter(id=-1)
                 for category in categories:
