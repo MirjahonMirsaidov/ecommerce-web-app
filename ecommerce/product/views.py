@@ -399,19 +399,33 @@ class ProductListView(generics.ListAPIView):
     CustomPagination.page_size = 10
 
     def get_queryset(self):
-        try:
-            min = self.request.GET.get('min')
-            max = self.request.GET.get('max')
-            if min == '':
-                min = 0
-            if max == '':
-                max = Product.objects.all().order_by('-price').first().price
+        # try:
+        min = self.request.GET.get('min')
+        max = self.request.GET.get('max')
+        if not min or min == '':
+            min = 0
+        if not max or max == '':
+            max = Product.objects.all().order_by('-price').first().price
+        categories = self.request.query_params.getlist('category')
+        if not categories[0] == '':
+            products = Product.objects.filter(id=-1)
+            for category in categories:
+                category_products = CategoryProduct.objects.filter(category_id=category)
+                for prod in category_products:
+                    id = prod.product_id
+                    product = Product.objects.get(id=id)
+                    products |= Product.objects.filter(id=product.id)
+
             if min or max:
-                return Product.objects.filter(status=True, price__range=(min, max)).select_related('brand').order_by('-id')
-            else:
-                return Product.objects.filter(status=True).select_related('brand', ).order_by('-id')
-        except:
-            return Product.objects.filter(id=-1)
+                products = products.filter(status=True, price__range=(min, max)).select_related('brand').order_by('-id')
+        elif min or max:
+            products = Product.objects.filter(status=True, price__range=(min, max)).select_related('brand').order_by('-id')
+        else:
+            products = Product.objects.filter(status=True).select_related('brand', ).order_by('-id')
+
+        return products
+        # except:
+        #     return Product.objects.filter(id=-1)
 
 
 class CodeSizeListView(APIView):
@@ -450,6 +464,7 @@ class ProductsByCategoryView(generics.ListAPIView):
             slug = self.kwargs['slug']
             min = self.request.GET.get('min')
             max = self.request.GET.get('max')
+
             if Category.objects.filter(slug=slug).exists():
                 print("Bor 443")
                 category = Category.objects.get(slug=slug)
