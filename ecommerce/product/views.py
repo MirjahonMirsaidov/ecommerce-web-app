@@ -1,6 +1,6 @@
 import datetime
 import os
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.http import JsonResponse, HttpResponse
 import django_filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -400,9 +400,18 @@ class ProductListView(generics.ListAPIView):
 
     def get_queryset(self):
         try:
-            return Product.objects.select_related('brand', ).filter(status=True).order_by('-id')
+            min = self.request.GET.get('min')
+            max = self.request.GET.get('max')
+            if min == '':
+                min = 0
+            if max == '':
+                max = Product.objects.all().order_by('-price').first().price
+            if min or max:
+                return Product.objects.filter(status=True, price__range=(min, max)).select_related('brand').order_by('-id')
+            else:
+                return Product.objects.filter(status=True).select_related('brand', ).order_by('-id')
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Product.objects.filter(id=-1)
 
 
 class CodeSizeListView(APIView):
@@ -429,35 +438,51 @@ class CodeSizeListView(APIView):
 class ProductsByCategoryView(generics.ListAPIView):
     serializer_class = ProductGetSerializer
     queryset = Product.objects.all()
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_fields = ['brand', 'parent_id', 'is_import', ]
+    search_fields = ['name', 'product_code']
+    ordering_fields = ['created_at', 'price']
+    pagination_class = CustomPagination
+    CustomPagination.page_size = 10
 
     def get_queryset(self):
         try:
             slug = self.kwargs['slug']
-            category = Category.objects.get(slug=slug)
-            products = []
-            if category.parent_id:
-                categories = CategoryProduct.objects.filter(category_id=category.id).values('product_id')
+            min = self.request.GET.get('min')
+            max = self.request.GET.get('max')
+            if Category.objects.filter(slug=slug).exists():
+                print("Bor 443")
+                category = Category.objects.get(slug=slug)
+                products = []
+                if min =='':
+                    min=0
+                if max == '':
+                    max = Product.objects.all().aggregate(Max('price'))
 
-                for category in categories:
-                    product = Product.objects.get(id=category.get('product_id')).id
-                    products.append(product)
-            else:
-                categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id)).values('id')
-                for item in categories:
-                    singl = CategoryProduct.objects.filter(category_id=item.get('id'))
-                    for iterr in singl:
-                        product = Product.objects.get(id=iterr.product_id).id
+                if category.parent_id:
+                    categories = CategoryProduct.objects.filter(category_id=category.id).values('product_id')
+
+                    for category in categories:
+                        product = Product.objects.get(id=category.get('product_id')).id
                         products.append(product)
+                else:
+                    categories = Category.objects.filter(Q(parent_id=category.id) | Q(id=category.id)).values('id')
+                    for item in categories:
+                        singl = CategoryProduct.objects.filter(category_id=item.get('id'))
+                        for iterr in singl:
+                            product = Product.objects.get(id=iterr.product_id).id
+                            products.append(product)
 
-            return Product.objects.filter(id__in=products).select_related('brand')
+                if min or max:
+                    return Product.objects.filter(id__in=products, price__range=(min, max)).select_related('brand')
+                else:
+                    return Product.objects.filter(id__in=products).select_related('brand')
+            else:
+                return Product.objects.filter(id=-1)
+
         except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-    filter_backends = [django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filter_fields = ['brand', 'parent_id', 'is_import']
-    search_fields = ['name', ]
-    ordering_fields = ['created_at', 'price']
-    pagination_class = CustomPagination
-    CustomPagination.page_size = 10
+            return Product.objects.filter(id=-1)
+
 
 
 class ProductUpdateView(GenericAPIView, UpdateModelMixin):
