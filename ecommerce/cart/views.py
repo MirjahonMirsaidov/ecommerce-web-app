@@ -89,7 +89,7 @@ class CreateOrderBetaView(generics.GenericAPIView):
 
     def post(self, request):
         try:
-            serializer = OrderProductBetaSerializer(data=request.data)
+            serializer = OrderBetaSerializer(data=request.data)
             name = request.data.get('name')
             phone_number = request.data.get('phone_number')
             products = request.data.get('products')
@@ -126,6 +126,9 @@ class CreateOrderBetaView(generics.GenericAPIView):
                                     )
                                     order.finish_price = finish_price
                                     order.save()
+                                    order_prods = OrderProductBeta.objects.filter(order=order.id)
+
+
                             else:
                                 order.delete()
                                 msg = f"Bizda {product.name} dan {product.quantity} dona qolgan"
@@ -135,9 +138,13 @@ class CreateOrderBetaView(generics.GenericAPIView):
                     if msg:
                         return Response(msg, status=status.HTTP_400_BAD_REQUEST)
                     else:
-                        return Response("Buyurtma muvaffaqiyatli qo'shildi", status=status.HTTP_201_CREATED)
+                        serial = OrderBetaSerializer(order, many=False)
+                        return Response(
+                            serial.data
+
+                        )
                 except:
-                    return Response("Buyurtma maxulotlarida xatolik bor", status=status.HTTP_400_BAD_REQUEST)
+                    return Response("Buyurtma maxsulotlarida xatolik bor", status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response("Telefon raqam, ism va maxsulotlar bo'lishi shart!", status=status.HTTP_400_BAD_REQUEST)
         except:
