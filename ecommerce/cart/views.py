@@ -126,7 +126,6 @@ class CreateOrderBetaView(generics.GenericAPIView):
                                     )
                                     order.finish_price = finish_price
                                     order.save()
-                                    order_prods = OrderProductBeta.objects.filter(order=order.id)
 
 
                             else:
