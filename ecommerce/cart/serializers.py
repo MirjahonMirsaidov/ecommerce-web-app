@@ -20,6 +20,7 @@ class CartSerializer(serializers.ModelSerializer):
 
 
 class OrderProductBetaListSerializer(serializers.ModelSerializer):
+    product = ProductGetSerializer(required=False)
 
     class Meta:
         model = OrderProductBeta
