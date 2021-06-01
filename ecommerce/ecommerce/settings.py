@@ -96,9 +96,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'HOST': 'localhost',
-        'NAME': 'ecommerce_db',
-        'USER': 'postgres',
-        'PASSWORD': '0214',}
+        'NAME': 'bahja_db',
+        'USER': 'bahja',
+        'PASSWORD': 'iB3oP0qT6qqG1u'}
 }
 
 
