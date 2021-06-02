@@ -82,7 +82,7 @@ def get_attributes(id):
 def get_images(product):
     images = []
     for image in ProductImage.objects.filter(product_id=product.id):
-        images.append("http://127.0.0.1:8000" + image.images.url)
+        images.append(image.images.url)
 
     return images
 
@@ -113,7 +113,7 @@ def get_available_colors_and_sizes(id):
                 available_colors.append({
                     "product_id": product.id,
                     "color": attribute.value,
-                    "image": "http://127.0.0.1:8000" + product.image.url,
+                    "image": product.image.url,
                 })
     return available_colors, available_sizes
 
