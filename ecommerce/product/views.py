@@ -582,7 +582,7 @@ class ProductDetailView(generics.GenericAPIView):
                     "categories": get_categories(parent),
                     "attributes": get_attributes(parent.id),
                     "price": parent.price,
-                    "image": "http://176.99.11.80:8040" + parent.image.url,
+                    "image": parent.image.url,
                     "quantity": parent.quantity,
                     "images": get_images(parent),
                     "created_at": parent.created_at,
@@ -605,7 +605,7 @@ class ProductDetailView(generics.GenericAPIView):
                 "categories": get_categories(variation),
                 "attributes": get_attributes(variation.id),
                 "price": variation.price,
-                "image": "http://176.99.11.80:8040" + variation.image.url,
+                "image": variation.image.url,
                 "quantity": variation.quantity,
                 "images": get_images(variation),
                 "created_at": variation.created_at,
@@ -639,7 +639,7 @@ class ProductSpecificDetailView(generics.GenericAPIView):
                 "description": product.description,
                 "price": product.price,
                 "quantity": product.quantity,
-                "image": "http://176.99.11.80:8040" + product.image.url,
+                "image": product.image.url,
                 "images": get_images(product),
             })
         except:
