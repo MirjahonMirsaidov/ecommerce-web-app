@@ -38,4 +38,4 @@ urlpatterns = [
     path('api/cart/', include('cart.urls')),
     path('schema/', schema_view),
     path('docs/', include_docs_urls(title='Blog API')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static('media/', document_root=settings.MEDIA_ROOT)
