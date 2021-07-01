@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'u#0q04ozathu)4ltl&&-lh9%dr+pv*e)a$0(@0gv(cs_#w2j2s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['bahja.herokuapp.com']
 CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
