@@ -94,11 +94,8 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'localhost',
-        'NAME': 'bahja_db',
-        'USER': 'bahja',
-        'PASSWORD': 'iB3oP0qT6qqG1u'}
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'bahja_db'}
 }
 
 
