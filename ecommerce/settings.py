@@ -97,7 +97,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'mirjahonn.mysql.pythonanywhere-services.com',
-        'NAME': 'mirjahonn$bahja_db',
+        'NAME': 'mirjahonn$default',
         'USER': 'mirjahonn',
         'PASSWORD': 'nyA@H9@bzpuYBXf'}
 }
