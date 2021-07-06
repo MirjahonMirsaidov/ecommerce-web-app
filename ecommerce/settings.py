@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,11 +95,11 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'localhost',
-        'NAME': 'bahja_db',
-        'USER': 'bahja',
-        'PASSWORD': 'iB3oP0qT6qqG1u'}
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'mirjahonn.mysql.pythonanywhere-services.com',
+        'NAME': 'mirjahonn$default',
+        'USER': 'mirjahonn',
+        'PASSWORD': 'nyA@H9@bzpuYBXf'}
 }
 
 
@@ -147,10 +148,16 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATIC_URL = '/static/'
-MEDIA_URL = 'https://bahja-api.atomlab.uz/media/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+MEDIA_URL = 'https://mirjahonn.pythonanywhere.com/media/'
 # MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 AUTH_USER_MODEL = 'main.User'
 
