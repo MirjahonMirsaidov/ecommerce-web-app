@@ -95,8 +95,11 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'bahja_db'}
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'mirjahonn.mysql.pythonanywhere-services.com',
+        'NAME': 'mirjahonn$bahja_db',
+        'USER': 'mirjahonn',
+        'PASSWORD': 'nyA@H9@bzpuYBXf'}
 }
 
 
