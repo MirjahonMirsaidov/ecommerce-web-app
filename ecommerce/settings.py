@@ -152,7 +152,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
-MEDIA_URL = 'https://bahja.herokuapp.com/media/'
+MEDIA_URL = 'https://mirjahonn.pythonanywhere.com/media/'
 # MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
