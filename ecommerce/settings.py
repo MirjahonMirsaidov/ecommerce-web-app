@@ -99,11 +99,6 @@ DATABASES = {
         'NAME': 'bahja_db'}
 }
 
-import dj_database_url
-
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-DATABASES['default'] = dj_database_url.config(default='postgres://aqckwzdssgjfxy:994bfd38aaf12b8c123089544e7832b9c80b52764273ecb7fadbf5d8306ca465@ec2-34-202-54-225.compute-1.amazonaws.com:5432/dcc8bej1pdgkvv')
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
